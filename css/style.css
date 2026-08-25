@@ -1229,6 +1229,7 @@ body.tema-light .previa-cura { color: #16a34a; }
   grid-template-columns: 1fr 1fr;
   gap: 4px;
   width: 280px;
+  max-width: 92vw;
   max-height: 260px;
   overflow-y: auto;
   box-shadow: 0 4px 16px rgba(0,0,0,0.6);
@@ -3594,5 +3595,242 @@ body.tema-light .acerto-badge--errou   { background: #fef3c7; color: #b45309; }
 
   .btn-turno {
     padding: 8px 10px;
+  }
+}
+
+/* ==========================================================================
+   20. RESPONSIVIDADE — TABLET PAISAGEM (ex: iPad/Android 1024–1200px)
+   Mantém o grid de 3 colunas, porém mais compacto.
+   ========================================================================== */
+@media (max-width: 1200px) {
+  .cabecalho-topo {
+    padding: 8px 12px;
+    gap: 10px;
+  }
+
+  .cabecalho-topo h1 {
+    font-size: 1.35rem;
+  }
+
+  .logo-icone {
+    height: 26px;
+  }
+
+  .menu-controles {
+    gap: 6px;
+  }
+
+  .btn-topo {
+    padding: 7px 10px;
+    font-size: 0.85rem;
+  }
+
+  .header-campanha {
+    font-size: 1.2rem;
+  }
+
+  .dashboard {
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 4px;
+    padding: 4px;
+  }
+
+  .item-iniciativa {
+    min-width: 150px;
+    width: 150px;
+    max-width: 150px;
+  }
+
+  /* Cabeçalhos dos painéis (título + botões) precisam poder quebrar linha
+     nas colunas mais estreitas, senão os botões estouram a borda do card. */
+  .painel-cabecalho,
+  .painel-cabecalho--status {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+
+  .painel-cabecalho h2 {
+    min-width: 0;
+  }
+
+  .painel-cabecalho-botoes {
+    flex-wrap: wrap;
+  }
+
+  .btn-area-cab {
+    font-size: 10px;
+    padding: 4px 7px;
+  }
+}
+
+/* ==========================================================================
+   21. RESPONSIVIDADE — TABLET RETRATO (largura até 900px)
+   Empilha os painéis em coluna única, com rolagem de página habilitada.
+   ========================================================================== */
+@media (max-width: 900px) {
+  html, body {
+    height: auto;
+    overflow: auto;
+  }
+
+  .dashboard {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100vh - 55px);
+    padding: 6px;
+    gap: 8px;
+  }
+
+  .painel {
+    width: 100%;
+  }
+
+  /* Ordem dos painéis empilhados: Histórico vai para o final, depois de
+     Grupo e Combatentes. */
+  .iniciativa      { order: 1; }
+  .painel-tabs     { order: 2; }
+  .painel.turno    { order: 3; }
+  .status          { order: 4; }
+  .historico       { order: 5; }
+
+  .iniciativa {
+    height: auto;
+    min-height: 190px;
+  }
+
+  .painel-tabs,
+  .painel.turno,
+  .historico,
+  .status {
+    max-height: 65vh;
+    overflow-y: auto;
+  }
+
+  .cabecalho-topo h1 {
+    font-size: 1.15rem;
+  }
+
+  .logo-icone {
+    height: 24px;
+    margin-right: 4px;
+  }
+
+  .cabecalho-topo {
+    padding: 6px 10px;
+    gap: 6px;
+  }
+
+  .btn-topo {
+    padding: 6px 8px;
+    font-size: 0.8rem;
+  }
+
+  .header-campanha {
+    font-size: 1rem;
+  }
+}
+
+/* ==========================================================================
+   22. RESPONSIVIDADE — CELULAR (largura até 600px)
+   Além do empilhamento herdado da regra de tablet retrato acima, o
+   cabeçalho e o painel de Combate precisam de ajustes próprios: em telas
+   de celular eles não cabem numa única linha mesmo compactados.
+   ========================================================================== */
+@media (max-width: 600px) {
+  .cabecalho-topo {
+    height: auto;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "logo direita"
+      "campanha campanha";
+    row-gap: 4px;
+    padding: 6px 8px;
+  }
+
+  .logo            { grid-area: logo; }
+  .header-campanha-wrap { grid-area: campanha; }
+  .cabecalho-direita     { grid-area: direita; }
+
+  /* Colunas em fr (em vez de auto) dão uma largura definida à célula dos
+     botões — sem isso, o grid tenta caber os 4 botões numa única linha
+     (ignorando o flex-wrap) e espreme a logo a quase zero de largura.
+     justify-self:stretch também é necessário: "end" (regra base) faz o
+     item de grid encolher para o conteúdo em vez de ocupar a coluna,
+     então o flex-wrap nunca chega a ser acionado. */
+  .cabecalho-direita {
+    justify-self: stretch;
+    min-width: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    row-gap: 6px;
+  }
+
+  .menu-controles {
+    flex-wrap: wrap;
+    flex-shrink: 1;
+    min-width: 0;
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .cabecalho-topo h1 {
+    font-size: 1rem;
+  }
+
+  .logo-icone {
+    height: 20px;
+  }
+
+  .btn-topo {
+    padding: 5px 8px;
+    font-size: 0.72rem;
+  }
+
+  .header-campanha {
+    font-size: 0.95rem;
+  }
+
+  .dashboard {
+    min-height: 0;
+  }
+
+  /* Painel de Combate: título+botão / info do turno / encerrar combate
+     empilham em vez de disputar espaço numa única linha. */
+  .painel-combate-topo {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .btn-encerrar-combate {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .item-iniciativa {
+    min-width: 135px;
+    width: 135px;
+    max-width: 135px;
+  }
+
+  .turno-ativo-linha {
+    flex-wrap: wrap;
+  }
+
+  .controle-modificador {
+    flex-wrap: wrap;
+  }
+
+  .modal-conteudo {
+    padding: 16px;
+  }
+
+  .modal-monstros-lista {
+    grid-template-columns: 1fr;
+  }
+
+  .acoes-rapidas-grid {
+    grid-template-columns: 1fr;
   }
 }

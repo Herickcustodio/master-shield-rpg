@@ -1435,11 +1435,20 @@ function abrirTurnoAcaoCondicao() {
   document.body.appendChild(popover);
   _popoverCondicaoTurno = popover;
 
-  // Posiciona logo acima do botão
+  // Posiciona logo acima do botão, sem deixar vazar para fora da tela
+  // (em telas de celular o botão pode estar perto da borda direita/topo)
   const btnCondicao = document.getElementById("btn-turno-condicao");
   const rect = btnCondicao.getBoundingClientRect();
-  popover.style.top  = (rect.top - popover.offsetHeight - 6) + "px";
-  popover.style.left = rect.left + "px";
+  const margem = 8;
+
+  let left = Math.min(rect.left, window.innerWidth - popover.offsetWidth - margem);
+  left = Math.max(margem, left);
+
+  let top = rect.top - popover.offsetHeight - 6;
+  if (top < margem) top = Math.min(rect.bottom + 6, window.innerHeight - popover.offsetHeight - margem);
+
+  popover.style.left = left + "px";
+  popover.style.top  = top + "px";
 
   // Fecha ao clicar fora (ignorando cliques dentro do modal de duração,
   // que faz parte do mesmo fluxo de seleção de condições)
