@@ -311,7 +311,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 8px 12px 8px;
+  padding: 3px;
   margin: 0;
   border-bottom: 1px solid var(--border-default);
   flex-shrink: 0;
@@ -340,7 +340,7 @@ body {
   white-space: nowrap;
 }
 
-.painel-combate-rodada {
+.painel-combate-turno {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -352,18 +352,18 @@ body {
   overflow: hidden;
 }
 
-.rodada-iniciativa-caixa {
+.turno-iniciativa-caixa {
   display: flex;
   align-items: center;
   gap: 16px;
   min-width: 0;
-  padding: 1px 10px;
+  padding: 1px 7px;
   border: 1px solid var(--border-default);
   border-radius: 8px;
   background: #1e1e1e;
 }
 
-.rodada-bloco {
+.turno-bloco {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -371,7 +371,7 @@ body {
   flex-shrink: 0;
 }
 
-.rodada-label {
+.turno-label {
   font-size: 12px;
   color: #999;
   text-transform: uppercase;
@@ -380,8 +380,8 @@ body {
   line-height: 1;
 }
 
-.rodada-num {
-  font-size: 1.65rem;
+.turno-num {
+  font-size: 1.50rem;
   font-weight: bold;
   color: #5aabff;
   line-height: 1;
@@ -400,7 +400,7 @@ body {
 .painel-tabs {
   grid-column: 3;
   grid-row: 2 / 4;
-  padding: 12px;
+  padding: 6px;
 }
 
 .anotacoes {
@@ -425,7 +425,7 @@ body {
   grid-column: 2;
   grid-row: 3;
   overflow-y: auto;
-  padding: 12px;
+  padding: 6px;
 }
 
 /* .monstros {
@@ -1016,6 +1016,13 @@ body.tema-light .previa-cura { color: #16a34a; }
   font-size: 10px;
 }
 
+.item-ini-ca-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
 .item-ini-vida-row {
   display: flex;
   justify-content: flex-start;
@@ -1273,34 +1280,6 @@ body.tema-light .previa-cura { color: #16a34a; }
 /* ==========================================================================
    5b. CONTROLE DE TURNO — PAINEL
    ========================================================================== */
-.turno-rodada-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
-  padding: 10px 12px;
-  margin-bottom: 10px;
-}
-
-.turno-rodada-label {
-  font-size: 12px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.turno-rodada-num {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #5aabff;
-  line-height: 1;
-  min-width: 32px;
-  text-align: center;
-}
-
 /* Linha com o card do combatente ativo + card de condições ao lado.
    Ocupa só o espaço que sobrar na coluna — os botões de ação e de turno
    ficam fixos abaixo dela em vez de serem empurrados para baixo. */
@@ -1481,7 +1460,7 @@ body.tema-light .previa-cura { color: #16a34a; }
 }
 
 .turno-ativo-ini {
-  color: #8ae0a0;
+  color: var(--text-secondary);
   font-weight: 700;
 }
 
@@ -1507,7 +1486,7 @@ body.tema-light .previa-cura { color: #16a34a; }
 }
 
 .turno-ativo-hp-valor {
-  color: #9fe6a3;
+  color: var(--text-primary);
   font-weight: 700;
 }
 
@@ -1590,7 +1569,7 @@ body.tema-light .previa-cura { color: #16a34a; }
 
 .btn-turno {
   flex: 1;
-  padding: 6px 10px;
+  padding: 13px 10px;
   background: var(--bg-card2);
   border: 1px solid var(--border-input);
   border-radius: 4px;
@@ -1613,7 +1592,7 @@ body.tema-light .previa-cura { color: #16a34a; }
   background: #0a65cc;
 }
 
-/* Faixa "Ordem da Iniciativa" (barra horizontal ao lado da Rodada, no topo do painel de Combate) */
+/* Faixa "Ordem da Iniciativa" (barra horizontal ao lado do Turno, no topo do painel de Combate) */
 .ordem-iniciativa-wrap {
   display: flex;
   align-items: center;
@@ -1774,12 +1753,12 @@ body.tema-light .previa-cura { color: #16a34a; }
   font-weight: bold;
 }
 
-.efeito-rodadas {
+.efeito-turnos {
   font-size: 11px;
   color: #5aabff;
 }
 
-.efeito-item--urgente .efeito-rodadas {
+.efeito-item--urgente .efeito-turnos {
   color: #f39c12;
   font-weight: bold;
 }
@@ -2082,9 +2061,9 @@ body.tema-light .previa-cura { color: #16a34a; }
   filter: brightness(1.15);
 }
 
-.btn-rapido--roxo    { background: #6d3fa8; }
-.btn-rapido--azul    { background: #064D9F; }
 .btn-rapido--teal    { background: #0f7d6c; }
+.btn-rapido--azul    { background: #064D9F; }
+.btn-rapido--amarelo { background: #b8860b; }
 .btn-rapido--laranja { background: #b8590a; }
 
 /* ==========================================================================
@@ -2196,14 +2175,50 @@ body.tema-light .previa-cura { color: #16a34a; }
   color: #6bffb0;
 }
 
-body.tema-light .log-item.falha  { color: #dc2626; }
-body.tema-light .log-item.sucesso { color: #16a34a; }
+.log-item.condicao {
+  border-left-color: #f39c12;
+  color: #f39c12;
+}
+
+.log-item.turno {
+  border-left-color: #5aabff;
+  color: #5aabff;
+}
+
+.log-item.acao-iniciativa {
+  border-left-color: #0f7d6c;
+  color: #2dd4bf;
+}
+
+.log-item.acao-pericia {
+  border-left-color: #064D9F;
+  color: #4dabf7;
+}
+
+.log-item.acao-resistencia {
+  border-left-color: #b8860b;
+  color: #f0c419;
+}
+
+.log-item.exp {
+  border-left-color: #af01e4;
+  color: #d968f5;
+}
+
+body.tema-light .log-item.falha          { color: #dc2626; }
+body.tema-light .log-item.sucesso        { color: #16a34a; }
+body.tema-light .log-item.condicao       { color: #b8720a; }
+body.tema-light .log-item.turno          { color: #1d6fd6; }
+body.tema-light .log-item.acao-iniciativa  { color: #0f7d6c; }
+body.tema-light .log-item.acao-pericia     { color: #064D9F; }
+body.tema-light .log-item.acao-resistencia { color: #8a6d0b; }
+body.tema-light .log-item.exp              { color: #af01e4; }
 
 /* ==========================================================================
    10. STATUS DO GRUPO
    ========================================================================== */
 .btn-novo-heroi-status {
-  padding: 2px 9px;
+  padding: 5px 9px;
   background: var(--accent);
   color: white;
   border: 1px solid transparent;
@@ -2707,10 +2722,6 @@ body.tema-light .heroi-imagem-preview img {
 }
 
 .exp-heroi-nivel {
-  background: var(--bg-card2);
-  border: 1px solid var(--border-input);
-  border-radius: 4px;
-  padding: 6px 10px;
   font-size: 13px;
   font-weight: bold;
   color: var(--text-secondary);
@@ -2718,14 +2729,25 @@ body.tema-light .heroi-imagem-preview img {
 }
 
 .exp-heroi-atual {
-  background: var(--bg-card2);
-  border: 1px solid var(--border-input);
-  border-radius: 4px;
-  padding: 8px 10px;
   font-size: 14px;
   font-weight: bold;
   color: #af01e4;
   text-align: center;
+}
+
+.exp-heroi-barra-wrap {
+  height: 8px;
+  background: var(--bg-card2);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.exp-heroi-barra-fill {
+  height: 100%;
+  background: #af01e4;
+  border-radius: 4px;
+  transition: width 0.3s;
 }
 
 #modal-heroi .form-heroi {
@@ -3125,6 +3147,38 @@ body.tema-light .heroi-imagem-preview img {
 }
 
 /* ==========================================================================
+   MODAL DE AJUDA
+   ========================================================================== */
+.modal-ajuda-conteudo {
+  max-width: 640px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.modal-ajuda-conteudo h3 {
+  margin: 18px 0 6px;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 15px;
+  color: var(--accent-hover);
+}
+
+.modal-ajuda-conteudo p {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.ajuda-dica {
+  margin-top: 16px !important;
+  padding: 8px 10px;
+  background: var(--bg-card2);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  color: var(--text-primary) !important;
+}
+
+/* ==========================================================================
    MODAL DE CONFIGURAÇÕES
    ========================================================================== */
 .modal-config-conteudo {
@@ -3266,8 +3320,9 @@ body.tema-light .heroi-imagem-preview img {
   background: var(--border-default);
 }
 
-.btn-config-importar {
+.config-secao .btn-config-importar {
   cursor: pointer;
+  color: var(--text-primary);
 }
 
 .btn-config-danger {
@@ -3425,4 +3480,119 @@ body.tema-light .acerto-badge--errou   { background: #fef3c7; color: #b45309; }
 .btn-acerto-pular:hover {
   border-color: var(--text-secondary);
   color: var(--text-primary);
+}
+
+/* ==========================================================================
+   19. RESPONSIVIDADE — NOTEBOOK (telas baixas, ex: 1366x768)
+   ========================================================================== */
+@media (max-width: 1440px) and (max-height: 800px) {
+
+  /* Rolador de dados: botão de rolar e resultado lado a lado, para não
+     empurrar o resultado para fora da área visível do painel. */
+  .rolar-resultado-linha {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 15px;
+  }
+
+  .rolar-resultado-linha .btn-rolar-dado-grande {
+    width: 130px;
+    flex: 0 0 auto;
+    margin-top: 0;
+  }
+
+  #resultado-dado {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 6px;
+    margin-top: 0;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  #resultado-dado .valor {
+    font-size: 24px;
+    margin-top: 0;
+  }
+
+  /* Controle de Turno: card do combatente ativo mais compacto, para que CA,
+     Ini, HP e a barra de vida caibam sem serem cortados pelo overflow. */
+  .painel.turno {
+    gap: 4px;
+  }
+
+  .painel.turno .painel-cabecalho {
+    padding-bottom: 4px;
+  }
+
+  .turno-ativo-card,
+  .turno-ativo-condicoes-card {
+    padding: 4px 6px;
+  }
+
+  .turno-ativo-cabecalho {
+    gap: 2px;
+    margin-bottom: 2px;
+  }
+
+  .turno-ativo-topo {
+    gap: 6px;
+  }
+
+  .turno-ativo-avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 15px;
+  }
+
+  .turno-ativo-info-col {
+    gap: 2px;
+  }
+
+  .btn-turno-morto-icone {
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+  }
+
+  .turno-ativo-nome {
+    font-size: 12px;
+  }
+
+  .turno-ativo-detalhes {
+    font-size: 10px;
+    gap: 4px 8px;
+  }
+
+  .turno-ativo-status {
+    gap: 1px;
+  }
+
+  .turno-ativo-hp-row {
+    font-size: 11px;
+  }
+
+  .turno-ativo-barra {
+    height: 5px;
+  }
+
+  .turno-ativo-acoes {
+    gap: 4px;
+  }
+
+  .btn-turno-acao {
+    padding: 4px 6px;
+    min-height: 22px;
+    font-size: 10px;
+  }
+
+  .turno-controles {
+    gap: 4px;
+  }
+
+  .btn-turno {
+    padding: 8px 10px;
+  }
 }

@@ -30,7 +30,7 @@ function lerLocalStorageNumero(chave, fallback = 0) {
 let listaDeIniciativa  = lerLocalStorageJSON("iniciativaRPG", []);
 let partyHerois        = lerLocalStorageJSON("partyHeroisRPG", []);
 let turnoAtivo         = lerLocalStorageNumero("turnoAtivoRPG", 0);
-let rodadaAtual        = lerLocalStorageNumero("rodadaAtualRPG", 1);
+let turnoAtual         = lerLocalStorageNumero("turnoAtualRPG", lerLocalStorageNumero("rodadaAtualRPG", 1));
 let monstrosCustom     = lerLocalStorageJSON("monstrosCustomRPG", []);
 let efeitosTemporarios = lerLocalStorageJSON("efeitosRPG", []);
 let ultimasRolagens    = lerLocalStorageJSON("ultimasRolagensRPG", []);
@@ -221,7 +221,7 @@ function salvarESincronizar() {
   salvarIniciativaNoCofre();
   salvarHeroisNoCofre();
   localStorage.setItem("turnoAtivoRPG",  turnoAtivo);
-  localStorage.setItem("rodadaAtualRPG", rodadaAtual);
+  localStorage.setItem("turnoAtualRPG",  turnoAtual);
   localStorage.setItem("efeitosRPG",     JSON.stringify(efeitosTemporarios));
   atualizarIniciativa();
   renderizarStatusGrupo();
@@ -351,10 +351,14 @@ function abrirModalExpHeroi(idHeroi) {
   _idHeroiExpAtual = idHeroi;
   const expMeta = heroi.expMeta || 1000;
 
+  const pctExp = Math.max(0, Math.min(100, ((heroi.exp || 0) / expMeta) * 100));
+
   document.getElementById("modal-exp-heroi-titulo").textContent = `EXP — ${heroi.nome}`;
   document.getElementById("exp-heroi-nivel").textContent = `Nível atual: ${heroi.nivel}`;
   document.getElementById("exp-heroi-atual").textContent = `EXP atual: ${heroi.exp || 0} / ${expMeta}`;
+  document.getElementById("exp-heroi-barra-fill").style.width = `${pctExp}%`;
   document.getElementById("exp-heroi-adicionar").value = "";
+  document.getElementById("exp-heroi-meta").value = expMeta;
 
   document.getElementById("modal-exp-heroi").classList.remove("oculto");
   document.getElementById("exp-heroi-adicionar").focus();
@@ -370,13 +374,15 @@ function confirmarExpHeroi() {
   if (!heroi) { fecharModalExpHeroi(); return; }
 
   const valorAdicionado = parseInt(document.getElementById("exp-heroi-adicionar").value) || 0;
-  const expMeta = heroi.expMeta || 1000;
-  const { nivel, exp, subiuNivel } = aplicarExpENivel(heroi.nivel, (heroi.exp || 0) + valorAdicionado, expMeta);
+  const metaAntiga = heroi.expMeta || 1000;
+  const novaMeta   = parseInt(document.getElementById("exp-heroi-meta").value) || metaAntiga;
+  const { nivel, exp, subiuNivel } = aplicarExpENivel(heroi.nivel, (heroi.exp || 0) + valorAdicionado, metaAntiga);
 
-  heroi.nivel = nivel;
-  heroi.exp   = exp;
+  heroi.nivel    = nivel;
+  heroi.exp      = exp;
+  heroi.expMeta  = novaMeta;
 
-  if (valorAdicionado) adicionarHistorico(`✨ ${heroi.nome} ganhou ${valorAdicionado} de EXP!`);
+  if (valorAdicionado) adicionarHistorico(`✨ ${heroi.nome} ganhou ${valorAdicionado} de EXP!`, "exp");
   if (subiuNivel) adicionarHistorico(`📈 ${heroi.nome} subiu para o nível ${nivel}!`);
 
   fecharModalExpHeroi();
@@ -616,9 +622,9 @@ function abrirModalCondicaoDuracao(criaturaId, condicaoId) {
 
   _condicaoCtx = { criaturaId, condicaoId };
   document.getElementById("modal-condicao-titulo").textContent = `${cond.emoji} ${cond.label} — ${criatura.nome}`;
-  document.getElementById("condicao-rodadas").value = "1";
+  document.getElementById("condicao-turnos").value = "1";
   document.getElementById("modal-condicao-duracao").classList.remove("oculto");
-  document.getElementById("condicao-rodadas").focus();
+  document.getElementById("condicao-turnos").focus();
 }
 
 function fecharModalCondicaoDuracao() {
@@ -646,14 +652,14 @@ function confirmarCondicao() {
   if (!criatura) return;
   if (!criatura.condicoes) criatura.condicoes = [];
 
-  const rodadasVal = document.getElementById("condicao-rodadas").value.trim();
-  const rodadas    = rodadasVal !== "" ? parseInt(rodadasVal) || 1 : null; // null = indefinido
-  const cond       = CONDICOES.find(c => c.id === condicaoId);
+  const turnosVal = document.getElementById("condicao-turnos").value.trim();
+  const turnos    = turnosVal !== "" ? parseInt(turnosVal) || 1 : null; // null = indefinido
+  const cond      = CONDICOES.find(c => c.id === condicaoId);
 
-  criatura.condicoes.push({ id: condicaoId, rodadas });
+  criatura.condicoes.push({ id: condicaoId, turnos });
 
-  const duracaoTxt = rodadas ? `${rodadas} rodada${rodadas > 1 ? "s" : ""}` : "indefinido";
-  adicionarHistorico(`${cond.emoji} ${criatura.nome} recebeu: ${cond.label} (${duracaoTxt})`);
+  const duracaoTxt = turnos ? `${turnos} turno${turnos > 1 ? "s" : ""}` : "indefinido";
+  adicionarHistorico(`${cond.emoji} ${criatura.nome} recebeu: ${cond.label} (${duracaoTxt})`, "condicao");
 
   fecharModalCondicaoDuracao();
   salvarESincronizar();
@@ -664,24 +670,24 @@ function removerCondicao(criaturaId, condicaoId) {
   if (!criatura) return;
   const cond = CONDICOES.find(c => c.id === condicaoId);
   criatura.condicoes = (criatura.condicoes || []).filter(c => c.id !== condicaoId);
-  adicionarHistorico(`✅ ${criatura.nome} se recuperou de: ${cond.label}`);
+  adicionarHistorico(`✅ ${criatura.nome} se recuperou de: ${cond.label}`, "sucesso");
   salvarESincronizar();
 }
 
-/** Decrementa rodadas de condições ao virar rodada */
+/** Decrementa turnos de condições ao virar turno */
 function decrementarCondicoes() {
   listaDeIniciativa.forEach(criatura => {
     if (!criatura.condicoes) return;
     const expiradas = [];
     criatura.condicoes = criatura.condicoes.map(c => {
-      if (c.rodadas === null) return c; // indefinido, não decrementa
-      const novas = c.rodadas - 1;
+      if (c.turnos === null) return c; // indefinido, não decrementa
+      const novas = c.turnos - 1;
       if (novas <= 0) { expiradas.push(c.id); return null; }
       if (novas === 1) {
         const cond = CONDICOES.find(x => x.id === c.id);
-        adicionarHistorico(`⚠️ ${criatura.nome}: "${cond?.label}" expira na próxima rodada!`);
+        adicionarHistorico(`⚠️ ${criatura.nome}: "${cond?.label}" expira no próximo turno!`);
       }
-      return { ...c, rodadas: novas };
+      return { ...c, turnos: novas };
     }).filter(Boolean);
 
     expiradas.forEach(id => {
@@ -725,6 +731,7 @@ function abrirModalArea() {
   }
 
   // Reseta campos
+  document.getElementById("area-nome-habilidade").value = "";
   document.getElementById("area-qtd").value          = "1";
   document.getElementById("area-tipo").value         = "8";
   document.getElementById("area-modificador").value  = "0";
@@ -827,7 +834,9 @@ function confirmarDanoArea() {
     if (c.hpAtual === 0 && !c.morto) processarHPZero(c);
   });
 
-  adicionarHistorico(`💥 Dano em área (${valor}): ${nomes.join(", ")}`, "falha");
+  const nomeHabilidade = document.getElementById("area-nome-habilidade").value.trim();
+  const rotulo = nomeHabilidade || "Dano em área";
+  adicionarHistorico(`💥 ${rotulo} (${valor}): ${nomes.join(", ")}`, "falha");
   fecharModalArea();
   salvarESincronizar();
 }
@@ -1264,8 +1273,8 @@ function mortoViaModal() {
    ========================================================================== */
 function abrirFormEfeito() {
   document.getElementById("turno-efeito-form").classList.remove("oculto");
-  document.getElementById("efeito-nome").value    = "";
-  document.getElementById("efeito-rodadas").value = "1";
+  document.getElementById("efeito-nome").value   = "";
+  document.getElementById("efeito-turnos").value = "1";
   document.getElementById("efeito-nome").focus();
 }
 
@@ -1274,12 +1283,12 @@ function fecharFormEfeito() {
 }
 
 function confirmarEfeito() {
-  const nome    = document.getElementById("efeito-nome").value.trim();
-  const rodadas = parseInt(document.getElementById("efeito-rodadas").value) || 1;
+  const nome   = document.getElementById("efeito-nome").value.trim();
+  const turnos = parseInt(document.getElementById("efeito-turnos").value) || 1;
   if (!nome) { document.getElementById("efeito-nome").focus(); return; }
 
-  efeitosTemporarios.push({ id: "ef_" + Date.now(), nome, rodadas });
-  adicionarHistorico(`⏳ Efeito adicionado: "${nome}" (${rodadas} rodada${rodadas > 1 ? "s" : ""})`);
+  efeitosTemporarios.push({ id: "ef_" + Date.now(), nome, turnos });
+  adicionarHistorico(`⏳ Efeito adicionado: "${nome}" (${turnos} turno${turnos > 1 ? "s" : ""})`);
   fecharFormEfeito();
   salvarESincronizar();
 }
@@ -1302,7 +1311,7 @@ function renderizarEfeitos() {
   }
 
   efeitosTemporarios.forEach(ef => {
-    const urgente = ef.rodadas === 1;
+    const urgente = ef.turnos === 1;
     const item = document.createElement("div");
     item.className = "efeito-item" + (urgente ? " efeito-item--urgente" : "");
 
@@ -1313,12 +1322,12 @@ function renderizarEfeitos() {
     nome.className   = "efeito-nome";
     nome.textContent = ef.nome;
 
-    const rodadas = document.createElement("span");
-    rodadas.className   = "efeito-rodadas";
-    rodadas.textContent = `${ef.rodadas} rodada${ef.rodadas > 1 ? "s" : ""}`;
+    const turnos = document.createElement("span");
+    turnos.className   = "efeito-turnos";
+    turnos.textContent = `${ef.turnos} turno${ef.turnos > 1 ? "s" : ""}`;
 
     info.appendChild(nome);
-    info.appendChild(rodadas);
+    info.appendChild(turnos);
 
     const btnDel = document.createElement("button");
     btnDel.textContent = "✕";
@@ -1345,15 +1354,15 @@ function proximoTurno() {
     turnoAtivo++;
     if (turnoAtivo >= listaDeIniciativa.length) {
       turnoAtivo = 0;
-      rodadaAtual++;
-      adicionarHistorico(`🔄 Rodada ${rodadaAtual} iniciada!`);
+      turnoAtual++;
+      adicionarHistorico(`🔄 Turno ${turnoAtual} iniciado!`, "turno");
       decrementarCondicoes();
-      efeitosTemporarios = efeitosTemporarios.map(e => ({ ...e, rodadas: e.rodadas - 1 }));
+      efeitosTemporarios = efeitosTemporarios.map(e => ({ ...e, turnos: e.turnos - 1 }));
       efeitosTemporarios.forEach(e => {
-        if (e.rodadas <= 0) adicionarHistorico(`⏰ Efeito expirado: "${e.nome}"`, "falha");
-        else if (e.rodadas === 1) adicionarHistorico(`⚠️ "${e.nome}" expira na próxima rodada!`);
+        if (e.turnos <= 0) adicionarHistorico(`⏰ Efeito expirado: "${e.nome}"`, "falha");
+        else if (e.turnos === 1) adicionarHistorico(`⚠️ "${e.nome}" expira no próximo turno!`);
       });
-      efeitosTemporarios = efeitosTemporarios.filter(e => e.rodadas > 0);
+      efeitosTemporarios = efeitosTemporarios.filter(e => e.turnos > 0);
     }
     tentativas++;
   } while (listaDeIniciativa[turnoAtivo]?.morto && tentativas < listaDeIniciativa.length);
@@ -1481,16 +1490,14 @@ function abrirTurnoAcaoMorto() {
 }
 
 function atualizarPainelTurno() {
-  const numEl   = document.getElementById("turno-rodada-num");
-  const combateRodadaEl = document.getElementById("combate-rodada-num");
+  const combateTurnoEl = document.getElementById("combate-turno-num");
   const linhaEl = document.getElementById("turno-ativo-linha");
   const cardEl  = document.getElementById("turno-ativo-card");
   const condCardEl = document.getElementById("turno-ativo-condicoes-card");
   const vazioEl = document.getElementById("turno-vazio-msg");
   const acoesEl = document.getElementById("turno-ativo-acoes");
 
-  if (numEl) numEl.textContent = rodadaAtual;
-  if (combateRodadaEl) combateRodadaEl.textContent = rodadaAtual;
+  if (combateTurnoEl) combateTurnoEl.textContent = turnoAtual;
 
   if (listaDeIniciativa.length === 0) {
     if (linhaEl)    linhaEl.classList.add("oculto");
@@ -1664,8 +1671,8 @@ function atualizarPainelTurno() {
         if (!cond) return;
         const tag = document.createElement("span");
         tag.className = "item-ini-cond-tag";
-        const duracaoTxt = condObj.rodadas !== null
-          ? ` (${condObj.rodadas} turno${condObj.rodadas > 1 ? "s" : ""})`
+        const duracaoTxt = condObj.turnos !== null
+          ? ` (${condObj.turnos} turno${condObj.turnos > 1 ? "s" : ""})`
           : "";
         tag.textContent = `${cond.emoji} ${cond.label}${duracaoTxt}`;
         tagsWrap.appendChild(tag);
@@ -1716,7 +1723,7 @@ function renderizarCondicoesAtivas() {
   if (!lista) return;
   lista.innerHTML = "";
 
-  // Coleta todas as condições com rodadas definidas de todos os combatentes
+  // Coleta todas as condições com turnos definidos de todos os combatentes
   const todasCondicoes = [];
   listaDeIniciativa.forEach(criatura => {
     (criatura.condicoes || []).forEach(condObj => {
@@ -1731,7 +1738,7 @@ function renderizarCondicoesAtivas() {
   }
 
   todasCondicoes.forEach(({ criatura, condObj, cond }) => {
-    const urgente = condObj.rodadas === 1;
+    const urgente = condObj.turnos === 1;
     const item    = document.createElement("div");
     item.className = "efeito-item" + (urgente ? " efeito-item--urgente" : "");
 
@@ -1743,9 +1750,9 @@ function renderizarCondicoesAtivas() {
     nomeCond.textContent = `${cond.emoji} ${cond.label}`;
 
     const sub = document.createElement("span");
-    sub.className = "efeito-rodadas";
-    sub.textContent = condObj.rodadas !== null
-      ? `${criatura.nome} · ${condObj.rodadas} rodada${condObj.rodadas > 1 ? "s" : ""}`
+    sub.className = "efeito-turnos";
+    sub.textContent = condObj.turnos !== null
+      ? `${criatura.nome} · ${condObj.turnos} turno${condObj.turnos > 1 ? "s" : ""}`
       : `${criatura.nome} · indefinido`;
 
     info.appendChild(nomeCond);
@@ -1875,11 +1882,13 @@ function atualizarIniciativa() {
     });
 
     nomeLinha.appendChild(nome);
-    nomeLinha.appendChild(btnMortoCombate);
 
     const caLinha = document.createElement("div");
-    caLinha.className = "item-ini-info";
-    caLinha.textContent = `CA ${caValor ?? "?"}`;
+    caLinha.className = "item-ini-info item-ini-ca-linha";
+    const caTexto = document.createElement("span");
+    caTexto.textContent = `CA ${caValor ?? "?"}`;
+    caLinha.appendChild(caTexto);
+    caLinha.appendChild(btnMortoCombate);
 
     const vidaLinha = document.createElement("div");
     vidaLinha.className = "item-ini-vida-row";
@@ -2216,7 +2225,7 @@ function limparIniciativa() {
   if (!confirm("Deseja realmente limpar todo o combate?")) return;
   listaDeIniciativa  = [];
   turnoAtivo         = 0;
-  rodadaAtual        = 1;
+  turnoAtual         = 1;
   efeitosTemporarios = [];
   adicionarHistorico("🏳️ Combate encerrado!");
   salvarESincronizar();
@@ -2233,8 +2242,7 @@ function rolarDadoSelecionado() {
   rolarDado(dadoSelecionado);
 }
 
-function rolarAcaoRapida(nomeAcao, emoji) {
-  const modificador = parseInt(document.getElementById("modificador").value) || 0;
+function rolarAcaoRapida(nomeAcao, emoji, modificador, tipoHistorico) {
   const rolagem = Math.floor(Math.random() * 20) + 1;
   const total   = rolagem + modificador;
   document.querySelector("#resultado-dado .valor").textContent = total;
@@ -2245,7 +2253,34 @@ function rolarAcaoRapida(nomeAcao, emoji) {
   const textoBase = `1d20: [${rolagem}] + ${modificador} = ${total}`;
   if (rolagem === 20) adicionarHistorico(`${emoji} ${nomeAcao}: SUCESSO CRÍTICO! ${textoBase}`, "sucesso");
   else if (rolagem === 1) adicionarHistorico(`${emoji} ${nomeAcao}: FALHA CRÍTICA! ${textoBase}`, "falha");
-  else adicionarHistorico(`${emoji} ${nomeAcao}: ${textoBase}`);
+  else adicionarHistorico(`${emoji} ${nomeAcao}: ${textoBase}`, tipoHistorico);
+}
+
+/* ==========================================================================
+   MODAL MODIFICADOR DE AÇÃO RÁPIDA
+   ========================================================================== */
+let _acaoRapidaCtx = null; // { nomeAcao, emoji, tipoHistorico }
+
+function abrirModalAcaoRapida(nomeAcao, emoji, tipoHistorico) {
+  _acaoRapidaCtx = { nomeAcao, emoji, tipoHistorico };
+  document.getElementById("modal-acao-rapida-titulo").textContent = `${emoji} ${nomeAcao}`;
+  document.getElementById("acao-rapida-modificador").value = "0";
+  document.getElementById("modal-acao-rapida").classList.remove("oculto");
+  document.getElementById("acao-rapida-modificador").focus();
+  document.getElementById("acao-rapida-modificador").select();
+}
+
+function fecharModalAcaoRapida() {
+  document.getElementById("modal-acao-rapida").classList.add("oculto");
+  _acaoRapidaCtx = null;
+}
+
+function confirmarAcaoRapida() {
+  if (!_acaoRapidaCtx) return;
+  const { nomeAcao, emoji, tipoHistorico } = _acaoRapidaCtx;
+  const modificador = parseInt(document.getElementById("acao-rapida-modificador").value) || 0;
+  rolarAcaoRapida(nomeAcao, emoji, modificador, tipoHistorico);
+  fecharModalAcaoRapida();
 }
 
 function abrirModalEvento() {
@@ -2478,7 +2513,7 @@ function exportarSessao() {
     campanha: config.campanhaNome,
     mestre: config.mestreNome,
     config, listaDeIniciativa, partyHerois, monstrosCustom,
-    efeitosTemporarios, rodadaAtual, turnoAtivo,
+    efeitosTemporarios, turnoAtual, turnoAtivo,
     historico: lerLocalStorageJSON("historicoRPG", []),
     anotacoes: localStorage.getItem("anotacoesRPG") || "",
   };
@@ -2504,7 +2539,7 @@ function importarSessao(file) {
       partyHerois        = dados.partyHerois        || [];
       monstrosCustom     = dados.monstrosCustom     || [];
       efeitosTemporarios = dados.efeitosTemporarios || [];
-      rodadaAtual        = dados.rodadaAtual        || 1;
+      turnoAtual         = dados.turnoAtual         || dados.rodadaAtual || 1;
       turnoAtivo         = dados.turnoAtivo         || 0;
       config             = dados.config             || config;
       localStorage.setItem("historicoRPG", JSON.stringify(dados.historico || []));
@@ -2569,7 +2604,7 @@ window.onload = () => {
   document.getElementById("btn-salvar-config").addEventListener("click", salvarConfig);
   document.getElementById("btn-exportar-sessao").addEventListener("click", exportarSessao);
   document.getElementById("btn-limpar-tudo").addEventListener("click", limparTodosDados);
-  const fileImportar = document.getElementById("file-importar-sessao");
+  const fileImportar = document.getElementById("input-importar-sessao");
   if (fileImportar) fileImportar.addEventListener("change", (e) => importarSessao(e.target.files[0]));
 
   document.getElementById("fechar-iniciativa").addEventListener("click", fecharModalIniciativa);
@@ -2653,9 +2688,13 @@ window.onload = () => {
   selecionarDado(dadoSelecionado);
   renderizarUltimasRolagens();
 
-  document.getElementById("btn-rapido-iniciativa").addEventListener("click", () => rolarAcaoRapida("Iniciativa", "🎲"));
-  document.getElementById("btn-rapido-pericia").addEventListener("click", () => rolarAcaoRapida("Teste de Perícia", "🎯"));
-  document.getElementById("btn-rapido-resistencia").addEventListener("click", () => rolarAcaoRapida("Teste de Resistência", "🛡️"));
+  document.getElementById("btn-rapido-iniciativa").addEventListener("click", () => abrirModalAcaoRapida("Iniciativa", "🎲", "acao-iniciativa"));
+  document.getElementById("btn-rapido-pericia").addEventListener("click", () => abrirModalAcaoRapida("Teste de Perícia", "🎯", "acao-pericia"));
+  document.getElementById("btn-rapido-resistencia").addEventListener("click", () => abrirModalAcaoRapida("Teste de Resistência", "🛡️", "acao-resistencia"));
+  document.getElementById("fechar-acao-rapida").addEventListener("click", fecharModalAcaoRapida);
+  document.getElementById("btn-confirmar-acao-rapida").addEventListener("click", confirmarAcaoRapida);
+  window.addEventListener("click", (e) => { if (e.target === document.getElementById("modal-acao-rapida")) fecharModalAcaoRapida(); });
+  document.getElementById("modal-acao-rapida").addEventListener("keydown", (e) => { if (e.key === "Enter") confirmarAcaoRapida(); });
 
   document.getElementById("btn-rapido-evento").addEventListener("click", abrirModalEvento);
   document.getElementById("fechar-evento").addEventListener("click", fecharModalEvento);

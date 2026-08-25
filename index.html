@@ -54,10 +54,36 @@
 
     <!-- Modal Ajuda -->
     <div id="modal-ajuda" class="modal oculto">
-      <div class="modal-conteudo">
+      <div class="modal-conteudo modal-ajuda-conteudo">
         <span class="fechar-modal" id="fechar-ajuda">&times;</span>
-        <h2>Ajuda</h2>
-        <p>Texto de ajuda e instruções para usar o RPG Companion.</p>
+        <h2>📖 Como usar o Master Shield RPG</h2>
+        <p>Guia rápido de cada parte da tela. As alterações são salvas automaticamente no navegador conforme você usa o app.</p>
+
+        <h3>🎲 Rolador de Dados</h3>
+        <p>Na aba <strong>Dados</strong>: escolha o dado clicando no ícone, ajuste Quantidade/Modificador e toque em "Rolar Dado". O resultado aparece ao lado e fica registrado em "Últimas Rolagens".</p>
+        <p>Em <strong>Ações Rápidas</strong>, os botões "Rolar Iniciativa", "Teste de Perícia" e "Teste de Resistência" abrem uma janela pedindo o modificador e rolam um d20, já lançando o resultado colorido no histórico. O botão "Evento" abre um rolador dedicado a testes de personagens específicos.</p>
+
+        <h3>⚔️ Combate</h3>
+        <p>Use "Adicionar Monstro" para buscar na coletânea ou criar um monstro customizado — ao adicionar, é pedida a iniciativa dele. Cada combatente vira um card com CA, HP e condições ativas, exibidos em ordem de iniciativa. A faixa "Ordem da Iniciativa" permite pular direto para o turno de qualquer combatente. "Encerrar Combate" limpa a lista e reinicia o contador de turno.</p>
+
+        <h3>🧭 Controle de Turno</h3>
+        <p>"Voltar Turno" e "Finalizar Turno" avançam a iniciativa entre os combatentes vivos; ao completar uma volta, o contador "TURNO" no topo avança e as condições/efeitos temporários são decrementados automaticamente.</p>
+        <p>O card do combatente ativo tem botões de <strong>Ataque</strong>, <strong>Cura</strong> e <strong>Condição</strong>, além do ícone de caveira para marcar como morto/nocauteado. Condições ativas de duração limitada expiram sozinhas e avisam no histórico quando estão prestes a acabar.</p>
+        <p>"Dano em Área" e "Cura em Área" aplicam valor a vários alvos de uma vez — dá para digitar o nome da magia/habilidade usada (ex: "Bola de Fogo") para ela aparecer no histórico no lugar do texto genérico.</p>
+
+        <h3>🦸 Grupo e Combatentes</h3>
+        <p>"+ Criar Novo Herói" cadastra nome, classe, nível, HP, CA, EXP, cor e imagem. Cada card de herói tem "+ Iniciativa" para entrar em combate e "+ EXP" para lançar experiência ganha — o herói sobe de nível automaticamente ao atingir a meta, que também pode ser reajustada ali mesmo para o próximo nível. HP temporário pode ser ajustado direto no card.</p>
+
+        <h3>📜 Histórico da Sessão</h3>
+        <p>Registra automaticamente tudo que acontece na mesa — dano, cura, condições, turnos, rolagens e mais — cada tipo de evento com sua própria cor para facilitar a leitura. "Limpar Histórico" apaga os registros.</p>
+
+        <h3>📝 Anotações</h3>
+        <p>Na aba "Anotações", ao lado dos Dados, há um campo de texto livre para anotar o que quiser durante a sessão.</p>
+
+        <h3>⚙️ Configurações</h3>
+        <p>Defina o nome da campanha e do mestre (aparecem no cabeçalho), exporte a sessão inteira para um arquivo .json (backup) ou importe um arquivo salvo anteriormente. "Limpar todos os dados" reseta o app por completo.</p>
+
+        <p class="ajuda-dica">💡 Dica: use o botão "🌓 Modo Dark/Light" no topo para trocar o tema a qualquer momento.</p>
       </div>
     </div>
 
@@ -230,9 +256,15 @@
 
           <div class="exp-heroi-nivel" id="exp-heroi-nivel">Nível atual: 1</div>
           <div class="exp-heroi-atual" id="exp-heroi-atual">EXP atual: 0 / 1000</div>
+          <div class="exp-heroi-barra-wrap">
+            <div class="exp-heroi-barra-fill" id="exp-heroi-barra-fill"></div>
+          </div>
 
           <label for="exp-heroi-adicionar">Adicionar EXP</label>
           <input type="number" id="exp-heroi-adicionar" placeholder="Ex: 250" />
+
+          <label for="exp-heroi-meta">EXP necessária para o próximo nível</label>
+          <input type="number" id="exp-heroi-meta" min="1" placeholder="Ex: 1000" />
 
           <button id="btn-confirmar-exp-heroi" class="btn-confirmar">+ Adicionar EXP</button>
         </div>
@@ -445,10 +477,23 @@
         <span class="fechar-modal" id="fechar-condicao-duracao">&times;</span>
         <h2 id="modal-condicao-titulo">Condição</h2>
         <div class="form-heroi">
-          <label for="condicao-rodadas">Duração em rodadas</label>
-          <input type="number" id="condicao-rodadas" value="1" min="1" placeholder="Rodadas..." />
+          <label for="condicao-turnos">Duração em turnos</label>
+          <input type="number" id="condicao-turnos" value="1" min="1" placeholder="Turnos..." />
           <p class="condicao-duracao-dica">Deixe em branco para duração indefinida (sem contagem).</p>
           <button id="btn-confirmar-condicao" class="btn-confirmar">Aplicar Condição</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Modificador de Ação Rápida -->
+    <div id="modal-acao-rapida" class="modal oculto">
+      <div class="modal-conteudo modal-conteudo--pequeno">
+        <span class="fechar-modal" id="fechar-acao-rapida">&times;</span>
+        <h2 id="modal-acao-rapida-titulo">Rolar 1d20</h2>
+        <div class="form-heroi">
+          <label for="acao-rapida-modificador">Modificador</label>
+          <input type="number" id="acao-rapida-modificador" value="0" />
+          <button id="btn-confirmar-acao-rapida" class="btn-confirmar">🎲 Rolar</button>
         </div>
       </div>
     </div>
@@ -460,6 +505,9 @@
         <h2>💥 Dano em Área</h2>
 
         <div class="form-heroi">
+          <label for="area-nome-habilidade">Nome da magia/habilidade (opcional)</label>
+          <input type="text" id="area-nome-habilidade" placeholder="Ex: Bola de Fogo" maxlength="40" />
+
           <label>Rolar dano</label>
           <div class="modal-dano-seletor">
             <div class="modal-dano-seletor-grupo">
@@ -585,11 +633,11 @@
           <h2>Combate</h2>
           <button id="btn-abrir-monstros" class="btn-abrir-monstros">⚔️ Adicionar Monstro</button>
         </div>
-        <div class="painel-combate-rodada">
-          <div class="rodada-iniciativa-caixa">
-            <div class="rodada-bloco">
-              <span class="rodada-label">RODADA</span>
-              <span id="combate-rodada-num" class="rodada-num">1</span>
+        <div class="painel-combate-turno">
+          <div class="turno-iniciativa-caixa">
+            <div class="turno-bloco">
+              <span class="turno-label">TURNO</span>
+              <span id="combate-turno-num" class="turno-num">1</span>
             </div>
             <div class="ordem-iniciativa-wrap">
               <h3 class="ordem-iniciativa-titulo">Ordem da Iniciativa</h3>
@@ -625,10 +673,12 @@
             <label for="modificador">Modificador:</label>
             <input type="number" id="modificador" value="0">
           </div>
-          <button id="btn-rolar-dado" class="btn-rolar-dado-grande">ROLAR DADO</button>
-          <div id="resultado-dado">
-            <span class="label">Resultado:</span>
-            <span class="valor">-</span>
+          <div class="rolar-resultado-linha">
+            <button id="btn-rolar-dado" class="btn-rolar-dado-grande">ROLAR DADO</button>
+            <div id="resultado-dado">
+              <span class="label">Resultado:</span>
+              <span class="valor">-</span>
+            </div>
           </div>
         </div>
         <div class="ultimas-rolagens-wrap">
@@ -638,9 +688,9 @@
         <div class="acoes-rapidas-wrap">
           <h3 class="acoes-rapidas-titulo">Ações Rápidas</h3>
           <div class="acoes-rapidas-grid">
-            <button id="btn-rapido-iniciativa" class="btn-rapido btn-rapido--roxo">🎲 Rolar Iniciativa</button>
+            <button id="btn-rapido-iniciativa" class="btn-rapido btn-rapido--teal">🎲 Rolar Iniciativa</button>
             <button id="btn-rapido-pericia" class="btn-rapido btn-rapido--azul">🎯 Teste de Perícia</button>
-            <button id="btn-rapido-resistencia" class="btn-rapido btn-rapido--teal">🛡️ Teste de Resistência</button>
+            <button id="btn-rapido-resistencia" class="btn-rapido btn-rapido--amarelo">🛡️ Teste de Resistência</button>
             <button id="btn-rapido-evento" class="btn-rapido btn-rapido--laranja">📜 Evento</button>
           </div>
         </div>
