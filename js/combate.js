@@ -9,11 +9,14 @@ import { CORES_HEROI, CONDICOES } from "./constantes.js";
 import { coletaneaMonstros } from "./monstros.js";
 import { adicionarHistorico } from "./historico.js";
 import { salvarESincronizar } from "./sync.js";
-import { calcularCorHP, preencherAvatar, obterImagemCriatura, obterCACriatura } from "./ui.js";
+import { calcularCorHP, preencherAvatar, obterImagemCriatura, obterCACriatura, redimensionarImagem } from "./ui.js";
 import { alternarMortoNocaute } from "./turno.js";
 
 // Contexto completo do modal de iniciativa (herói ou monstro)
 let _contextoIniciativa = null;
+
+// Imagem escolhida no modal de "Criar Monstro" (data URL ou null)
+let _monstroImagemSel = null;
 
 /* ==========================================================================
    MONSTRO CUSTOMIZADO + COLETÂNEA
@@ -22,8 +25,26 @@ function abrirModalMonstro() {
   $("monstro-nome").value = "";
   $("monstro-hp").value   = "10";
   $("monstro-nd").value   = "";
+  _monstroImagemSel = null;
+  atualizarPreviewImagemMonstro();
   $("modal-monstro").classList.remove("oculto");
   $("monstro-nome").focus();
+}
+
+/** Prévia da imagem no modal de Criar Monstro (a imagem é sempre uma data URL) */
+function atualizarPreviewImagemMonstro() {
+  const preview = $("monstro-imagem-preview");
+  if (!preview) return;
+  preview.innerHTML = "";
+  if (_monstroImagemSel) {
+    const img = document.createElement("img");
+    img.className = "foto";
+    img.alt = "";
+    img.src = _monstroImagemSel;
+    preview.appendChild(img);
+  } else {
+    preview.textContent = "✕";
+  }
 }
 
 function abrirModalMonstrosLista() {
@@ -54,6 +75,7 @@ function confirmarNovoMonstro() {
     nome,
     vidaMax: parseInt($("monstro-hp").value) || 10,
     ca:      $("monstro-nd").value.trim() || "?",
+    imagem:  _monstroImagemSel || "",
     custom:  true
   };
 
@@ -428,6 +450,14 @@ export function renderizarColetanea(filtro = "") {
     const item = document.createElement("div");
     item.className = "item-monstro" + (monstro.custom ? " item-monstro-custom" : "");
 
+    // ── Miniatura (só quando o monstro custom tem imagem)
+    if (monstro.imagem) {
+      const av = document.createElement("div");
+      av.className = "item-monstro-avatar";
+      preencherAvatar(av, monstro.nome, monstro.imagem);
+      item.appendChild(av);
+    }
+
     // ── Info: nome + stats em badges
     const info = document.createElement("div");
     info.className = "item-monstro-info";
@@ -500,6 +530,20 @@ export function initCombate() {
   $("btn-confirmar-monstro").addEventListener("click", confirmarNovoMonstro);
   window.addEventListener("click", (e) => { if (e.target === $("modal-monstro")) fecharModalMonstro(); });
   $("modal-monstro").addEventListener("keydown", (e) => { if (e.key === "Enter") confirmarNovoMonstro(); });
+
+  $("btn-escolher-imagem-monstro").addEventListener("click", () => $("monstro-imagem-arquivo").click());
+  $("monstro-imagem-arquivo").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    e.target.value = ""; // permite reenviar o mesmo arquivo depois
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { alert("Selecione um arquivo de imagem."); return; }
+    try {
+      _monstroImagemSel = await redimensionarImagem(file);
+      atualizarPreviewImagemMonstro();
+    } catch (err) {
+      alert("Não foi possível carregar a imagem: " + err.message);
+    }
+  });
 
   $("fechar-iniciativa").addEventListener("click", fecharModalIniciativa);
   $("btn-rolar-ini").addEventListener("click", rolarIniciativaModal);

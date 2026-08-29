@@ -302,6 +302,13 @@
           <label for="monstro-nd">Classe de Armadura (CA)</label>
           <input type="text" id="monstro-nd" placeholder="Ex: 1, 1/2, 5..." />
 
+          <label>Imagem (opcional)</label>
+          <div class="heroi-imagem-escolha">
+            <div id="monstro-imagem-preview" class="heroi-imagem-preview">✕</div>
+            <button type="button" id="btn-escolher-imagem-monstro" class="btn-escolher-imagem">🖼️ Escolher Imagem</button>
+          </div>
+          <input type="file" id="monstro-imagem-arquivo" accept="image/*" style="display:none;" />
+
           <button id="btn-confirmar-monstro" class="btn-confirmar">Criar Monstro</button>
         </div>
       </div>

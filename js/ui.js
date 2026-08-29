@@ -17,6 +17,35 @@ export function configurarModal(btnId, modalId, fecharId) {
   window.addEventListener("click", (e) => { if (e.target === modal) modal.classList.add("oculto"); });
 }
 
+/** true se o valor é uma foto enviada pelo usuário (data URL), não um id de preset */
+export const ehFoto = (v) => typeof v === "string" && v.startsWith("data:");
+
+/** Lê um arquivo de imagem, reduz para no máx. `max`px de lado e devolve uma data URL leve */
+export function redimensionarImagem(file, max = 256) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("não foi possível ler o arquivo"));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("o arquivo não é uma imagem válida"));
+      img.onload = () => {
+        const escala = Math.min(1, max / Math.max(img.width, img.height));
+        const w = Math.max(1, Math.round(img.width  * escala));
+        const h = Math.max(1, Math.round(img.height * escala));
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        let out = canvas.toDataURL("image/webp", 0.82);
+        if (!out.startsWith("data:image/webp")) out = canvas.toDataURL("image/jpeg", 0.85);
+        resolve(out);
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 /** Cor da barra/indicador de HP conforme a fração de vida restante */
 export function calcularCorHP(hpAtual, hpMax) {
   if (hpMax <= 0) return "#888";
@@ -31,7 +60,7 @@ export function calcularCorHP(hpAtual, hpMax) {
 export function preencherAvatar(elemento, nome, imagemBase) {
   elemento.innerHTML = "";
   if (imagemBase) {
-    const foto = imagemBase.startsWith("data:");
+    const foto = ehFoto(imagemBase);
     const img = document.createElement("img");
     img.className = foto ? "avatar-img avatar-img--foto" : "avatar-img";
     img.src = foto ? imagemBase : `img/herois/${imagemBase}_white.png`;
@@ -42,11 +71,17 @@ export function preencherAvatar(elemento, nome, imagemBase) {
   }
 }
 
-/** Resolve a imagem escolhida de um combatente da iniciativa (só heróis têm) */
+/** Resolve a imagem de um combatente da iniciativa (herói ou monstro customizado) */
 export function obterImagemCriatura(criatura) {
-  if (!criatura.idHeroi) return null;
-  const h = estado.partyHerois.find(h => h.id === criatura.idHeroi);
-  return h?.imagem || null;
+  if (criatura.idHeroi) {
+    const h = estado.partyHerois.find(h => h.id === criatura.idHeroi);
+    return h?.imagem || null;
+  }
+  if (criatura.idMonstroCustom) {
+    const mc = estado.monstrosCustom.find(m => m.id === criatura.idMonstroCustom);
+    return mc?.imagem || null;
+  }
+  return null;
 }
 
 /** Resolve a CA de um combatente da iniciativa (herói, monstro custom ou da coletânea) */
