@@ -1,5 +1,5 @@
 /* ==========================================================================
-   21. RESPONSIVIDADE — TABLET RETRATO (largura até 900px)
+   RESPONSIVO — tablet retrato (largura até 900px)
    Empilha os painéis em coluna única, com rolagem de página habilitada.
    ========================================================================== */
 @media (max-width: 900px) {

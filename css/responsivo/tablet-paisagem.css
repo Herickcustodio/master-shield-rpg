@@ -1,5 +1,5 @@
 /* ==========================================================================
-   20. RESPONSIVIDADE — TABLET PAISAGEM (ex: iPad/Android 1024–1200px)
+   RESPONSIVO — tablet paisagem (ex.: iPad/Android 1024–1200px)
    Mantém o grid de 3 colunas, porém mais compacto.
    ========================================================================== */
 @media (max-width: 1200px) {
