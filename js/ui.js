@@ -26,13 +26,15 @@ export function calcularCorHP(hpAtual, hpMax) {
   return "#e63946";                   // vermelho
 }
 
-/** Preenche um elemento de avatar com a imagem escolhida do herói, ou a inicial do nome como fallback */
+/** Preenche um elemento de avatar com a imagem escolhida do herói, ou a inicial do nome como fallback.
+ *  `imagemBase` pode ser um id de preset (img/herois/<id>_white.png) ou uma foto do usuário (data URL). */
 export function preencherAvatar(elemento, nome, imagemBase) {
   elemento.innerHTML = "";
   if (imagemBase) {
+    const foto = imagemBase.startsWith("data:");
     const img = document.createElement("img");
-    img.className = "avatar-img";
-    img.src = `img/herois/${imagemBase}_white.png`;
+    img.className = foto ? "avatar-img avatar-img--foto" : "avatar-img";
+    img.src = foto ? imagemBase : `img/herois/${imagemBase}_white.png`;
     img.alt = nome || "";
     elemento.appendChild(img);
   } else {

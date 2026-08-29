@@ -100,6 +100,16 @@ body.tema-light .heroi-imagem-preview img {
   filter: invert(1);
 }
 
+/* Fotos enviadas pelo usuário: preenchem o quadro e não são invertidas no tema claro */
+.avatar-img--foto {
+  object-fit: cover;
+  padding: 0;
+}
+
+body.tema-light .avatar-img--foto {
+  filter: none;
+}
+
 .card-heroi-avatar {
   width: 56px;
   border-radius: 8px;

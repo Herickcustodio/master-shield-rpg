@@ -17,12 +17,55 @@ let _idHeroiExpAtual = null;
 /* ==========================================================================
    SELETORES DE COR E IMAGEM
    ========================================================================== */
+/** true se o valor guardado é uma foto enviada pelo usuário (data URL) e não um id de preset */
+const _ehFoto = (v) => typeof v === "string" && v.startsWith("data:");
+
+/** Lê um arquivo de imagem, reduz para no máx. `max`px de lado e devolve uma data URL leve */
+function redimensionarImagem(file, max = 256) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("não foi possível ler o arquivo"));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("o arquivo não é uma imagem válida"));
+      img.onload = () => {
+        const escala = Math.min(1, max / Math.max(img.width, img.height));
+        const w = Math.max(1, Math.round(img.width  * escala));
+        const h = Math.max(1, Math.round(img.height * escala));
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        let out = canvas.toDataURL("image/webp", 0.82);
+        if (!out.startsWith("data:image/webp")) out = canvas.toDataURL("image/jpeg", 0.85);
+        resolve(out);
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+/** Marca o <img> de avatar como foto (cover, sem padding, sem inversão no tema claro) */
+function _srcAvatar(imgEl, valor) {
+  if (_ehFoto(valor)) {
+    imgEl.src = valor;
+    imgEl.classList.add("foto");
+  } else {
+    imgEl.src = `img/herois/${valor}_white.png`;
+  }
+}
+
 /** Preenche o quadradinho de pré-visualização no modal de Novo/Editar Herói */
 function atualizarPreviewImagemHeroi() {
   const preview = $("heroi-imagem-preview");
   if (!preview) return;
   if (_imagemSelecionada) {
-    preview.innerHTML = `<img src="img/herois/${_imagemSelecionada}_white.png" alt="">`;
+    preview.innerHTML = "";
+    const img = document.createElement("img");
+    img.alt = "";
+    _srcAvatar(img, _imagemSelecionada);
+    preview.appendChild(img);
   } else {
     preview.innerHTML = "";
     preview.textContent = "✕";
@@ -55,6 +98,26 @@ function renderizarSeletorImagens() {
     fecharModalEscolherImagem();
   });
   container.appendChild(btnNenhuma);
+
+  // Botão "enviar do computador"
+  const btnUpload = document.createElement("button");
+  btnUpload.type      = "button";
+  btnUpload.title     = "Enviar uma imagem do computador";
+  btnUpload.className = "imagem-heroi-btn imagem-heroi-btn--upload";
+  btnUpload.innerHTML = `<span>📁</span><span class="imagem-heroi-btn-legenda">Do computador</span>`;
+  btnUpload.addEventListener("click", () => $("heroi-imagem-arquivo").click());
+  container.appendChild(btnUpload);
+
+  // Miniatura da foto atual (quando já foi enviada uma), marcada como selecionada
+  if (_ehFoto(_imagemSelecionada)) {
+    const btnFoto = document.createElement("button");
+    btnFoto.type      = "button";
+    btnFoto.title     = "Imagem atual (enviada do computador)";
+    btnFoto.className = "imagem-heroi-btn imagem-heroi-btn--selecionada";
+    btnFoto.innerHTML = `<img class="foto" src="${_imagemSelecionada}" alt="">`;
+    btnFoto.addEventListener("click", () => fecharModalEscolherImagem());
+    container.appendChild(btnFoto);
+  }
 
   IMAGENS_HEROI.forEach(img => {
     const btn = document.createElement("button");
@@ -440,6 +503,20 @@ export function initHerois() {
   $("btn-escolher-imagem-heroi").addEventListener("click", abrirModalEscolherImagem);
   $("fechar-escolher-imagem").addEventListener("click", fecharModalEscolherImagem);
   window.addEventListener("click", (e) => { if (e.target === $("modal-escolher-imagem")) fecharModalEscolherImagem(); });
+
+  $("heroi-imagem-arquivo").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    e.target.value = ""; // permite reenviar o mesmo arquivo depois
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { alert("Selecione um arquivo de imagem."); return; }
+    try {
+      _imagemSelecionada = await redimensionarImagem(file);
+      atualizarPreviewImagemHeroi();
+      fecharModalEscolherImagem();
+    } catch (err) {
+      alert("Não foi possível carregar a imagem: " + err.message);
+    }
+  });
 
   $("fechar-exp-heroi").addEventListener("click", fecharModalExpHeroi);
   $("btn-confirmar-exp-heroi").addEventListener("click", confirmarExpHeroi);
