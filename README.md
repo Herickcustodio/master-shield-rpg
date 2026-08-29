@@ -104,6 +104,23 @@ seria o ciclo principal).
 | [js/condicoes.js](js/condicoes.js) | Aplicar/remover condições, contagem de duração, morte/reviver. |
 | [js/dano.js](js/dano.js) | Modais de acerto, dano/cura (individual e em lote) e dano/cura em área. |
 
+### CSS
+
+`css/style.css` é só uma lista de `@import` — o `index.html` carrega ele e nada
+mais. A ordem dos imports é a cascata: variáveis → base → layout → painéis →
+modais → responsividade (media queries por último). Parciais:
+
+```
+css/
+├── style.css            # só os @import
+├── base/                # variaveis (:root), global (body/reset), inputs
+├── layout/              # cabecalho, dashboard, paineis (posicionamento)
+├── paineis/             # iniciativa, turno, dados, anotacoes, historico,
+│                        #   status-grupo, coletanea-monstros
+├── modais/              # base, dano-cura, iniciativa, ajuda, configuracoes, acerto
+└── responsivo/          # notebook, tablet-paisagem, tablet-retrato, celular
+```
+
 ---
 
 ## Estrutura de pastas
@@ -111,7 +128,7 @@ seria o ciclo principal).
 ```
 .
 ├── index.html          # markup + todos os modais
-├── css/style.css        # estilos (tema claro/escuro, responsivo)
+├── css/                 # style.css (@import) + parciais (ver acima)
 ├── js/                  # módulos ES (ver tabela acima)
 ├── img/                 # dados (d4–d100), ícones e img/herois/<id>_white|black.png
 └── informacoes.txt      # notas de desenvolvimento / backlog
