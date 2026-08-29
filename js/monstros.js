@@ -6,7 +6,7 @@
      ca      → Classe de Armadura
    ========================================================================== */
 
-const coletaneaMonstros = [
+export const coletaneaMonstros = [
 
   // ── HUMANOIDES ──────────────────────────────────────────────────────────
   { nome: "Goblin",             vidaMax: 7,   ca: 15 },

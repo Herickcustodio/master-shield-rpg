@@ -10,13 +10,17 @@ Falta implementar:
 
 FEITOCor do heroi fica no nome e no fundo do card
 
-As condições precisa expirar quando for o turno da pessoa
+FEITO As condições precisa expirar quando for o turno da pessoa (agora configurável: fim da rodada ou turno do personagem)
+FEITO No modo light, o fundo da parte Rodada X ordem da iniciativa estava com a cor preta, deixado com a cor secundária
 Ajustar os botões das janelas, para ficar padrão
+FEITO No painel de combate, mudar o nome de turno para Rodada
 FEITO Resposividade para telas menores (nmotebook)
-
+Sera? cada mestre pode fazer suas regras. Quando der critico, causa o dano duplicado
+FEITO Quando nocauteado ou morto, mudar o icone do botão para reviver
+FEITO Quando edita o nome do herói o nome não atualiza no painel de controle de grupo e combate.
 
 Fazer um modo inglês
-Fazer modo celular
+Feito Fazer modo celular
 
 
 

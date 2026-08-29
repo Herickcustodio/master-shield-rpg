@@ -1,93 +1,28 @@
 /* ==========================================================================
-   1. ESTADO GLOBAL
+   MASTER SHIELD RPG — script principal
+   Migração em andamento para módulos ES. Já extraídos:
+     js/dom.js        → $, horaAgora
+     js/storage.js    → CHAVES, lerLocalStorageJSON, lerLocalStorageNumero
+     js/state.js      → estado (estado mutável compartilhado)
+     js/constantes.js → CORES_HEROI, IMAGENS_HEROI, CONDICOES
+     js/monstros.js   → coletaneaMonstros
+     js/historico.js  → adicionarHistorico, renderizarItemHistorico, limparHistorico
+     js/dados.js      → rolador de dados, ações rápidas, evento
    ========================================================================== */
-function lerLocalStorageJSON(chave, fallback) {
-  try {
-    if (typeof localStorage === "undefined") return fallback;
-    const valor = localStorage.getItem(chave);
-    if (valor === null || valor === undefined || valor === "") return fallback;
-    const parseado = JSON.parse(valor);
-    return parseado ?? fallback;
-  } catch (erro) {
-    console.warn(`Dados inválidos em ${chave}. Usando fallback.`, erro);
-    return fallback;
-  }
-}
-
-function lerLocalStorageNumero(chave, fallback = 0) {
-  try {
-    if (typeof localStorage === "undefined") return fallback;
-    const valor = localStorage.getItem(chave);
-    if (valor === null || valor === undefined || valor === "") return fallback;
-    const numero = Number(valor);
-    return Number.isFinite(numero) ? numero : fallback;
-  } catch (erro) {
-    console.warn(`Valor inválido em ${chave}. Usando fallback.`, erro);
-    return fallback;
-  }
-}
-
-let listaDeIniciativa  = lerLocalStorageJSON("iniciativaRPG", []);
-let partyHerois        = lerLocalStorageJSON("partyHeroisRPG", []);
-let turnoAtivo         = lerLocalStorageNumero("turnoAtivoRPG", 0);
-let turnoAtual         = lerLocalStorageNumero("turnoAtualRPG", lerLocalStorageNumero("rodadaAtualRPG", 1));
-let monstrosCustom     = lerLocalStorageJSON("monstrosCustomRPG", []);
-let efeitosTemporarios = lerLocalStorageJSON("efeitosRPG", []);
-let ultimasRolagens    = lerLocalStorageJSON("ultimasRolagensRPG", []);
-let dadoSelecionado    = 20;
-
-function horaAgora() {
-  return new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-}
-
-// coletaneaMonstros é carregada pelo monstros.js
-
-const CORES_HEROI = [
-  { id: "azul",     hex: "#3b82f6", label: "Azul"     },
-  { id: "verde",    hex: "#22c55e", label: "Verde"     },
-  { id: "amarelo",  hex: "#eab308", label: "Amarelo"   },
-  { id: "laranja",  hex: "#f97316", label: "Laranja"   },
-  { id: "vermelho", hex: "#ef4444", label: "Vermelho"  },
-  { id: "roxo",     hex: "#a855f7", label: "Roxo"      },
-  { id: "rosa",     hex: "#ec4899", label: "Rosa"      },
-  { id: "ciano",    hex: "#06b6d4", label: "Ciano"     },
-  { id: "branco",   hex: "#e5e7eb", label: "Branco"    },
-  { id: "ouro",     hex: "#d97706", label: "Ouro"      },
-];
+import { $ } from "./dom.js";
+import { CHAVES, lerLocalStorageJSON } from "./storage.js";
+import { estado } from "./state.js";
+import { CORES_HEROI, IMAGENS_HEROI, CONDICOES } from "./constantes.js";
+import { coletaneaMonstros } from "./monstros.js";
+import { adicionarHistorico, renderizarItemHistorico, limparHistorico } from "./historico.js";
+import { initDados } from "./dados.js";
 
 let _corSelecionada = null;
-
-// Ícones disponíveis em img/herois/ (arquivo real é <id>_white.png / <id>_black.png)
-const IMAGENS_HEROI = [
-  { id: "barbarian",         label: "Bárbaro"        },
-  { id: "dwarf-face",        label: "Anão"           },
-  { id: "dwarf-helmet",      label: "Anão Guerreiro" },
-  { id: "dwarf-king",        label: "Rei Anão"       },
-  { id: "elf-helmet",        label: "Elfo Guerreiro" },
-  { id: "woman-elf-face",    label: "Elfa"           },
-  { id: "kenku-head",        label: "Kenku"          },
-  { id: "orc-head",          label: "Orc"            },
-  { id: "troll",             label: "Troll"          },
-  { id: "ogre",              label: "Ogro"           },
-  { id: "vampire-dracula",   label: "Vampiro"        },
-  { id: "warlock-hood",      label: "Bruxo"          },
-  { id: "wizard-face",       label: "Mago"           },
-  { id: "witch-face",        label: "Bruxa"          },
-  { id: "monk-face",         label: "Monge"          },
-  { id: "nun-face",          label: "Clériga"        },
-  { id: "cultist",           label: "Cultista"       },
-  { id: "cowled",            label: "Encapuzado"     },
-  { id: "executioner-hood",  label: "Carrasco"       },
-  { id: "barbute",           label: "Elmo Barbuto"   },
-  { id: "brutal-helm",       label: "Elmo Brutal"    },
-  { id: "visored-helm",      label: "Elmo com Viseira" },
-];
-
 let _imagemSelecionada = null;
 
 /** Preenche o quadradinho de pré-visualização no modal de Novo/Editar Herói */
 function atualizarPreviewImagemHeroi() {
-  const preview = document.getElementById("heroi-imagem-preview");
+  const preview = $("heroi-imagem-preview");
   if (!preview) return;
   if (_imagemSelecionada) {
     preview.innerHTML = `<img src="img/herois/${_imagemSelecionada}_white.png" alt="">`;
@@ -99,15 +34,15 @@ function atualizarPreviewImagemHeroi() {
 
 function abrirModalEscolherImagem() {
   renderizarSeletorImagens();
-  document.getElementById("modal-escolher-imagem").classList.remove("oculto");
+  $("modal-escolher-imagem").classList.remove("oculto");
 }
 
 function fecharModalEscolherImagem() {
-  document.getElementById("modal-escolher-imagem").classList.add("oculto");
+  $("modal-escolher-imagem").classList.add("oculto");
 }
 
 function renderizarSeletorImagens() {
-  const container = document.getElementById("heroi-imagens");
+  const container = $("heroi-imagens");
   if (!container) return;
   container.innerHTML = "";
 
@@ -157,17 +92,17 @@ function preencherAvatar(elemento, nome, imagemBase) {
 /** Resolve a imagem escolhida de um combatente da iniciativa (só heróis têm) */
 function obterImagemCriatura(criatura) {
   if (!criatura.idHeroi) return null;
-  const h = partyHerois.find(h => h.id === criatura.idHeroi);
+  const h = estado.partyHerois.find(h => h.id === criatura.idHeroi);
   return h?.imagem || null;
 }
 
 function renderizarSeletorCores(idEdicao = null) {
-  const container = document.getElementById("heroi-cores");
+  const container = $("heroi-cores");
   if (!container) return;
   container.innerHTML = "";
 
   // Bloqueia cores de outros heróis (não do que está sendo editado)
-  const coresUsadas = partyHerois
+  const coresUsadas = estado.partyHerois
     .filter(h => h.id !== idEdicao)
     .map(h => h.cor).filter(Boolean);
 
@@ -189,40 +124,23 @@ function renderizarSeletorCores(idEdicao = null) {
   });
 }
 
-const CONDICOES = [
-  { id: "agarrado",      emoji: "🤝", label: "Agarrado",      descricao: "Deslocamento vira 0. O efeito termina se quem agarrou ficar incapacitado ou o alvo escapar mecanicamente."        },
-  { id: "amedrontado",   emoji: "😱", label: "Amedrontado",    descricao: "Desvantagem em ataques e testes enquanto a fonte do medo estiver visível. Não pode se aproximar dela."             },
-  { id: "atordoado",     emoji: "💫", label: "Atordoado",      descricao: "Incapacitado, não pode se mover, fala balbuciante. Ataques contra ele têm vantagem."                              },
-  { id: "caido",         emoji: "🛡️", label: "Caído",          descricao: "Só pode rastejar. Ataques próprios com desvantagem. Ataques corpo a corpo contra si com vantagem, distância com desvantagem." },
-  { id: "cego",          emoji: "🙈", label: "Cego",           descricao: "Falha em testes que dependem de visão. Ataques próprios com desvantagem, ataques contra si com vantagem."          },
-  { id: "enfeiticado",   emoji: "💜", label: "Enfeitiçado",    descricao: "Não pode atacar o encantador. O encantador tem vantagem em interações sociais com o alvo."                         },
-  { id: "envenenado",    emoji: "🤢", label: "Envenenado",     descricao: "Desvantagem em jogadas de ataque e testes de habilidade."                                                          },
-  { id: "impedido",      emoji: "⛓️", label: "Impedido",       descricao: "Deslocamento vira 0. Ataques contra si com vantagem, próprios com desvantagem. Desvantagem em saves de Destreza."  },
-  { id: "incapacitado",  emoji: "🚫", label: "Incapacitado",   descricao: "Não pode realizar ações, ações bônus ou reações."                                                                  },
-  { id: "invisivel",     emoji: "👻", label: "Invisível",      descricao: "Impossível de ver sem sentidos especiais. Ataques próprios com vantagem, ataques contra si com desvantagem."       },
-  { id: "paralisado",    emoji: "❄️", label: "Paralisado",     descricao: "Incapacitado, não se move nem fala. Falha automática em saves de For/Des. Acertos adjacentes são críticos."        },
-  { id: "petrificado",   emoji: "🗿", label: "Petrificado",    descricao: "Transformado em pedra. Incapacitado, peso ×10, resistente a todo dano."                                            },
-  { id: "surdo",         emoji: "🔇", label: "Surdo",          descricao: "Não pode ouvir. Falha automática em testes baseados em audição."                                                   },
-  { id: "exaustao",      emoji: "😮‍💨", label: "Exaustão",      descricao: "Condição cumulativa. Níveis crescentes afetam testes e velocidade, podendo levar à morte no nível máximo."        },
-];
-
 /* ==========================================================================
    2. PERSISTÊNCIA
    ========================================================================== */
 function salvarIniciativaNoCofre() {
-  localStorage.setItem("iniciativaRPG", JSON.stringify(listaDeIniciativa));
+  localStorage.setItem(CHAVES.iniciativa, JSON.stringify(estado.listaDeIniciativa));
 }
 
 function salvarHeroisNoCofre() {
-  localStorage.setItem("partyHeroisRPG", JSON.stringify(partyHerois));
+  localStorage.setItem(CHAVES.party, JSON.stringify(estado.partyHerois));
 }
 
 function salvarESincronizar() {
   salvarIniciativaNoCofre();
   salvarHeroisNoCofre();
-  localStorage.setItem("turnoAtivoRPG",  turnoAtivo);
-  localStorage.setItem("turnoAtualRPG",  turnoAtual);
-  localStorage.setItem("efeitosRPG",     JSON.stringify(efeitosTemporarios));
+  localStorage.setItem(CHAVES.turnoAtivo,  estado.turnoAtivo);
+  localStorage.setItem(CHAVES.turnoAtual,  estado.turnoAtual);
+  localStorage.setItem(CHAVES.efeitos,     JSON.stringify(estado.efeitosTemporarios));
   atualizarIniciativa();
   renderizarStatusGrupo();
   atualizarPainelTurno();
@@ -247,21 +165,21 @@ function aplicarExpENivel(nivelInicial, expInicial, expMeta) {
 function abrirModalHeroi(idEdicao = null) {
   // Se idEdicao não for uma string (ex: for o objeto de evento de clique), reseta para null
   if (typeof idEdicao !== "string") idEdicao = null;
-  const heroi = idEdicao ? partyHerois.find(h => h.id === idEdicao) : null;
+  const heroi = idEdicao ? estado.partyHerois.find(h => h.id === idEdicao) : null;
 
-  document.getElementById("modal-heroi-titulo").textContent    = heroi ? "Editar Herói" : "Novo Herói";
-  document.getElementById("btn-confirmar-heroi").textContent   = heroi ? "Salvar Alterações" : "Criar Herói";
-  document.getElementById("heroi-id-edicao").value             = idEdicao || "";
-  document.getElementById("heroi-nome").value   = heroi ? heroi.nome   : "";
-  document.getElementById("heroi-classe").value = heroi ? heroi.classe : "";
-  document.getElementById("heroi-nivel").value  = heroi ? heroi.nivel  : "1";
-  document.getElementById("heroi-hp").value     = heroi ? heroi.hpMax  : "10";
-  document.getElementById("heroi-ca").value     = heroi ? heroi.ca     : "10";
-  document.getElementById("heroi-exp").value      = heroi ? (heroi.exp || 0) : "0";
-  document.getElementById("heroi-exp-meta").value = heroi ? (heroi.expMeta || 1000) : "1000";
+  $("modal-heroi-titulo").textContent    = heroi ? "Editar Herói" : "Novo Herói";
+  $("btn-confirmar-heroi").textContent   = heroi ? "Salvar Alterações" : "Criar Herói";
+  $("heroi-id-edicao").value             = idEdicao || "";
+  $("heroi-nome").value   = heroi ? heroi.nome   : "";
+  $("heroi-classe").value = heroi ? heroi.classe : "";
+  $("heroi-nivel").value  = heroi ? heroi.nivel  : "1";
+  $("heroi-hp").value     = heroi ? heroi.hpMax  : "10";
+  $("heroi-ca").value     = heroi ? heroi.ca     : "10";
+  $("heroi-exp").value      = heroi ? (heroi.exp || 0) : "0";
+  $("heroi-exp-meta").value = heroi ? (heroi.expMeta || 1000) : "1000";
 
   // Seletor de cores — em edição permite trocar, mas bloqueia cores de OUTROS heróis
-  const coresUsadas = partyHerois
+  const coresUsadas = estado.partyHerois
     .filter(h => h.id !== idEdicao)
     .map(h => h.cor).filter(Boolean);
   const primeiraLivre = CORES_HEROI.find(c => !coresUsadas.includes(c.id));
@@ -271,65 +189,66 @@ function abrirModalHeroi(idEdicao = null) {
 
   renderizarSeletorCores(idEdicao);
   atualizarPreviewImagemHeroi();
-  document.getElementById("modal-heroi").classList.remove("oculto");
-  document.getElementById("heroi-nome").focus();
+  $("modal-heroi").classList.remove("oculto");
+  $("heroi-nome").focus();
 }
 
 function fecharModalHeroi() {
-  document.getElementById("modal-heroi").classList.add("oculto");
+  $("modal-heroi").classList.add("oculto");
 }
 
 function confirmarNovoHeroi() {
-  const nome     = document.getElementById("heroi-nome").value.trim();
-  if (!nome) { document.getElementById("heroi-nome").focus(); return; }
+  const nome     = $("heroi-nome").value.trim();
+  if (!nome) { $("heroi-nome").focus(); return; }
 
-  const idEdicao = document.getElementById("heroi-id-edicao").value;
+  const idEdicao = $("heroi-id-edicao").value;
 
   if (idEdicao) {
     // EDIÇÃO
-    const heroi = partyHerois.find(h => h.id === idEdicao);
+    const heroi = estado.partyHerois.find(h => h.id === idEdicao);
     if (!heroi) return;
 
     const hpMaxAnterior = heroi.hpMax;
-    const nivelInformado = parseInt(document.getElementById("heroi-nivel").value) || 1;
-    const expInformada   = parseInt(document.getElementById("heroi-exp").value) || 0;
-    const expMeta        = parseInt(document.getElementById("heroi-exp-meta").value) || 1000;
+    const nivelInformado = parseInt($("heroi-nivel").value) || 1;
+    const expInformada   = parseInt($("heroi-exp").value) || 0;
+    const expMeta        = parseInt($("heroi-exp-meta").value) || 1000;
     const { nivel, exp, subiuNivel } = aplicarExpENivel(nivelInformado, expInformada, expMeta);
 
     heroi.nome    = nome;
-    heroi.classe  = document.getElementById("heroi-classe").value.trim() || "Aventureiro";
+    heroi.classe  = $("heroi-classe").value.trim() || "Aventureiro";
     heroi.nivel   = nivel;
     heroi.exp     = exp;
     heroi.expMeta = expMeta;
-    heroi.hpMax   = parseInt(document.getElementById("heroi-hp").value) || 10;
-    heroi.ca      = parseInt(document.getElementById("heroi-ca").value) || 10;
+    heroi.hpMax   = parseInt($("heroi-hp").value) || 10;
+    heroi.ca      = parseInt($("heroi-ca").value) || 10;
     heroi.cor     = _corSelecionada;
     heroi.imagem  = _imagemSelecionada || "";
 
-    // Atualiza hpMax na iniciativa também se mudou
-    if (heroi.hpMax !== hpMaxAnterior) {
-      const naIni = listaDeIniciativa.find(c => c.idHeroi === idEdicao);
-      if (naIni) naIni.hpMax = heroi.hpMax;
+    // Atualiza nome e hpMax na iniciativa também, já que são copiados ao entrar em combate
+    const naIni = estado.listaDeIniciativa.find(c => c.idHeroi === idEdicao);
+    if (naIni) {
+      naIni.nome = heroi.nome;
+      if (heroi.hpMax !== hpMaxAnterior) naIni.hpMax = heroi.hpMax;
     }
 
     adicionarHistorico(`✏️ ${heroi.nome} foi editado.`);
     if (subiuNivel) adicionarHistorico(`📈 ${heroi.nome} subiu para o nível ${nivel}!`);
   } else {
     // CRIAÇÃO
-    const nivelInformado = parseInt(document.getElementById("heroi-nivel").value) || 1;
-    const expInformada   = parseInt(document.getElementById("heroi-exp").value) || 0;
-    const expMeta        = parseInt(document.getElementById("heroi-exp-meta").value) || 1000;
+    const nivelInformado = parseInt($("heroi-nivel").value) || 1;
+    const expInformada   = parseInt($("heroi-exp").value) || 0;
+    const expMeta        = parseInt($("heroi-exp-meta").value) || 1000;
     const { nivel, exp } = aplicarExpENivel(nivelInformado, expInformada, expMeta);
 
-    partyHerois.push({
+    estado.partyHerois.push({
       id:      "h_" + Date.now(),
       nome,
-      classe:  document.getElementById("heroi-classe").value.trim() || "Aventureiro",
+      classe:  $("heroi-classe").value.trim() || "Aventureiro",
       nivel,
       exp,
       expMeta,
-      hpMax:   parseInt(document.getElementById("heroi-hp").value) || 10,
-      ca:      parseInt(document.getElementById("heroi-ca").value) || 10,
+      hpMax:   parseInt($("heroi-hp").value) || 10,
+      ca:      parseInt($("heroi-ca").value) || 10,
       cor:     _corSelecionada,
       imagem:  _imagemSelecionada || ""
     });
@@ -345,7 +264,7 @@ function confirmarNovoHeroi() {
 let _idHeroiExpAtual = null;
 
 function abrirModalExpHeroi(idHeroi) {
-  const heroi = partyHerois.find(h => h.id === idHeroi);
+  const heroi = estado.partyHerois.find(h => h.id === idHeroi);
   if (!heroi) return;
 
   _idHeroiExpAtual = idHeroi;
@@ -353,29 +272,29 @@ function abrirModalExpHeroi(idHeroi) {
 
   const pctExp = Math.max(0, Math.min(100, ((heroi.exp || 0) / expMeta) * 100));
 
-  document.getElementById("modal-exp-heroi-titulo").textContent = `EXP — ${heroi.nome}`;
-  document.getElementById("exp-heroi-nivel").textContent = `Nível atual: ${heroi.nivel}`;
-  document.getElementById("exp-heroi-atual").textContent = `EXP atual: ${heroi.exp || 0} / ${expMeta}`;
-  document.getElementById("exp-heroi-barra-fill").style.width = `${pctExp}%`;
-  document.getElementById("exp-heroi-adicionar").value = "";
-  document.getElementById("exp-heroi-meta").value = expMeta;
+  $("modal-exp-heroi-titulo").textContent = `EXP — ${heroi.nome}`;
+  $("exp-heroi-nivel").textContent = `Nível atual: ${heroi.nivel}`;
+  $("exp-heroi-atual").textContent = `EXP atual: ${heroi.exp || 0} / ${expMeta}`;
+  $("exp-heroi-barra-fill").style.width = `${pctExp}%`;
+  $("exp-heroi-adicionar").value = "";
+  $("exp-heroi-meta").value = expMeta;
 
-  document.getElementById("modal-exp-heroi").classList.remove("oculto");
-  document.getElementById("exp-heroi-adicionar").focus();
+  $("modal-exp-heroi").classList.remove("oculto");
+  $("exp-heroi-adicionar").focus();
 }
 
 function fecharModalExpHeroi() {
-  document.getElementById("modal-exp-heroi").classList.add("oculto");
+  $("modal-exp-heroi").classList.add("oculto");
   _idHeroiExpAtual = null;
 }
 
 function confirmarExpHeroi() {
-  const heroi = partyHerois.find(h => h.id === _idHeroiExpAtual);
+  const heroi = estado.partyHerois.find(h => h.id === _idHeroiExpAtual);
   if (!heroi) { fecharModalExpHeroi(); return; }
 
-  const valorAdicionado = parseInt(document.getElementById("exp-heroi-adicionar").value) || 0;
+  const valorAdicionado = parseInt($("exp-heroi-adicionar").value) || 0;
   const metaAntiga = heroi.expMeta || 1000;
-  const novaMeta   = parseInt(document.getElementById("exp-heroi-meta").value) || metaAntiga;
+  const novaMeta   = parseInt($("exp-heroi-meta").value) || metaAntiga;
   const { nivel, exp, subiuNivel } = aplicarExpENivel(heroi.nivel, (heroi.exp || 0) + valorAdicionado, metaAntiga);
 
   heroi.nivel    = nivel;
@@ -393,16 +312,16 @@ function confirmarExpHeroi() {
    3b. MODAL DE NOVO MONSTRO CUSTOMIZADO
    ========================================================================== */
 function abrirModalMonstro() {
-  document.getElementById("monstro-nome").value = "";
-  document.getElementById("monstro-hp").value   = "10";
-  document.getElementById("monstro-nd").value   = "";
-  document.getElementById("modal-monstro").classList.remove("oculto");
-  document.getElementById("monstro-nome").focus();
+  $("monstro-nome").value = "";
+  $("monstro-hp").value   = "10";
+  $("monstro-nd").value   = "";
+  $("modal-monstro").classList.remove("oculto");
+  $("monstro-nome").focus();
 }
 
 function abrirModalMonstrosLista() {
-  const modal = document.getElementById("modal-monstros-lista");
-  const busca = document.getElementById("busca-monstros");
+  const modal = $("modal-monstros-lista");
+  const busca = $("busca-monstros");
   if (modal) modal.classList.remove("oculto");
   if (busca) {
     renderizarColetanea(busca.value || "");
@@ -411,47 +330,47 @@ function abrirModalMonstrosLista() {
 }
 
 function fecharModalMonstrosLista() {
-  const modal = document.getElementById("modal-monstros-lista");
+  const modal = $("modal-monstros-lista");
   if (modal) modal.classList.add("oculto");
 }
 
 function fecharModalMonstro() {
-  document.getElementById("modal-monstro").classList.add("oculto");
+  $("modal-monstro").classList.add("oculto");
 }
 
 function confirmarNovoMonstro() {
-  const nome = document.getElementById("monstro-nome").value.trim();
-  if (!nome) { document.getElementById("monstro-nome").focus(); return; }
+  const nome = $("monstro-nome").value.trim();
+  if (!nome) { $("monstro-nome").focus(); return; }
 
   const novoMonstro = {
     id:      "mc_" + Date.now(),
     nome,
-    vidaMax: parseInt(document.getElementById("monstro-hp").value) || 10,
-    ca:      document.getElementById("monstro-nd").value.trim() || "?",
+    vidaMax: parseInt($("monstro-hp").value) || 10,
+    ca:      $("monstro-nd").value.trim() || "?",
     custom:  true
   };
 
-  monstrosCustom.push(novoMonstro);
-  localStorage.setItem("monstrosCustomRPG", JSON.stringify(monstrosCustom));
+  estado.monstrosCustom.push(novoMonstro);
+  localStorage.setItem(CHAVES.monstrosCustom, JSON.stringify(estado.monstrosCustom));
   fecharModalMonstro();
 
-  const inputBusca = document.getElementById("busca-monstros");
+  const inputBusca = $("busca-monstros");
   renderizarColetanea(inputBusca ? inputBusca.value : "");
 }
 
 function deletarMonstroCustom(id) {
   if (!confirm("Deseja remover este monstro da coletânea?")) return;
-  monstrosCustom = monstrosCustom.filter(m => m.id !== id);
-  localStorage.setItem("monstrosCustomRPG", JSON.stringify(monstrosCustom));
+  estado.monstrosCustom = estado.monstrosCustom.filter(m => m.id !== id);
+  localStorage.setItem(CHAVES.monstrosCustom, JSON.stringify(estado.monstrosCustom));
 
-  const inputBusca = document.getElementById("busca-monstros");
+  const inputBusca = $("busca-monstros");
   renderizarColetanea(inputBusca ? inputBusca.value : "");
 }
 
 
 function adicionarIniciativaDeMonstro(monstro) {
   // Monta o nome já com a letra (A, B, C…) antes de abrir o modal
-  const quantidadeExistente = listaDeIniciativa.filter(c => c.nomeBase === monstro.nome).length;
+  const quantidadeExistente = estado.listaDeIniciativa.filter(c => c.nomeBase === monstro.nome).length;
   const letra = String.fromCharCode(65 + quantidadeExistente);
   const nomeCompleto = `${monstro.nome} ${letra}`;
 
@@ -464,15 +383,13 @@ function adicionarIniciativaDeMonstro(monstro) {
   abrirModalIniciativa(`Combate — ${nomeCompleto}`);
 }
 
-let _idHeroiIniciativaAtual = null;
 // Contexto completo do modal (herói ou monstro)
 let _contextoIniciativa = null;
 
 function lancarIniciativaHeroi(idHeroi) {
-  const heroiBase = partyHerois.find(h => h.id === idHeroi);
+  const heroiBase = estado.partyHerois.find(h => h.id === idHeroi);
   if (!heroiBase) return;
 
-  _idHeroiIniciativaAtual = idHeroi;
   _contextoIniciativa = {
     tipo:   "heroi",
     idHeroi
@@ -482,31 +399,30 @@ function lancarIniciativaHeroi(idHeroi) {
 }
 
 function abrirModalIniciativa(titulo) {
-  document.getElementById("modal-iniciativa-titulo").textContent = titulo;
-  document.getElementById("ini-modificador").value = "0";
-  document.getElementById("ini-valor-manual").value = "";
-  document.getElementById("ini-resultado-display").classList.add("oculto");
+  $("modal-iniciativa-titulo").textContent = titulo;
+  $("ini-modificador").value = "0";
+  $("ini-valor-manual").value = "";
+  $("ini-resultado-display").classList.add("oculto");
 
-  const valorDisplay = document.getElementById("ini-dado-valor");
+  const valorDisplay = $("ini-dado-valor");
   valorDisplay.textContent = "—";
   valorDisplay.className   = "ini-dado-valor";
 
-  document.getElementById("modal-iniciativa").classList.remove("oculto");
-  document.getElementById("ini-modificador").focus();
+  $("modal-iniciativa").classList.remove("oculto");
+  $("ini-modificador").focus();
 }
 
 function fecharModalIniciativa() {
-  document.getElementById("modal-iniciativa").classList.add("oculto");
-  _idHeroiIniciativaAtual = null;
-  _contextoIniciativa     = null;
+  $("modal-iniciativa").classList.add("oculto");
+  _contextoIniciativa = null;
 }
 
 function rolarIniciativaModal() {
-  const modificador    = parseInt(document.getElementById("ini-modificador").value) || 0;
+  const modificador    = parseInt($("ini-modificador").value) || 0;
   const dado           = Math.floor(Math.random() * 20) + 1;
   const total          = dado + modificador;
-  const valorDisplay   = document.getElementById("ini-dado-valor");
-  const formulaDisplay = document.getElementById("ini-formula");
+  const valorDisplay   = $("ini-dado-valor");
+  const formulaDisplay = $("ini-formula");
 
   valorDisplay.textContent = total;
   valorDisplay.className   = "ini-dado-valor";
@@ -515,27 +431,27 @@ function rolarIniciativaModal() {
 
   const sinal = modificador >= 0 ? "+" : "";
   formulaDisplay.textContent = `(d20: ${dado} ${sinal}${modificador})`;
-  document.getElementById("ini-resultado-display").classList.remove("oculto");
-  document.getElementById("ini-valor-manual").value = total;
+  $("ini-resultado-display").classList.remove("oculto");
+  $("ini-valor-manual").value = total;
 }
 
 function confirmarIniciativaModal() {
-  const valor = parseInt(document.getElementById("ini-valor-manual").value);
-  if (isNaN(valor)) { document.getElementById("ini-valor-manual").focus(); return; }
+  const valor = parseInt($("ini-valor-manual").value);
+  if (isNaN(valor)) { $("ini-valor-manual").focus(); return; }
 
   const ctx = _contextoIniciativa;
   if (!ctx) return;
 
   if (ctx.tipo === "heroi") {
-    const heroiBase = partyHerois.find(h => h.id === ctx.idHeroi);
+    const heroiBase = estado.partyHerois.find(h => h.id === ctx.idHeroi);
     if (!heroiBase) return;
 
-    const entradaAnterior = listaDeIniciativa.find(c => c.idHeroi === ctx.idHeroi);
+    const entradaAnterior = estado.listaDeIniciativa.find(c => c.idHeroi === ctx.idHeroi);
     const condicoes = entradaAnterior ? entradaAnterior.condicoes : [];
     const jaEstava  = !!entradaAnterior;
 
-    listaDeIniciativa = listaDeIniciativa.filter(c => c.idHeroi !== ctx.idHeroi);
-    listaDeIniciativa.push({
+    estado.listaDeIniciativa = estado.listaDeIniciativa.filter(c => c.idHeroi !== ctx.idHeroi);
+    estado.listaDeIniciativa.push({
       id:       Date.now(),
       idHeroi:  ctx.idHeroi,
       nome:     heroiBase.nome,
@@ -562,7 +478,7 @@ function confirmarIniciativaModal() {
     if (ctx.monstro.custom && ctx.monstro.id) {
       entradaMonstro.idMonstroCustom = ctx.monstro.id;
     }
-    listaDeIniciativa.push(entradaMonstro);
+    estado.listaDeIniciativa.push(entradaMonstro);
 
     const caTxt = ctx.monstro.ca ? ` | CA: ${ctx.monstro.ca}` : "";
     adicionarHistorico(`⚔️ ${ctx.nomeCompleto} entrou no combate! (Ini: ${valor} | HP: ${ctx.monstro.vidaMax}${caTxt})`);
@@ -574,30 +490,13 @@ function confirmarIniciativaModal() {
 
 function removerHeroi(idHeroi) {
   if (!confirm("Deseja realmente remover este herói da party?")) return;
-  partyHerois       = partyHerois.filter(h => h.id !== idHeroi);
-  listaDeIniciativa = listaDeIniciativa.filter(c => c.idHeroi !== idHeroi);
-  salvarESincronizar();
-}
-
-/** Remove um combatente individual da iniciativa (ex.: monstro morto) */
-function removerDaIniciativa(id) {
-  const idx = listaDeIniciativa.findIndex(c => c.id === id);
-  if (idx === -1) return;
-  listaDeIniciativa.splice(idx, 1);
-  // Se o turno ativo estava depois do removido, recua um passo
-  if (turnoAtivo >= listaDeIniciativa.length) turnoAtivo = 0;
-  salvarESincronizar();
-}
-
-function sincronizarHP(id, novoValor) {
-  const criatura = listaDeIniciativa.find(c => c.id === id);
-  if (!criatura) return;
-  criatura.hpAtual = parseInt(novoValor) || 0;
+  estado.partyHerois       = estado.partyHerois.filter(h => h.id !== idHeroi);
+  estado.listaDeIniciativa = estado.listaDeIniciativa.filter(c => c.idHeroi !== idHeroi);
   salvarESincronizar();
 }
 
 function sincronizarVidaTudo(idHeroi, novoValor) {
-  const itemIni = listaDeIniciativa.find(c => c.idHeroi === idHeroi);
+  const itemIni = estado.listaDeIniciativa.find(c => c.idHeroi === idHeroi);
   if (itemIni) itemIni.hpAtual = parseInt(novoValor) || 0;
   salvarESincronizar();
 }
@@ -608,7 +507,7 @@ function sincronizarVidaTudo(idHeroi, novoValor) {
 let _condicaoCtx = null; // { criaturaId, condicaoId }
 
 function abrirModalCondicaoDuracao(criaturaId, condicaoId) {
-  const criatura = listaDeIniciativa.find(c => c.id === criaturaId);
+  const criatura = estado.listaDeIniciativa.find(c => c.id === criaturaId);
   if (!criatura) return;
 
   const cond     = CONDICOES.find(c => c.id === condicaoId);
@@ -621,20 +520,20 @@ function abrirModalCondicaoDuracao(criaturaId, condicaoId) {
   }
 
   _condicaoCtx = { criaturaId, condicaoId };
-  document.getElementById("modal-condicao-titulo").textContent = `${cond.emoji} ${cond.label} — ${criatura.nome}`;
-  document.getElementById("condicao-turnos").value = "1";
-  document.getElementById("modal-condicao-duracao").classList.remove("oculto");
-  document.getElementById("condicao-turnos").focus();
+  $("modal-condicao-titulo").textContent = `${cond.emoji} ${cond.label} — ${criatura.nome}`;
+  $("condicao-turnos").value = "1";
+  $("modal-condicao-duracao").classList.remove("oculto");
+  $("condicao-turnos").focus();
 }
 
 function fecharModalCondicaoDuracao() {
-  document.getElementById("modal-condicao-duracao").classList.add("oculto");
+  $("modal-condicao-duracao").classList.add("oculto");
   _condicaoCtx = null;
 
   // Se o popover de condições do turno estava aberto (e só escondido para dar
   // lugar a este modal), reexibe ele já atualizado para escolher outra condição.
   if (_popoverCondicaoTurno && document.body.contains(_popoverCondicaoTurno)) {
-    const atual = listaDeIniciativa[turnoAtivo];
+    const atual = estado.listaDeIniciativa[estado.turnoAtivo];
     if (atual) {
       renderizarOpcoesPopoverCondicao(_popoverCondicaoTurno, atual);
       _popoverCondicaoTurno.style.display = "";
@@ -648,11 +547,11 @@ function fecharModalCondicaoDuracao() {
 function confirmarCondicao() {
   if (!_condicaoCtx) return;
   const { criaturaId, condicaoId } = _condicaoCtx;
-  const criatura = listaDeIniciativa.find(c => c.id === criaturaId);
+  const criatura = estado.listaDeIniciativa.find(c => c.id === criaturaId);
   if (!criatura) return;
   if (!criatura.condicoes) criatura.condicoes = [];
 
-  const turnosVal = document.getElementById("condicao-turnos").value.trim();
+  const turnosVal = $("condicao-turnos").value.trim();
   const turnos    = turnosVal !== "" ? parseInt(turnosVal) || 1 : null; // null = indefinido
   const cond      = CONDICOES.find(c => c.id === condicaoId);
 
@@ -666,7 +565,7 @@ function confirmarCondicao() {
 }
 
 function removerCondicao(criaturaId, condicaoId) {
-  const criatura = listaDeIniciativa.find(c => c.id === criaturaId);
+  const criatura = estado.listaDeIniciativa.find(c => c.id === criaturaId);
   if (!criatura) return;
   const cond = CONDICOES.find(c => c.id === condicaoId);
   criatura.condicoes = (criatura.condicoes || []).filter(c => c.id !== condicaoId);
@@ -674,9 +573,10 @@ function removerCondicao(criaturaId, condicaoId) {
   salvarESincronizar();
 }
 
-/** Decrementa turnos de condições ao virar turno */
-function decrementarCondicoes() {
-  listaDeIniciativa.forEach(criatura => {
+/** Decrementa turnos de condições ao virar turno. Por padrão processa todos os combatentes;
+ *  passe uma sublista (ex.: [criaturaAtiva]) para decrementar só quem está com o turno ativo. */
+function decrementarCondicoes(criaturas = estado.listaDeIniciativa) {
+  criaturas.forEach(criatura => {
     if (!criatura.condicoes) return;
     const expiradas = [];
     criatura.condicoes = criatura.condicoes.map(c => {
@@ -704,7 +604,7 @@ function toggleCondicao(id, condicaoId) {
 
 /** Alterna o estado de morte do combatente sem removê-lo da lista */
 function marcarMorto(id) {
-  const criatura = listaDeIniciativa.find(c => c.id === id);
+  const criatura = estado.listaDeIniciativa.find(c => c.id === id);
   if (!criatura) return;
 
   if (criatura.morto) {
@@ -725,36 +625,36 @@ function marcarMorto(id) {
    DANO EM ÁREA
    ========================================================================== */
 function abrirModalArea() {
-  if (listaDeIniciativa.length === 0) {
+  if (estado.listaDeIniciativa.length === 0) {
     alert("Não há combatentes no combate!");
     return;
   }
 
   // Reseta campos
-  document.getElementById("area-nome-habilidade").value = "";
-  document.getElementById("area-qtd").value          = "1";
-  document.getElementById("area-tipo").value         = "8";
-  document.getElementById("area-modificador").value  = "0";
-  document.getElementById("area-valor-manual").value = "";
-  document.getElementById("area-resultado").textContent  = "—";
-  document.getElementById("area-resultado").className    = "modal-dano-valor modal-dano-valor--dano";
-  document.getElementById("area-formula").textContent    = "";
+  $("area-nome-habilidade").value = "";
+  $("area-qtd").value          = "1";
+  $("area-tipo").value         = "8";
+  $("area-modificador").value  = "0";
+  $("area-valor-manual").value = "";
+  $("area-resultado").textContent  = "—";
+  $("area-resultado").className    = "modal-dano-valor modal-dano-valor--dano";
+  $("area-formula").textContent    = "";
 
   renderizarAlvosArea();
-  document.getElementById("modal-area").classList.remove("oculto");
+  $("modal-area").classList.remove("oculto");
 }
 
 function fecharModalArea() {
-  document.getElementById("modal-area").classList.add("oculto");
+  $("modal-area").classList.add("oculto");
 }
 
 /** Renderiza uma lista de combatentes com checkbox (usada em Área, Acerto e Dano) */
 function renderizarListaAlvos(containerId, { preSelecionados = [], mostrarCA = false } = {}) {
-  const lista = document.getElementById(containerId);
+  const lista = $(containerId);
   lista.innerHTML = "";
   const preSet = new Set(preSelecionados.map(String));
 
-  listaDeIniciativa.forEach(c => {
+  estado.listaDeIniciativa.forEach(c => {
     const row = document.createElement("label");
     row.className = "area-alvo-row" + (c.morto ? " area-alvo-morto" : "");
 
@@ -766,7 +666,7 @@ function renderizarListaAlvos(containerId, { preSelecionados = [], mostrarCA = f
 
     const corHeroi = (() => {
       if (!c.idHeroi) return null;
-      const h   = partyHerois.find(h => h.id === c.idHeroi);
+      const h   = estado.partyHerois.find(h => h.id === c.idHeroi);
       const cor = h?.cor ? CORES_HEROI.find(x => x.id === h.cor) : null;
       return cor?.hex ?? null;
     })();
@@ -790,14 +690,14 @@ function selecionarTodosAlvos(containerId, selecionar) {
 
 function renderizarAlvosArea() {
   renderizarListaAlvos("area-alvos-lista", {
-    preSelecionados: listaDeIniciativa.filter(c => !c.morto).map(c => c.id),
+    preSelecionados: estado.listaDeIniciativa.filter(c => !c.morto).map(c => c.id),
   });
 }
 
 function rolarDadoArea() {
-  const qtd  = parseInt(document.getElementById("area-qtd").value)         || 1;
-  const lados = parseInt(document.getElementById("area-tipo").value)        || 8;
-  const mod   = parseInt(document.getElementById("area-modificador").value) || 0;
+  const qtd  = parseInt($("area-qtd").value)         || 1;
+  const lados = parseInt($("area-tipo").value)        || 8;
+  const mod   = parseInt($("area-modificador").value) || 0;
 
   let soma = 0;
   const rolagens = [];
@@ -807,16 +707,16 @@ function rolarDadoArea() {
   }
   const total = Math.max(0, soma + mod);
 
-  document.getElementById("area-resultado").textContent = total;
+  $("area-resultado").textContent = total;
   const sinal = mod >= 0 ? "+" : "";
-  document.getElementById("area-formula").textContent = `(${qtd}d${lados}: [${rolagens.join(", ")}] ${sinal}${mod})`;
-  document.getElementById("area-valor-manual").value  = total;
+  $("area-formula").textContent = `(${qtd}d${lados}: [${rolagens.join(", ")}] ${sinal}${mod})`;
+  $("area-valor-manual").value  = total;
 }
 
 function confirmarDanoArea() {
-  const valor = parseInt(document.getElementById("area-valor-manual").value);
+  const valor = parseInt($("area-valor-manual").value);
   if (isNaN(valor) || valor < 0) {
-    document.getElementById("area-valor-manual").focus(); return;
+    $("area-valor-manual").focus(); return;
   }
 
   const selecionados = [...document.querySelectorAll("#area-alvos-lista .area-alvo-cb:checked")].map(cb => cb.value);
@@ -826,7 +726,7 @@ function confirmarDanoArea() {
 
   const nomes = [];
   selecionados.forEach(id => {
-    const c = listaDeIniciativa.find(x => x.id == id);
+    const c = estado.listaDeIniciativa.find(x => x.id == id);
     if (!c) return;
     const antes = c.hpAtual;
     c.hpAtual = Math.max(0, c.hpAtual - valor);
@@ -834,7 +734,7 @@ function confirmarDanoArea() {
     if (c.hpAtual === 0 && !c.morto) processarHPZero(c);
   });
 
-  const nomeHabilidade = document.getElementById("area-nome-habilidade").value.trim();
+  const nomeHabilidade = $("area-nome-habilidade").value.trim();
   const rotulo = nomeHabilidade || "Dano em área";
   adicionarHistorico(`💥 ${rotulo} (${valor}): ${nomes.join(", ")}`, "falha");
   fecharModalArea();
@@ -845,16 +745,16 @@ function confirmarDanoArea() {
    CURA EM ÁREA
    ========================================================================== */
 function abrirModalCuraArea() {
-  if (listaDeIniciativa.length === 0) {
+  if (estado.listaDeIniciativa.length === 0) {
     alert("Não há combatentes no combate!");
     return;
   }
 
   // Curador — pré-seleciona o ativo do turno, mas pode ser trocado
-  const sel   = document.getElementById("cura-area-curador");
+  const sel   = $("cura-area-curador");
   sel.innerHTML = "";
-  const ativo = listaDeIniciativa[turnoAtivo];
-  listaDeIniciativa.filter(c => !c.morto).forEach(c => {
+  const ativo = estado.listaDeIniciativa[estado.turnoAtivo];
+  estado.listaDeIniciativa.filter(c => !c.morto).forEach(c => {
     const opt = document.createElement("option");
     opt.value = c.id;
     opt.textContent = c.nome;
@@ -862,28 +762,28 @@ function abrirModalCuraArea() {
     sel.appendChild(opt);
   });
 
-  document.getElementById("cura-area-qtd").value          = "1";
-  document.getElementById("cura-area-tipo").value         = "8";
-  document.getElementById("cura-area-modificador").value  = "0";
-  document.getElementById("cura-area-valor-manual").value = "";
-  document.getElementById("cura-area-resultado").textContent = "—";
-  document.getElementById("cura-area-formula").textContent   = "";
+  $("cura-area-qtd").value          = "1";
+  $("cura-area-tipo").value         = "8";
+  $("cura-area-modificador").value  = "0";
+  $("cura-area-valor-manual").value = "";
+  $("cura-area-resultado").textContent = "—";
+  $("cura-area-formula").textContent   = "";
 
   renderizarListaAlvos("cura-area-alvos-lista", {
-    preSelecionados: listaDeIniciativa.filter(c => !c.morto).map(c => c.id),
+    preSelecionados: estado.listaDeIniciativa.filter(c => !c.morto).map(c => c.id),
   });
 
-  document.getElementById("modal-cura-area").classList.remove("oculto");
+  $("modal-cura-area").classList.remove("oculto");
 }
 
 function fecharModalCuraArea() {
-  document.getElementById("modal-cura-area").classList.add("oculto");
+  $("modal-cura-area").classList.add("oculto");
 }
 
 function rolarDadoCuraArea() {
-  const qtd   = parseInt(document.getElementById("cura-area-qtd").value)         || 1;
-  const lados = parseInt(document.getElementById("cura-area-tipo").value)        || 8;
-  const mod   = parseInt(document.getElementById("cura-area-modificador").value) || 0;
+  const qtd   = parseInt($("cura-area-qtd").value)         || 1;
+  const lados = parseInt($("cura-area-tipo").value)        || 8;
+  const mod   = parseInt($("cura-area-modificador").value) || 0;
 
   let soma = 0;
   const rolagens = [];
@@ -893,28 +793,28 @@ function rolarDadoCuraArea() {
   }
   const total = Math.max(0, soma + mod);
 
-  document.getElementById("cura-area-resultado").textContent = total;
+  $("cura-area-resultado").textContent = total;
   const sinal = mod >= 0 ? "+" : "";
-  document.getElementById("cura-area-formula").textContent = `(${qtd}d${lados}: [${rolagens.join(", ")}] ${sinal}${mod})`;
-  document.getElementById("cura-area-valor-manual").value   = total;
+  $("cura-area-formula").textContent = `(${qtd}d${lados}: [${rolagens.join(", ")}] ${sinal}${mod})`;
+  $("cura-area-valor-manual").value   = total;
 }
 
 function confirmarCuraArea() {
-  const valor = parseInt(document.getElementById("cura-area-valor-manual").value);
+  const valor = parseInt($("cura-area-valor-manual").value);
   if (isNaN(valor) || valor < 0) {
-    document.getElementById("cura-area-valor-manual").focus(); return;
+    $("cura-area-valor-manual").focus(); return;
   }
 
   const selecionados = [...document.querySelectorAll("#cura-area-alvos-lista .area-alvo-cb:checked")]
-    .map(cb => listaDeIniciativa.find(c => c.id == cb.value))
+    .map(cb => estado.listaDeIniciativa.find(c => c.id == cb.value))
     .filter(Boolean);
   if (selecionados.length === 0) {
     alert("Selecione pelo menos um alvo!"); return;
   }
 
-  const sel       = document.getElementById("cura-area-curador");
+  const sel       = $("cura-area-curador");
   const curadorId = sel ? sel.value : null;
-  const curador   = curadorId ? listaDeIniciativa.find(c => c.id == curadorId) : null;
+  const curador   = curadorId ? estado.listaDeIniciativa.find(c => c.id == curadorId) : null;
 
   const nomes = [];
   selecionados.forEach(c => {
@@ -958,44 +858,44 @@ let _modalDanoCuraTipo = null;
 let _acertoAtacanteId = null;
 
 function abrirModalAcerto(atacanteId) {
-  const atacante = listaDeIniciativa.find(c => c.id === atacanteId);
+  const atacante = estado.listaDeIniciativa.find(c => c.id === atacanteId);
   if (!atacante) return;
 
   _acertoAtacanteId = atacanteId;
 
-  document.getElementById("modal-acerto-titulo").textContent = `🎯 Acerto — ${atacante.nome}`;
-  document.getElementById("acerto-atacante-info").innerHTML  = `⚔️ Atacante: <strong>${atacante.nome}</strong>`;
+  $("modal-acerto-titulo").textContent = `🎯 Acerto — ${atacante.nome}`;
+  $("acerto-atacante-info").innerHTML  = `⚔️ Atacante: <strong>${atacante.nome}</strong>`;
 
   // Lista de alvos — nada pré-selecionado, o mestre escolhe quem é atacado
   renderizarListaAlvos("acerto-alvos-lista", { mostrarCA: true });
 
   // Reseta campos
-  document.getElementById("acerto-qtd").value         = "1";
-  document.getElementById("acerto-tipo").value        = "20";
-  document.getElementById("acerto-modificador").value = "0";
-  document.getElementById("acerto-resultado-wrap").style.display  = "none";
-  document.getElementById("acerto-resultado-display").innerHTML   = "";
-  document.getElementById("acerto-resultado-alvos").innerHTML     = "";
+  $("acerto-qtd").value         = "1";
+  $("acerto-tipo").value        = "20";
+  $("acerto-modificador").value = "0";
+  $("acerto-resultado-wrap").style.display  = "none";
+  $("acerto-resultado-display").innerHTML   = "";
+  $("acerto-resultado-alvos").innerHTML     = "";
 
-  document.getElementById("modal-acerto").classList.remove("oculto");
-  document.getElementById("acerto-modificador").focus();
+  $("modal-acerto").classList.remove("oculto");
+  $("acerto-modificador").focus();
 }
 
 function fecharModalAcerto() {
-  document.getElementById("modal-acerto").classList.add("oculto");
+  $("modal-acerto").classList.add("oculto");
   _acertoAtacanteId = null;
 }
 
 function alvosSelecionadosAcerto() {
   return [...document.querySelectorAll("#acerto-alvos-lista .area-alvo-cb:checked")]
-    .map(cb => listaDeIniciativa.find(c => c.id == cb.value))
+    .map(cb => estado.listaDeIniciativa.find(c => c.id == cb.value))
     .filter(Boolean);
 }
 
 function rolarAcerto() {
-  const qtd   = parseInt(document.getElementById("acerto-qtd").value)         || 1;
-  const lados = parseInt(document.getElementById("acerto-tipo").value)        || 20;
-  const mod   = parseInt(document.getElementById("acerto-modificador").value) || 0;
+  const qtd   = parseInt($("acerto-qtd").value)         || 1;
+  const lados = parseInt($("acerto-tipo").value)        || 20;
+  const mod   = parseInt($("acerto-modificador").value) || 0;
 
   let soma = 0;
   const rolagens = [];
@@ -1010,9 +910,9 @@ function rolarAcerto() {
   const critico      = lados === 20 && qtd === 1 && rolagens[0] === 20;
   const falhaCritica = lados === 20 && qtd === 1 && rolagens[0] === 1;
 
-  const wrap        = document.getElementById("acerto-resultado-wrap");
-  const display      = document.getElementById("acerto-resultado-display");
-  const alvosDisplay = document.getElementById("acerto-resultado-alvos");
+  const wrap        = $("acerto-resultado-wrap");
+  const display      = $("acerto-resultado-display");
+  const alvosDisplay = $("acerto-resultado-alvos");
   wrap.style.display = "block";
 
   let badgeGeral = "";
@@ -1025,7 +925,7 @@ function rolarAcerto() {
     ${badgeGeral}
   `;
 
-  const atacante     = listaDeIniciativa.find(c => c.id === _acertoAtacanteId);
+  const atacante     = estado.listaDeIniciativa.find(c => c.id === _acertoAtacanteId);
   const nomeAtacante = atacante?.nome ?? "?";
   const alvos        = alvosSelecionadosAcerto();
 
@@ -1071,24 +971,24 @@ function abrirModalDanoCura(ids, tipo, atacantePreId = null) {
   const idsArr = (Array.isArray(ids) ? ids : [ids]).filter(id => id !== null && id !== undefined);
   const isDano = tipo === "dano";
 
-  if (!isDano && !listaDeIniciativa.find(c => c.id === idsArr[0])) return;
+  if (!isDano && !estado.listaDeIniciativa.find(c => c.id === idsArr[0])) return;
 
   _modalDanoCuraIds  = idsArr;
   _modalDanoCuraTipo = tipo;
 
-  document.getElementById("modal-dano-resultado").textContent = "—";
-  document.getElementById("modal-dano-resultado").className   = "modal-dano-valor";
-  document.getElementById("modal-dano-formula-txt").textContent = "";
-  document.getElementById("modal-dano-modificador").value     = "0";
-  document.getElementById("modal-dano-manual").value          = "";
-  document.getElementById("modal-dano-qtd").value             = "1";
-  document.getElementById("modal-dano-tipo").value            = "20";
-  document.getElementById("btn-confirmar-dano").textContent   = isDano ? "⚔️ Aplicar Dano" : "💊 Aplicar Cura";
-  document.getElementById("btn-confirmar-dano").className     = isDano ? "btn-confirmar btn-confirmar-dano" : "btn-confirmar btn-confirmar-cura";
+  $("modal-dano-resultado").textContent = "—";
+  $("modal-dano-resultado").className   = "modal-dano-valor";
+  $("modal-dano-formula-txt").textContent = "";
+  $("modal-dano-modificador").value     = "0";
+  $("modal-dano-manual").value          = "";
+  $("modal-dano-qtd").value             = "1";
+  $("modal-dano-tipo").value            = "20";
+  $("btn-confirmar-dano").textContent   = isDano ? "⚔️ Aplicar Dano" : "💊 Aplicar Cura";
+  $("btn-confirmar-dano").className     = isDano ? "btn-confirmar btn-confirmar-dano" : "btn-confirmar btn-confirmar-cura";
 
-  const tituloEl  = document.getElementById("modal-dano-titulo");
-  const hpAtualEl = document.getElementById("modal-dano-hp-atual");
-  const alvosWrap = document.getElementById("modal-dano-alvos-wrap");
+  const tituloEl  = $("modal-dano-titulo");
+  const hpAtualEl = $("modal-dano-hp-atual");
+  const alvosWrap = $("modal-dano-alvos-wrap");
 
   if (isDano) {
     tituloEl.textContent    = "⚔️ Dano";
@@ -1097,7 +997,7 @@ function abrirModalDanoCura(ids, tipo, atacantePreId = null) {
     // Alvo(s) já escolhidos na etapa de acerto vêm pré-selecionados; pode-se ajustar aqui
     renderizarListaAlvos("modal-dano-alvos-lista", { preSelecionados: idsArr, mostrarCA: true });
   } else {
-    const criatura = listaDeIniciativa.find(c => c.id === idsArr[0]);
+    const criatura = estado.listaDeIniciativa.find(c => c.id === idsArr[0]);
     tituloEl.textContent    = `💊 Cura — ${criatura.nome}`;
     hpAtualEl.textContent   = `HP atual: ${criatura.hpAtual} / ${criatura.hpMax}`;
     hpAtualEl.style.display = "block";
@@ -1106,13 +1006,13 @@ function abrirModalDanoCura(ids, tipo, atacantePreId = null) {
 
   // Seletor de atacante — por padrão o ativo do turno, mas pode ser trocado
   // (ex.: o alvo tomou um ataque de oportunidade de outro combatente)
-  const atacanteWrap = document.getElementById("modal-dano-atacante-wrap");
+  const atacanteWrap = $("modal-dano-atacante-wrap");
   if (isDano) {
     atacanteWrap.style.display = "block";
-    const sel = document.getElementById("modal-dano-atacante");
+    const sel = $("modal-dano-atacante");
     sel.innerHTML = "";
-    const ativo = listaDeIniciativa[turnoAtivo];
-    listaDeIniciativa.filter(c => !c.morto).forEach(c => {
+    const ativo = estado.listaDeIniciativa[estado.turnoAtivo];
+    estado.listaDeIniciativa.filter(c => !c.morto).forEach(c => {
       const opt = document.createElement("option");
       opt.value = c.id;
       opt.textContent = c.nome;
@@ -1125,47 +1025,47 @@ function abrirModalDanoCura(ids, tipo, atacantePreId = null) {
   }
 
   // Prévia
-  const previa = document.getElementById("modal-dano-previa");
+  const previa = $("modal-dano-previa");
   previa.style.display = "none";
   previa.innerHTML = "";
 
-  const btnMortoModal = document.getElementById("btn-morto-modal");
+  const btnMortoModal = $("btn-morto-modal");
   if (isDano) {
-    const unico = idsArr.length === 1 ? listaDeIniciativa.find(c => c.id === idsArr[0]) : null;
+    const unico = idsArr.length === 1 ? estado.listaDeIniciativa.find(c => c.id === idsArr[0]) : null;
     btnMortoModal.style.display = unico ? "block" : "none";
     if (unico) {
       btnMortoModal.textContent = unico.morto ? "💚 Reviver" : "☠️ Marcar como Morto";
       btnMortoModal.className   = unico.morto ? "btn-morto-modal btn-morto-modal--reviver" : "btn-morto-modal";
     }
   } else {
-    const criatura = listaDeIniciativa.find(c => c.id === idsArr[0]);
+    const criatura = estado.listaDeIniciativa.find(c => c.id === idsArr[0]);
     btnMortoModal.style.display = "block";
     btnMortoModal.textContent   = criatura.morto ? "💚 Reviver" : "☠️ Marcar como Morto";
     btnMortoModal.className     = criatura.morto ? "btn-morto-modal btn-morto-modal--reviver" : "btn-morto-modal";
   }
 
-  const aviso = document.getElementById("modal-dano-aviso");
+  const aviso = $("modal-dano-aviso");
   if (aviso) aviso.style.display = isDano ? "none" : "block";
 
-  document.getElementById("modal-dano-cura").classList.remove("oculto");
-  document.getElementById("modal-dano-modificador").focus();
+  $("modal-dano-cura").classList.remove("oculto");
+  $("modal-dano-modificador").focus();
 }
 
 function fecharModalDanoCura() {
-  document.getElementById("modal-dano-cura").classList.add("oculto");
+  $("modal-dano-cura").classList.add("oculto");
   _modalDanoCuraIds  = [];
   _modalDanoCuraTipo = null;
 }
 
 function alvosSelecionadosDano() {
   return [...document.querySelectorAll("#modal-dano-alvos-lista .area-alvo-cb:checked")]
-    .map(cb => listaDeIniciativa.find(c => c.id == cb.value))
+    .map(cb => estado.listaDeIniciativa.find(c => c.id == cb.value))
     .filter(Boolean);
 }
 
 function atualizarPrevia() {
-  const valor  = parseInt(document.getElementById("modal-dano-manual").value);
-  const previa = document.getElementById("modal-dano-previa");
+  const valor  = parseInt($("modal-dano-manual").value);
+  const previa = $("modal-dano-previa");
   if (isNaN(valor) || valor < 0) { previa.style.display = "none"; return; }
 
   const isDano = _modalDanoCuraTipo === "dano";
@@ -1174,9 +1074,9 @@ function atualizarPrevia() {
     const alvos = alvosSelecionadosDano();
     if (alvos.length === 0) { previa.style.display = "none"; return; }
 
-    const sel        = document.getElementById("modal-dano-atacante");
+    const sel        = $("modal-dano-atacante");
     const atacanteId = sel ? sel.value : null;
-    const atacante   = atacanteId ? listaDeIniciativa.find(c => c.id == atacanteId) : null;
+    const atacante   = atacanteId ? estado.listaDeIniciativa.find(c => c.id == atacanteId) : null;
 
     previa.innerHTML = alvos.map(criatura => {
       const hpFinal = Math.max(0, criatura.hpAtual - valor);
@@ -1185,7 +1085,7 @@ function atualizarPrevia() {
     }).join("");
     previa.className = "modal-dano-previa modal-dano-previa--dano";
   } else {
-    const criatura = listaDeIniciativa.find(c => c.id === _modalDanoCuraIds[0]);
+    const criatura = estado.listaDeIniciativa.find(c => c.id === _modalDanoCuraIds[0]);
     if (!criatura) { previa.style.display = "none"; return; }
     const hpFinal = Math.min(criatura.hpMax, criatura.hpAtual + valor);
     previa.innerHTML = `<span class="previa-ataque">${criatura.nome}</span><span class="previa-cura">+${valor}</span><span class="previa-hp">${criatura.hpAtual} → ${hpFinal} HP</span>`;
@@ -1196,9 +1096,9 @@ function atualizarPrevia() {
 }
 
 function rolarDadoModal() {
-  const quantidade  = parseInt(document.getElementById("modal-dano-qtd").value)  || 1;
-  const lados       = parseInt(document.getElementById("modal-dano-tipo").value)  || 20;
-  const modificador = parseInt(document.getElementById("modal-dano-modificador").value) || 0;
+  const quantidade  = parseInt($("modal-dano-qtd").value)  || 1;
+  const lados       = parseInt($("modal-dano-tipo").value)  || 20;
+  const modificador = parseInt($("modal-dano-modificador").value) || 0;
 
   let soma = 0;
   const rolagens = [];
@@ -1209,19 +1109,19 @@ function rolarDadoModal() {
   }
   const total = Math.max(0, soma + modificador);
 
-  const display = document.getElementById("modal-dano-resultado");
+  const display = $("modal-dano-resultado");
   display.textContent = total;
   display.className   = "modal-dano-valor " + (_modalDanoCuraTipo === "dano" ? "modal-dano-valor--dano" : "modal-dano-valor--cura");
 
   const sinal = modificador >= 0 ? "+" : "";
-  document.getElementById("modal-dano-formula-txt").textContent = `(${quantidade}d${lados}: [${rolagens.join(", ")}] ${sinal}${modificador})`;
-  document.getElementById("modal-dano-manual").value = total;
+  $("modal-dano-formula-txt").textContent = `(${quantidade}d${lados}: [${rolagens.join(", ")}] ${sinal}${modificador})`;
+  $("modal-dano-manual").value = total;
   atualizarPrevia();
 }
 
 function confirmarDanoCura() {
-  const valor = parseInt(document.getElementById("modal-dano-manual").value);
-  if (isNaN(valor) || valor < 0) { document.getElementById("modal-dano-manual").focus(); return; }
+  const valor = parseInt($("modal-dano-manual").value);
+  if (isNaN(valor) || valor < 0) { $("modal-dano-manual").focus(); return; }
 
   const isDano = _modalDanoCuraTipo === "dano";
 
@@ -1229,9 +1129,9 @@ function confirmarDanoCura() {
     const alvos = alvosSelecionadosDano();
     if (alvos.length === 0) return;
 
-    const sel         = document.getElementById("modal-dano-atacante");
+    const sel         = $("modal-dano-atacante");
     const atacanteId  = sel ? sel.value : null;
-    const atacante    = atacanteId ? listaDeIniciativa.find(c => c.id == atacanteId) : null;
+    const atacante    = atacanteId ? estado.listaDeIniciativa.find(c => c.id == atacanteId) : null;
     const nomeAtacante = atacante ? atacante.nome : null;
 
     alvos.forEach(criatura => {
@@ -1245,7 +1145,7 @@ function confirmarDanoCura() {
       if (criatura.hpAtual === 0 && !criatura.morto) processarHPZero(criatura);
     });
   } else {
-    const criatura = listaDeIniciativa.find(c => c.id === _modalDanoCuraIds[0]);
+    const criatura = estado.listaDeIniciativa.find(c => c.id === _modalDanoCuraIds[0]);
     if (!criatura) return;
 
     const hpAntes = criatura.hpAtual;
@@ -1268,111 +1168,43 @@ function mortoViaModal() {
   marcarMorto(id);
 }
 
-/* ==========================================================================
-   5b. RASTREADOR DE EFEITOS TEMPORÁRIOS
-   ========================================================================== */
-function abrirFormEfeito() {
-  document.getElementById("turno-efeito-form").classList.remove("oculto");
-  document.getElementById("efeito-nome").value   = "";
-  document.getElementById("efeito-turnos").value = "1";
-  document.getElementById("efeito-nome").focus();
-}
-
-function fecharFormEfeito() {
-  document.getElementById("turno-efeito-form").classList.add("oculto");
-}
-
-function confirmarEfeito() {
-  const nome   = document.getElementById("efeito-nome").value.trim();
-  const turnos = parseInt(document.getElementById("efeito-turnos").value) || 1;
-  if (!nome) { document.getElementById("efeito-nome").focus(); return; }
-
-  efeitosTemporarios.push({ id: "ef_" + Date.now(), nome, turnos });
-  adicionarHistorico(`⏳ Efeito adicionado: "${nome}" (${turnos} turno${turnos > 1 ? "s" : ""})`);
-  fecharFormEfeito();
-  salvarESincronizar();
-}
-
-function removerEfeito(id) {
-  const ef = efeitosTemporarios.find(e => e.id === id);
-  if (ef) adicionarHistorico(`🗑️ Efeito removido: "${ef.nome}"`);
-  efeitosTemporarios = efeitosTemporarios.filter(e => e.id !== id);
-  salvarESincronizar();
-}
-
-function renderizarEfeitos() {
-  const lista = document.getElementById("turno-efeitos-lista");
-  if (!lista) return;
-  lista.innerHTML = "";
-
-  if (efeitosTemporarios.length === 0) {
-    lista.innerHTML = `<p class="efeitos-vazio">Nenhum efeito ativo.</p>`;
-    return;
-  }
-
-  efeitosTemporarios.forEach(ef => {
-    const urgente = ef.turnos === 1;
-    const item = document.createElement("div");
-    item.className = "efeito-item" + (urgente ? " efeito-item--urgente" : "");
-
-    const info = document.createElement("div");
-    info.className = "efeito-info";
-
-    const nome = document.createElement("span");
-    nome.className   = "efeito-nome";
-    nome.textContent = ef.nome;
-
-    const turnos = document.createElement("span");
-    turnos.className   = "efeito-turnos";
-    turnos.textContent = `${ef.turnos} turno${ef.turnos > 1 ? "s" : ""}`;
-
-    info.appendChild(nome);
-    info.appendChild(turnos);
-
-    const btnDel = document.createElement("button");
-    btnDel.textContent = "✕";
-    btnDel.className   = "efeito-btn-del";
-    btnDel.title       = "Remover efeito";
-    btnDel.addEventListener("click", () => removerEfeito(ef.id));
-
-    item.appendChild(info);
-    item.appendChild(btnDel);
-    lista.appendChild(item);
-  });
-}
-
-
 function proximoTurno() {
-  if (listaDeIniciativa.length === 0) return;
+  if (estado.listaDeIniciativa.length === 0) return;
 
-  const vivos = listaDeIniciativa.filter(c => !c.morto);
+  const vivos = estado.listaDeIniciativa.filter(c => !c.morto);
   if (vivos.length === 0) return;
 
   // Avança e pula mortos
   let tentativas = 0;
   do {
-    turnoAtivo++;
-    if (turnoAtivo >= listaDeIniciativa.length) {
-      turnoAtivo = 0;
-      turnoAtual++;
-      adicionarHistorico(`🔄 Turno ${turnoAtual} iniciado!`, "turno");
-      decrementarCondicoes();
-      efeitosTemporarios = efeitosTemporarios.map(e => ({ ...e, turnos: e.turnos - 1 }));
-      efeitosTemporarios.forEach(e => {
+    estado.turnoAtivo++;
+    if (estado.turnoAtivo >= estado.listaDeIniciativa.length) {
+      estado.turnoAtivo = 0;
+      estado.turnoAtual++;
+      adicionarHistorico(`🔄 Rodada ${estado.turnoAtual} iniciada!`, "turno");
+      if (config.expiracaoCondicao !== "turno") decrementarCondicoes();
+      estado.efeitosTemporarios = estado.efeitosTemporarios.map(e => ({ ...e, turnos: e.turnos - 1 }));
+      estado.efeitosTemporarios.forEach(e => {
         if (e.turnos <= 0) adicionarHistorico(`⏰ Efeito expirado: "${e.nome}"`, "falha");
         else if (e.turnos === 1) adicionarHistorico(`⚠️ "${e.nome}" expira no próximo turno!`);
       });
-      efeitosTemporarios = efeitosTemporarios.filter(e => e.turnos > 0);
+      estado.efeitosTemporarios = estado.efeitosTemporarios.filter(e => e.turnos > 0);
     }
     tentativas++;
-  } while (listaDeIniciativa[turnoAtivo]?.morto && tentativas < listaDeIniciativa.length);
+  } while (estado.listaDeIniciativa[estado.turnoAtivo]?.morto && tentativas < estado.listaDeIniciativa.length);
+
+  // Modo "no turno do personagem": só a criatura cujo turno chegou tem suas condições decrementadas
+  if (config.expiracaoCondicao === "turno") {
+    const atual = estado.listaDeIniciativa[estado.turnoAtivo];
+    if (atual && !atual.morto) decrementarCondicoes([atual]);
+  }
 
   salvarESincronizar();
 }
 
 function turnoAnterior() {
-  if (listaDeIniciativa.length === 0) return;
-  turnoAtivo = (turnoAtivo - 1 + listaDeIniciativa.length) % listaDeIniciativa.length;
+  if (estado.listaDeIniciativa.length === 0) return;
+  estado.turnoAtivo = (estado.turnoAtivo - 1 + estado.listaDeIniciativa.length) % estado.listaDeIniciativa.length;
   salvarESincronizar();
 }
 
@@ -1380,7 +1212,7 @@ function turnoAnterior() {
    BOTÕES DE AÇÃO DO PAINEL DE TURNO
    ========================================================================== */
 function abrirTurnoAcaoAtaque() {
-  const atual = listaDeIniciativa[turnoAtivo];
+  const atual = estado.listaDeIniciativa[estado.turnoAtivo];
   if (!atual) return;
   if (config.etapaAcerto) abrirModalAcerto(atual.id);
   else abrirModalDanoCura([], "dano", atual.id);
@@ -1405,7 +1237,7 @@ function renderizarOpcoesPopoverCondicao(popover, criatura) {
       // Se a condição já estava ativa, ela é removida na hora (sem modal) — só
       // atualiza a lista. Se abriu o modal de duração, escondemos o popover até
       // ele ser confirmado/fechado (veja fecharModalCondicaoDuracao).
-      if (document.getElementById("modal-condicao-duracao").classList.contains("oculto")) {
+      if ($("modal-condicao-duracao").classList.contains("oculto")) {
         renderizarOpcoesPopoverCondicao(popover, criatura);
       } else {
         popover.style.display = "none";
@@ -1416,11 +1248,11 @@ function renderizarOpcoesPopoverCondicao(popover, criatura) {
 }
 
 function abrirTurnoAcaoCondicao() {
-  const atual = listaDeIniciativa[turnoAtivo];
+  const atual = estado.listaDeIniciativa[estado.turnoAtivo];
   if (!atual) return;
 
   // Remove popover anterior se existir
-  const popoverAnterior = document.getElementById("turno-condicoes-popover");
+  const popoverAnterior = $("turno-condicoes-popover");
   if (popoverAnterior) popoverAnterior.remove();
 
   // Cria popover de condições
@@ -1437,7 +1269,7 @@ function abrirTurnoAcaoCondicao() {
 
   // Posiciona logo acima do botão, sem deixar vazar para fora da tela
   // (em telas de celular o botão pode estar perto da borda direita/topo)
-  const btnCondicao = document.getElementById("btn-turno-condicao");
+  const btnCondicao = $("btn-turno-condicao");
   const rect = btnCondicao.getBoundingClientRect();
   const margem = 8;
 
@@ -1464,14 +1296,14 @@ function abrirTurnoAcaoCondicao() {
 }
 
 function abrirTurnoAcaoCura() {
-  const atual = listaDeIniciativa[turnoAtivo];
+  const atual = estado.listaDeIniciativa[estado.turnoAtivo];
   if (!atual) return;
   abrirModalDanoCura([atual.id], "cura");
 }
 
 /** Botão de morte/nocaute: herói vai a nocauteado, monstro vai a morto. Clicar de novo reverte. */
 function alternarMortoNocaute(id) {
-  const criatura = listaDeIniciativa.find(c => c.id === id);
+  const criatura = estado.listaDeIniciativa.find(c => c.id === id);
   if (!criatura) return;
 
   if (criatura.morto || criatura.nocauteado) {
@@ -1493,28 +1325,27 @@ function alternarMortoNocaute(id) {
 
 /** Botão de morte/nocaute do combatente ativo no painel de turno */
 function abrirTurnoAcaoMorto() {
-  const atual = listaDeIniciativa[turnoAtivo];
+  const atual = estado.listaDeIniciativa[estado.turnoAtivo];
   if (!atual) return;
   alternarMortoNocaute(atual.id);
 }
 
 function atualizarPainelTurno() {
-  const combateTurnoEl = document.getElementById("combate-turno-num");
-  const linhaEl = document.getElementById("turno-ativo-linha");
-  const cardEl  = document.getElementById("turno-ativo-card");
-  const condCardEl = document.getElementById("turno-ativo-condicoes-card");
-  const vazioEl = document.getElementById("turno-vazio-msg");
-  const acoesEl = document.getElementById("turno-ativo-acoes");
+  const combateTurnoEl = $("combate-turno-num");
+  const linhaEl = $("turno-ativo-linha");
+  const cardEl  = $("turno-ativo-card");
+  const condCardEl = $("turno-ativo-condicoes-card");
+  const vazioEl = $("turno-vazio-msg");
+  const acoesEl = $("turno-ativo-acoes");
 
-  if (combateTurnoEl) combateTurnoEl.textContent = turnoAtual;
+  if (combateTurnoEl) combateTurnoEl.textContent = estado.turnoAtual;
 
-  if (listaDeIniciativa.length === 0) {
+  if (estado.listaDeIniciativa.length === 0) {
     if (linhaEl)    linhaEl.classList.add("oculto");
     if (cardEl)     cardEl.innerHTML = "";
     if (condCardEl) condCardEl.innerHTML = "";
     if (vazioEl) vazioEl.style.display = "block";
     if (acoesEl) { acoesEl.classList.add("oculto"); acoesEl.innerHTML = ""; }
-    renderizarCondicoesAtivas();
     return;
   }
 
@@ -1522,7 +1353,7 @@ function atualizarPainelTurno() {
   if (vazioEl) vazioEl.style.display = "none";
   if (acoesEl) acoesEl.classList.remove("oculto");
 
-  const atual = listaDeIniciativa[turnoAtivo];
+  const atual = estado.listaDeIniciativa[estado.turnoAtivo];
   if (!atual) return;
 
   // Limpa o card ativo para reconstruí-lo idêntico ao painel de combate
@@ -1531,7 +1362,7 @@ function atualizarPainelTurno() {
   // Coleta dados visuais (Cor e CA)
   const corHeroi = (() => {
     if (!atual.idHeroi) return null;
-    const h = partyHerois.find(h => h.id === atual.idHeroi);
+    const h = estado.partyHerois.find(h => h.id === atual.idHeroi);
     const cor = h?.cor ? CORES_HEROI.find(c => c.id === h.cor) : null;
     return cor?.hex ?? null;
   })();
@@ -1588,7 +1419,7 @@ function atualizarPainelTurno() {
   btnMorto.type = "button";
   btnMorto.className = "btn-turno-morto-icone";
   btnMorto.title = estaCaido ? "Reviver" : "Marcar como Morto ou Nocautear";
-  btnMorto.textContent = "☠️";
+  btnMorto.textContent = estaCaido ? "💚" : "☠️";
   btnMorto.addEventListener("click", abrirTurnoAcaoMorto);
 
   badgeLinha.appendChild(badge);
@@ -1722,61 +1553,6 @@ function atualizarPainelTurno() {
   // Montagem final do card de turno ativo
   cardEl.appendChild(cabecalho);
   cardEl.appendChild(stats);
-
-  renderizarCondicoesAtivas();
-}
-
-/** Lista todas as condições ativas de todos os combatentes no painel de turno */
-function renderizarCondicoesAtivas() {
-  const lista = document.getElementById("turno-efeitos-lista");
-  if (!lista) return;
-  lista.innerHTML = "";
-
-  // Coleta todas as condições com turnos definidos de todos os combatentes
-  const todasCondicoes = [];
-  listaDeIniciativa.forEach(criatura => {
-    (criatura.condicoes || []).forEach(condObj => {
-      const cond = CONDICOES.find(c => c.id === condObj.id);
-      if (cond) todasCondicoes.push({ criatura, condObj, cond });
-    });
-  });
-
-  if (todasCondicoes.length === 0) {
-    lista.innerHTML = `<p class="efeitos-vazio">Nenhuma condição ativa.</p>`;
-    return;
-  }
-
-  todasCondicoes.forEach(({ criatura, condObj, cond }) => {
-    const urgente = condObj.turnos === 1;
-    const item    = document.createElement("div");
-    item.className = "efeito-item" + (urgente ? " efeito-item--urgente" : "");
-
-    const info = document.createElement("div");
-    info.className = "efeito-info";
-
-    const nomeCond = document.createElement("span");
-    nomeCond.className   = "efeito-nome";
-    nomeCond.textContent = `${cond.emoji} ${cond.label}`;
-
-    const sub = document.createElement("span");
-    sub.className = "efeito-turnos";
-    sub.textContent = condObj.turnos !== null
-      ? `${criatura.nome} · ${condObj.turnos} turno${condObj.turnos > 1 ? "s" : ""}`
-      : `${criatura.nome} · indefinido`;
-
-    info.appendChild(nomeCond);
-    info.appendChild(sub);
-
-    const btnDel = document.createElement("button");
-    btnDel.textContent = "✕";
-    btnDel.className   = "efeito-btn-del";
-    btnDel.title       = "Remover condição";
-    btnDel.addEventListener("click", () => removerCondicao(criatura.id, cond.id));
-
-    item.appendChild(info);
-    item.appendChild(btnDel);
-    lista.appendChild(item);
-  });
 }
 
 /* ==========================================================================
@@ -1793,11 +1569,11 @@ function calcularCorHP(hpAtual, hpMax) {
 /** Resolve a CA de um combatente da iniciativa (herói, monstro custom ou da coletânea) */
 function obterCACriatura(criatura) {
   if (criatura.idHeroi) {
-    const h = partyHerois.find(h => h.id === criatura.idHeroi);
+    const h = estado.partyHerois.find(h => h.id === criatura.idHeroi);
     return h?.ca ?? null;
   }
   if (criatura.idMonstroCustom) {
-    const mc = monstrosCustom.find(m => m.id === criatura.idMonstroCustom);
+    const mc = estado.monstrosCustom.find(m => m.id === criatura.idMonstroCustom);
     if (mc) return mc.ca ?? null;
   }
   const m = coletaneaMonstros.find(m => m.nome === criatura.nomeBase);
@@ -1805,16 +1581,16 @@ function obterCACriatura(criatura) {
 }
 
 function atualizarIniciativa() {
-  listaDeIniciativa.sort((a, b) => b.valor - a.valor);
-  const container = document.getElementById("lista-iniciativa-conteudo");
+  estado.listaDeIniciativa.sort((a, b) => b.valor - a.valor);
+  const container = $("lista-iniciativa-conteudo");
   if (!container) return;
   container.innerHTML = "";
 
-  // Garante que turnoAtivo não aponte para fora dos limites
-  if (listaDeIniciativa.length > 0 && turnoAtivo >= listaDeIniciativa.length) turnoAtivo = 0;
+  // Garante que estado.turnoAtivo não aponte para fora dos limites
+  if (estado.listaDeIniciativa.length > 0 && estado.turnoAtivo >= estado.listaDeIniciativa.length) estado.turnoAtivo = 0;
 
-  listaDeIniciativa.forEach((personagem, index) => {
-    const ativo      = index === turnoAtivo && listaDeIniciativa.length > 0;
+  estado.listaDeIniciativa.forEach((personagem, index) => {
+    const ativo      = index === estado.turnoAtivo && estado.listaDeIniciativa.length > 0;
     const condicoes  = personagem.condicoes || [];
     const pctHP      = personagem.hpMax > 0 ? (personagem.hpAtual / personagem.hpMax) * 100 : 0;
     const corHP      = calcularCorHP(personagem.hpAtual, personagem.hpMax);
@@ -1829,7 +1605,7 @@ function atualizarIniciativa() {
     // Cor do herói na borda esquerda (e fundo suave quando ativo)
     let corHeroiHex = null;
     if (personagem.idHeroi) {
-      const h   = partyHerois.find(h => h.id === personagem.idHeroi);
+      const h   = estado.partyHerois.find(h => h.id === personagem.idHeroi);
       const cor = h?.cor ? CORES_HEROI.find(c => c.id === h.cor) : null;
       if (cor) {
         corHeroiHex = cor.hex;
@@ -1884,7 +1660,7 @@ function atualizarIniciativa() {
     btnMortoCombate.type = "button";
     btnMortoCombate.className = "btn-turno-morto-icone btn-morto-item-ini";
     btnMortoCombate.title = estaCaidoCombate ? "Reviver" : "Marcar como Morto ou Nocautear";
-    btnMortoCombate.textContent = "☠️";
+    btnMortoCombate.textContent = estaCaidoCombate ? "💚" : "☠️";
     btnMortoCombate.addEventListener("click", (e) => {
       e.stopPropagation();
       alternarMortoNocaute(personagem.id);
@@ -1963,6 +1739,13 @@ function atualizarIniciativa() {
       item.appendChild(atualBadge);
     }
 
+    if (index > 0) {
+      const seta = document.createElement("span");
+      seta.className = "seta-iniciativa";
+      seta.textContent = "❯";
+      container.appendChild(seta);
+    }
+
     container.appendChild(item);
   });
 
@@ -1977,18 +1760,18 @@ function atualizarIniciativa() {
 
 /** Faixa "Ordem da Iniciativa": um chip por combatente, clicável para pular o turno até ele */
 function renderizarOrdemIniciativa() {
-  const lista = document.getElementById("ordem-iniciativa-lista");
+  const lista = $("ordem-iniciativa-lista");
   if (!lista) return;
   lista.innerHTML = "";
 
-  listaDeIniciativa.forEach((personagem, index) => {
+  estado.listaDeIniciativa.forEach((personagem, index) => {
     const chip = document.createElement("button");
     chip.type = "button";
-    chip.className = "ordem-iniciativa-chip" + (index === turnoAtivo ? " ordem-iniciativa-chip--ativa" : "");
+    chip.className = "ordem-iniciativa-chip" + (index === estado.turnoAtivo ? " ordem-iniciativa-chip--ativa" : "");
     chip.textContent = personagem.valor;
     chip.title = personagem.nome;
     chip.addEventListener("click", () => {
-      turnoAtivo = index;
+      estado.turnoAtivo = index;
       salvarESincronizar();
     });
     lista.appendChild(chip);
@@ -1999,12 +1782,12 @@ function renderizarOrdemIniciativa() {
    7. RENDERIZAÇÃO — STATUS DO GRUPO
    ========================================================================== */
 function renderizarStatusGrupo() {
-  const container = document.getElementById("conteudo-status-grupo");
+  const container = $("conteudo-status-grupo");
   if (!container) return;
   container.innerHTML = "";
 
-  partyHerois.forEach(heroi => {
-    const naIni    = listaDeIniciativa.find(c => c.idHeroi === heroi.id);
+  estado.partyHerois.forEach(heroi => {
+    const naIni    = estado.listaDeIniciativa.find(c => c.idHeroi === heroi.id);
     const hpAtual  = naIni ? naIni.hpAtual : heroi.hpMax;
     const valorIni = naIni ? naIni.valor    : "-";
     const pctHP    = heroi.hpMax > 0 ? (hpAtual / heroi.hpMax) * 100 : 0;
@@ -2153,14 +1936,14 @@ function renderizarStatusGrupo() {
    8. RENDERIZAÇÃO — COLETÂNEA DE MONSTROS
    ========================================================================== */
 function renderizarColetanea(filtro = "") {
-  const container = document.getElementById("conteudo-monstros");
+  const container = $("conteudo-monstros");
   if (!container) return;
   container.innerHTML = "";
 
   const termo = filtro.toLowerCase().trim();
 
   const listaCompleta = [
-    ...monstrosCustom,
+    ...estado.monstrosCustom,
     ...[...coletaneaMonstros].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"))
   ];
 
@@ -2232,234 +2015,17 @@ function renderizarColetanea(filtro = "") {
    ========================================================================== */
 function limparIniciativa() {
   if (!confirm("Deseja realmente limpar todo o combate?")) return;
-  listaDeIniciativa  = [];
-  turnoAtivo         = 0;
-  turnoAtual         = 1;
-  efeitosTemporarios = [];
+  estado.listaDeIniciativa  = [];
+  estado.turnoAtivo         = 0;
+  estado.turnoAtual         = 1;
+  estado.efeitosTemporarios = [];
   adicionarHistorico("🏳️ Combate encerrado!");
   salvarESincronizar();
 }
 
-function selecionarDado(lados) {
-  dadoSelecionado = lados;
-  document.querySelectorAll(".botoes-dados button").forEach(b => {
-    b.classList.toggle("selecionado", Number(b.dataset.dado) === lados);
-  });
-}
-
-function rolarDadoSelecionado() {
-  rolarDado(dadoSelecionado);
-}
-
-function rolarAcaoRapida(nomeAcao, emoji, modificador, tipoHistorico) {
-  const rolagem = Math.floor(Math.random() * 20) + 1;
-  const total   = rolagem + modificador;
-  document.querySelector("#resultado-dado .valor").textContent = total;
-
-  const formulaCurta = `1d20${modificador ? (modificador > 0 ? " + " + modificador : " - " + Math.abs(modificador)) : ""}`;
-  registrarUltimaRolagem(formulaCurta, total, nomeAcao);
-
-  const textoBase = `1d20: [${rolagem}] + ${modificador} = ${total}`;
-  if (rolagem === 20) adicionarHistorico(`${emoji} ${nomeAcao}: SUCESSO CRÍTICO! ${textoBase}`, "sucesso");
-  else if (rolagem === 1) adicionarHistorico(`${emoji} ${nomeAcao}: FALHA CRÍTICA! ${textoBase}`, "falha");
-  else adicionarHistorico(`${emoji} ${nomeAcao}: ${textoBase}`, tipoHistorico);
-}
-
-/* ==========================================================================
-   MODAL MODIFICADOR DE AÇÃO RÁPIDA
-   ========================================================================== */
-let _acaoRapidaCtx = null; // { nomeAcao, emoji, tipoHistorico }
-
-function abrirModalAcaoRapida(nomeAcao, emoji, tipoHistorico) {
-  _acaoRapidaCtx = { nomeAcao, emoji, tipoHistorico };
-  document.getElementById("modal-acao-rapida-titulo").textContent = `${emoji} ${nomeAcao}`;
-  document.getElementById("acao-rapida-modificador").value = "0";
-  document.getElementById("modal-acao-rapida").classList.remove("oculto");
-  document.getElementById("acao-rapida-modificador").focus();
-  document.getElementById("acao-rapida-modificador").select();
-}
-
-function fecharModalAcaoRapida() {
-  document.getElementById("modal-acao-rapida").classList.add("oculto");
-  _acaoRapidaCtx = null;
-}
-
-function confirmarAcaoRapida() {
-  if (!_acaoRapidaCtx) return;
-  const { nomeAcao, emoji, tipoHistorico } = _acaoRapidaCtx;
-  const modificador = parseInt(document.getElementById("acao-rapida-modificador").value) || 0;
-  rolarAcaoRapida(nomeAcao, emoji, modificador, tipoHistorico);
-  fecharModalAcaoRapida();
-}
-
-function abrirModalEvento() {
-  const sel = document.getElementById("evento-personagem");
-  sel.innerHTML = "";
-
-  const nomes = new Set();
-  partyHerois.forEach(h => nomes.add(h.nome));
-  listaDeIniciativa.forEach(c => nomes.add(c.nome));
-
-  if (nomes.size === 0) {
-    const opt = document.createElement("option");
-    opt.value = "";
-    opt.textContent = "Nenhum personagem disponível";
-    sel.appendChild(opt);
-  } else {
-    [...nomes].sort((a, b) => a.localeCompare(b, "pt-BR")).forEach(nome => {
-      const opt = document.createElement("option");
-      opt.value = nome;
-      opt.textContent = nome;
-      sel.appendChild(opt);
-    });
-  }
-
-  document.getElementById("evento-acao").value = "";
-  document.getElementById("evento-qtd").value = "1";
-  document.getElementById("evento-tipo").value = "20";
-  document.getElementById("evento-modificador").value = "0";
-
-  atualizarPreviaEvento();
-  document.getElementById("modal-evento").classList.remove("oculto");
-  document.getElementById("evento-acao").focus();
-}
-
-function fecharModalEvento() {
-  document.getElementById("modal-evento").classList.add("oculto");
-}
-
-function atualizarPreviaEvento(resultado = null) {
-  const personagem = document.getElementById("evento-personagem").value || "Alguém";
-  const acao       = document.getElementById("evento-acao").value.trim();
-  const previa     = document.getElementById("evento-previa");
-
-  let html = `<span class="previa-ataque">${personagem}${acao ? " " + acao : ""}</span>`;
-  if (resultado !== null) html += `<span class="previa-evento-resultado">${resultado}</span>`;
-  previa.innerHTML = html;
-}
-
-function rolarEvento() {
-  const qtd   = parseInt(document.getElementById("evento-qtd").value)         || 1;
-  const lados = parseInt(document.getElementById("evento-tipo").value)        || 20;
-  const mod   = parseInt(document.getElementById("evento-modificador").value) || 0;
-
-  let soma = 0;
-  const rolagens = [];
-  for (let i = 0; i < qtd; i++) {
-    const r = Math.floor(Math.random() * lados) + 1;
-    soma += r; rolagens.push(r);
-  }
-  const total = soma + mod;
-
-  atualizarPreviaEvento(total);
-
-  const personagem = document.getElementById("evento-personagem").value || "Alguém";
-  const acao       = document.getElementById("evento-acao").value.trim();
-  const sinal      = mod >= 0 ? "+" : "";
-  const formula    = `(${qtd}d${lados}: [${rolagens.join(", ")}] ${sinal}${mod})`;
-
-  const formulaCurta = `${qtd}d${lados}${mod ? (mod > 0 ? " + " + mod : " - " + Math.abs(mod)) : ""}`;
-  registrarUltimaRolagem(formulaCurta, total, `Evento: ${personagem}${acao ? " " + acao : ""}`);
-
-  adicionarHistorico(`📜 ${personagem}${acao ? " " + acao : ""} e rolou ${total} ${formula}`);
-}
-
-function rolarDado(lados) {
-  const modificador = parseInt(document.getElementById("modificador").value) || 0;
-  const quantidade  = parseInt(document.getElementById("quantidade").value)  || 1;
-  let somaDados = 0;
-  const rolagens = [];
-
-  for (let i = 0; i < quantidade; i++) {
-    const rolagem = Math.floor(Math.random() * lados) + 1;
-    somaDados += rolagem;
-    rolagens.push(rolagem);
-  }
-
-  const total     = somaDados + modificador;
-  const textoBase = `Rolou ${quantidade}d${lados}: [${rolagens.join(", ")}] + ${modificador} = ${total}`;
-  document.querySelector("#resultado-dado .valor").textContent = total;
-
-  const formulaCurta = `${quantidade}d${lados}${modificador ? (modificador > 0 ? " + " + modificador : " - " + Math.abs(modificador)) : ""}`;
-  registrarUltimaRolagem(formulaCurta, total);
-
-  if (lados === 20 && quantidade === 1) {
-    if (rolagens[0] === 20) adicionarHistorico(`⚔️ SUCESSO CRÍTICO! ${textoBase}`, "sucesso");
-    else if (rolagens[0] === 1) adicionarHistorico(`💀 FALHA CRÍTICA! ${textoBase}`, "falha");
-    else adicionarHistorico(textoBase);
-  } else {
-    adicionarHistorico(textoBase);
-  }
-}
-
-function registrarUltimaRolagem(formula, total, label = "") {
-  ultimasRolagens.unshift({ formula, total, hora: horaAgora(), label });
-  ultimasRolagens = ultimasRolagens.slice(0, 3);
-  localStorage.setItem("ultimasRolagensRPG", JSON.stringify(ultimasRolagens));
-  renderizarUltimasRolagens();
-}
-
-function renderizarUltimasRolagens() {
-  const lista = document.getElementById("lista-ultimas-rolagens");
-  if (!lista) return;
-  lista.innerHTML = "";
-
-  if (ultimasRolagens.length === 0) {
-    lista.innerHTML = `<p class="efeitos-vazio">Nenhuma rolagem ainda.</p>`;
-    return;
-  }
-
-  ultimasRolagens.forEach(r => {
-    const item = document.createElement("div");
-    item.className = "ultima-rolagem-item";
-    item.innerHTML = `
-      <span class="ultima-rolagem-formula">${r.label ? `${r.label} (${r.formula})` : r.formula}</span>
-      <span class="ultima-rolagem-total">Resultado: ${r.total}</span>
-      <span class="ultima-rolagem-hora">${r.hora || ""}</span>
-    `;
-    lista.appendChild(item);
-  });
-}
-
-function adicionarHistorico(texto, tipo = "") {
-  const historico = lerLocalStorageJSON("historicoRPG", []);
-  const hora = horaAgora();
-  historico.push({ texto, tipo, hora });
-  localStorage.setItem("historicoRPG", JSON.stringify(historico));
-  renderizarItemHistorico(texto, tipo, hora);
-}
-
-function renderizarItemHistorico(texto, tipo, hora) {
-  const log = document.getElementById("log-historico");
-  if (!log) return;
-  const item       = document.createElement("div");
-  item.className   = "log-item" + (tipo ? ` ${tipo}` : "");
-
-  const texto_el = document.createElement("span");
-  texto_el.className = "log-item-texto";
-  texto_el.textContent = texto;
-  item.appendChild(texto_el);
-
-  if (hora) {
-    const hora_el = document.createElement("span");
-    hora_el.className = "log-item-hora";
-    hora_el.textContent = hora;
-    item.appendChild(hora_el);
-  }
-
-  log.appendChild(item);
-  log.scrollTop = log.scrollHeight;
-}
-
-function limparHistorico() {
-  if (!confirm("Deseja realmente limpar o histórico da sessão?")) return;
-  localStorage.removeItem("historicoRPG");
-  document.getElementById("log-historico").innerHTML = "";
-}
-
 function atualizarBtnTema() {
   const isLight = document.body.classList.contains("tema-light");
-  const btn = document.getElementById("btn-tema");
+  const btn = $("btn-tema");
   if (btn) btn.textContent = isLight ? "🌙 Modo Dark" : "☀️ Modo Light";
 }
 
@@ -2467,9 +2033,9 @@ function atualizarBtnTema() {
    10. MODAIS
    ========================================================================== */
 function configurarModal(btnId, modalId, fecharId) {
-  const botao = document.getElementById(btnId);
-  const modal = document.getElementById(modalId);
-  const fechar = document.getElementById(fecharId);
+  const botao = $(btnId);
+  const modal = $(modalId);
+  const fechar = $(fecharId);
   botao.addEventListener("click",  () => modal.classList.remove("oculto"));
   fechar.addEventListener("click", () => modal.classList.add("oculto"));
   window.addEventListener("click", (e) => { if (e.target === modal) modal.classList.add("oculto"); });
@@ -2478,40 +2044,43 @@ function configurarModal(btnId, modalId, fecharId) {
 /* ==========================================================================
    CONFIGURAÇÕES
    ========================================================================== */
-let config = lerLocalStorageJSON("configRPG", {
+let config = lerLocalStorageJSON(CHAVES.config, {
   campanhaNome: "",
   mestreNome:   "",
   dadoAcerto:   20,
   etapaAcerto:  true,
   autoMorte:    true,
+  expiracaoCondicao: "rodada", // "rodada" = fim da rodada | "turno" = no turno do personagem
 });
 
 function abrirModalConfig() {
-  document.getElementById("config-campanha-nome").value  = config.campanhaNome;
-  document.getElementById("config-mestre-nome").value    = config.mestreNome;
-  document.getElementById("config-dado-acerto").value    = config.dadoAcerto;
-  document.getElementById("config-etapa-acerto").checked = config.etapaAcerto;
-  document.getElementById("config-auto-morte").checked   = config.autoMorte;
-  document.getElementById("modal-config").classList.remove("oculto");
+  $("config-campanha-nome").value      = config.campanhaNome;
+  $("config-mestre-nome").value        = config.mestreNome;
+  $("config-dado-acerto").value        = config.dadoAcerto;
+  $("config-expiracao-condicao").value = config.expiracaoCondicao;
+  $("config-etapa-acerto").checked     = config.etapaAcerto;
+  $("config-auto-morte").checked       = config.autoMorte;
+  $("modal-config").classList.remove("oculto");
 }
 
 function salvarConfig() {
-  config.campanhaNome = document.getElementById("config-campanha-nome").value.trim();
-  config.mestreNome   = document.getElementById("config-mestre-nome").value.trim();
-  config.dadoAcerto   = parseInt(document.getElementById("config-dado-acerto").value) || 20;
-  config.etapaAcerto  = document.getElementById("config-etapa-acerto").checked;
-  config.autoMorte    = document.getElementById("config-auto-morte").checked;
-  localStorage.setItem("configRPG", JSON.stringify(config));
+  config.campanhaNome      = $("config-campanha-nome").value.trim();
+  config.mestreNome        = $("config-mestre-nome").value.trim();
+  config.dadoAcerto        = parseInt($("config-dado-acerto").value) || 20;
+  config.expiracaoCondicao = $("config-expiracao-condicao").value === "turno" ? "turno" : "rodada";
+  config.etapaAcerto       = $("config-etapa-acerto").checked;
+  config.autoMorte         = $("config-auto-morte").checked;
+  localStorage.setItem(CHAVES.config, JSON.stringify(config));
   aplicarConfig();
-  document.getElementById("modal-config").classList.add("oculto");
+  $("modal-config").classList.add("oculto");
 }
 
 function aplicarConfig() {
-  const spanCampanha = document.getElementById("header-campanha");
+  const spanCampanha = $("header-campanha");
   if (spanCampanha) spanCampanha.textContent = config.campanhaNome || "";
-  const spanMestre = document.getElementById("header-mestre");
+  const spanMestre = $("header-mestre");
   if (spanMestre) spanMestre.textContent = config.mestreNome ? `Mestre: ${config.mestreNome}` : "";
-  const selAcerto = document.getElementById("acerto-tipo");
+  const selAcerto = $("acerto-tipo");
   if (selAcerto) selAcerto.value = config.dadoAcerto;
 }
 
@@ -2521,10 +2090,15 @@ function exportarSessao() {
     data: new Date().toLocaleString("pt-BR"),
     campanha: config.campanhaNome,
     mestre: config.mestreNome,
-    config, listaDeIniciativa, partyHerois, monstrosCustom,
-    efeitosTemporarios, turnoAtual, turnoAtivo,
-    historico: lerLocalStorageJSON("historicoRPG", []),
-    anotacoes: localStorage.getItem("anotacoesRPG") || "",
+    config,
+    listaDeIniciativa:  estado.listaDeIniciativa,
+    partyHerois:        estado.partyHerois,
+    monstrosCustom:     estado.monstrosCustom,
+    efeitosTemporarios: estado.efeitosTemporarios,
+    turnoAtual:         estado.turnoAtual,
+    turnoAtivo:         estado.turnoAtivo,
+    historico: lerLocalStorageJSON(CHAVES.historico, []),
+    anotacoes: localStorage.getItem(CHAVES.anotacoes) || "",
   };
   const blob = new Blob([JSON.stringify(dados, null, 2)], { type: "application/json" });
   const url  = URL.createObjectURL(blob);
@@ -2544,24 +2118,24 @@ function importarSessao(file) {
     try {
       const dados = JSON.parse(e.target.result);
       if (!confirm(`Importar sessão "${dados.campanha || "sem nome"}" de ${dados.data}?\nIsso substituirá os dados atuais.`)) return;
-      listaDeIniciativa  = dados.listaDeIniciativa  || [];
-      partyHerois        = dados.partyHerois        || [];
-      monstrosCustom     = dados.monstrosCustom     || [];
-      efeitosTemporarios = dados.efeitosTemporarios || [];
-      turnoAtual         = dados.turnoAtual         || dados.rodadaAtual || 1;
-      turnoAtivo         = dados.turnoAtivo         || 0;
+      estado.listaDeIniciativa  = dados.listaDeIniciativa  || [];
+      estado.partyHerois        = dados.partyHerois        || [];
+      estado.monstrosCustom     = dados.monstrosCustom     || [];
+      estado.efeitosTemporarios = dados.efeitosTemporarios || [];
+      estado.turnoAtual         = dados.turnoAtual         || dados.rodadaAtual || 1;
+      estado.turnoAtivo         = dados.turnoAtivo         || 0;
       config             = dados.config             || config;
-      localStorage.setItem("historicoRPG", JSON.stringify(dados.historico || []));
-      localStorage.setItem("anotacoesRPG", dados.anotacoes || "");
-      localStorage.setItem("configRPG",    JSON.stringify(config));
-      const area = document.getElementById("campo-anotacoes");
+      localStorage.setItem(CHAVES.historico, JSON.stringify(dados.historico || []));
+      localStorage.setItem(CHAVES.anotacoes, dados.anotacoes || "");
+      localStorage.setItem(CHAVES.config,    JSON.stringify(config));
+      const area = $("campo-anotacoes");
       if (area) area.value = dados.anotacoes || "";
-      document.getElementById("log-historico").innerHTML = "";
+      $("log-historico").innerHTML = "";
       (dados.historico || []).forEach(h => renderizarItemHistorico(h.texto, h.tipo, h.hora));
       aplicarConfig();
       salvarESincronizar();
       renderizarColetanea();
-      document.getElementById("modal-config").classList.add("oculto");
+      $("modal-config").classList.add("oculto");
       alert("Sessão importada com sucesso!");
     } catch {
       alert("Arquivo inválido.");
@@ -2583,7 +2157,7 @@ function limparTodosDados() {
 window.onload = () => {
   renderizarColetanea();
 
-  const inputBusca = document.getElementById("busca-monstros");
+  const inputBusca = $("busca-monstros");
   if (inputBusca) inputBusca.addEventListener("input", () => renderizarColetanea(inputBusca.value));
 
   configurarModal("btn-sobre", "modal-sobre", "fechar-sobre");
@@ -2604,118 +2178,104 @@ window.onload = () => {
     });
   });
 
-  const btnNovoHeroiStatus = document.getElementById("btn-novo-heroi-status");
+  const btnNovoHeroiStatus = $("btn-novo-heroi-status");
   if (btnNovoHeroiStatus) btnNovoHeroiStatus.addEventListener("click", () => abrirModalHeroi());
 
-  document.getElementById("btn-config").addEventListener("click", abrirModalConfig);
-  document.getElementById("fechar-config").addEventListener("click", () => document.getElementById("modal-config").classList.add("oculto"));
-  window.addEventListener("click", (e) => { if (e.target === document.getElementById("modal-config")) document.getElementById("modal-config").classList.add("oculto"); });
-  document.getElementById("btn-salvar-config").addEventListener("click", salvarConfig);
-  document.getElementById("btn-exportar-sessao").addEventListener("click", exportarSessao);
-  document.getElementById("btn-limpar-tudo").addEventListener("click", limparTodosDados);
-  const fileImportar = document.getElementById("input-importar-sessao");
+  $("btn-config").addEventListener("click", abrirModalConfig);
+  $("fechar-config").addEventListener("click", () => $("modal-config").classList.add("oculto"));
+  window.addEventListener("click", (e) => { if (e.target === $("modal-config")) $("modal-config").classList.add("oculto"); });
+  $("btn-salvar-config").addEventListener("click", salvarConfig);
+  $("btn-exportar-sessao").addEventListener("click", exportarSessao);
+  $("btn-limpar-tudo").addEventListener("click", limparTodosDados);
+  const fileImportar = $("input-importar-sessao");
   if (fileImportar) fileImportar.addEventListener("change", (e) => importarSessao(e.target.files[0]));
 
-  document.getElementById("fechar-iniciativa").addEventListener("click", fecharModalIniciativa);
-  document.getElementById("btn-rolar-ini").addEventListener("click", rolarIniciativaModal);
-  document.getElementById("btn-confirmar-ini").addEventListener("click", confirmarIniciativaModal);
-  window.addEventListener("click", (e) => { if (e.target === document.getElementById("modal-iniciativa")) fecharModalIniciativa(); });
-  document.getElementById("modal-iniciativa").addEventListener("keydown", (e) => { if (e.key === "Enter") confirmarIniciativaModal(); });
+  $("fechar-iniciativa").addEventListener("click", fecharModalIniciativa);
+  $("btn-rolar-ini").addEventListener("click", rolarIniciativaModal);
+  $("btn-confirmar-ini").addEventListener("click", confirmarIniciativaModal);
+  window.addEventListener("click", (e) => { if (e.target === $("modal-iniciativa")) fecharModalIniciativa(); });
+  $("modal-iniciativa").addEventListener("keydown", (e) => { if (e.key === "Enter") confirmarIniciativaModal(); });
 
-  document.getElementById("fechar-heroi").addEventListener("click", fecharModalHeroi);
-  document.getElementById("btn-confirmar-heroi").addEventListener("click", confirmarNovoHeroi);
-  window.addEventListener("click", (e) => { if (e.target === document.getElementById("modal-heroi")) fecharModalHeroi(); });
-  document.getElementById("modal-heroi").addEventListener("keydown", (e) => { if (e.key === "Enter") confirmarNovoHeroi(); });
+  $("fechar-heroi").addEventListener("click", fecharModalHeroi);
+  $("btn-confirmar-heroi").addEventListener("click", confirmarNovoHeroi);
+  window.addEventListener("click", (e) => { if (e.target === $("modal-heroi")) fecharModalHeroi(); });
+  $("modal-heroi").addEventListener("keydown", (e) => { if (e.key === "Enter") confirmarNovoHeroi(); });
 
-  document.getElementById("btn-escolher-imagem-heroi").addEventListener("click", abrirModalEscolherImagem);
-  document.getElementById("fechar-escolher-imagem").addEventListener("click", fecharModalEscolherImagem);
-  window.addEventListener("click", (e) => { if (e.target === document.getElementById("modal-escolher-imagem")) fecharModalEscolherImagem(); });
+  $("btn-escolher-imagem-heroi").addEventListener("click", abrirModalEscolherImagem);
+  $("fechar-escolher-imagem").addEventListener("click", fecharModalEscolherImagem);
+  window.addEventListener("click", (e) => { if (e.target === $("modal-escolher-imagem")) fecharModalEscolherImagem(); });
 
-  document.getElementById("fechar-exp-heroi").addEventListener("click", fecharModalExpHeroi);
-  document.getElementById("btn-confirmar-exp-heroi").addEventListener("click", confirmarExpHeroi);
-  window.addEventListener("click", (e) => { if (e.target === document.getElementById("modal-exp-heroi")) fecharModalExpHeroi(); });
-  document.getElementById("modal-exp-heroi").addEventListener("keydown", (e) => { if (e.key === "Enter") confirmarExpHeroi(); });
+  $("fechar-exp-heroi").addEventListener("click", fecharModalExpHeroi);
+  $("btn-confirmar-exp-heroi").addEventListener("click", confirmarExpHeroi);
+  window.addEventListener("click", (e) => { if (e.target === $("modal-exp-heroi")) fecharModalExpHeroi(); });
+  $("modal-exp-heroi").addEventListener("keydown", (e) => { if (e.key === "Enter") confirmarExpHeroi(); });
 
-  document.getElementById("btn-abrir-monstros").addEventListener("click", abrirModalMonstrosLista);
-  document.getElementById("fechar-monstros-lista").addEventListener("click", fecharModalMonstrosLista);
+  $("btn-abrir-monstros").addEventListener("click", abrirModalMonstrosLista);
+  $("fechar-monstros-lista").addEventListener("click", fecharModalMonstrosLista);
   window.addEventListener("click", (e) => {
-    const modal = document.getElementById("modal-monstros-lista");
+    const modal = $("modal-monstros-lista");
     if (e.target === modal) fecharModalMonstrosLista();
   });
 
-  document.getElementById("btn-novo-monstro").addEventListener("click", abrirModalMonstro);
-  document.getElementById("fechar-monstro").addEventListener("click", fecharModalMonstro);
-  document.getElementById("btn-confirmar-monstro").addEventListener("click", confirmarNovoMonstro);
-  window.addEventListener("click", (e) => { if (e.target === document.getElementById("modal-monstro")) fecharModalMonstro(); });
-  document.getElementById("modal-monstro").addEventListener("keydown", (e) => { if (e.key === "Enter") confirmarNovoMonstro(); });
+  $("btn-novo-monstro").addEventListener("click", abrirModalMonstro);
+  $("fechar-monstro").addEventListener("click", fecharModalMonstro);
+  $("btn-confirmar-monstro").addEventListener("click", confirmarNovoMonstro);
+  window.addEventListener("click", (e) => { if (e.target === $("modal-monstro")) fecharModalMonstro(); });
+  $("modal-monstro").addEventListener("keydown", (e) => { if (e.key === "Enter") confirmarNovoMonstro(); });
 
-  document.getElementById("fechar-dano-cura").addEventListener("click", fecharModalDanoCura);
-  document.getElementById("btn-confirmar-dano").addEventListener("click", confirmarDanoCura);
-  document.getElementById("btn-morto-modal").addEventListener("click", mortoViaModal);
-  document.getElementById("btn-rolar-dano-modal").addEventListener("click", rolarDadoModal);
-  document.getElementById("modal-dano-manual").addEventListener("input", atualizarPrevia);
-  document.getElementById("modal-dano-atacante").addEventListener("change", atualizarPrevia);
-  document.getElementById("modal-dano-alvos-lista").addEventListener("change", atualizarPrevia);
-  document.getElementById("btn-dano-alvo-todos").addEventListener("click", () => { selecionarTodosAlvos("modal-dano-alvos-lista", true); atualizarPrevia(); });
-  document.getElementById("btn-dano-alvo-nenhum").addEventListener("click", () => { selecionarTodosAlvos("modal-dano-alvos-lista", false); atualizarPrevia(); });
-  window.addEventListener("click", (e) => { if (e.target === document.getElementById("modal-dano-cura")) fecharModalDanoCura(); });
-  document.getElementById("modal-dano-cura").addEventListener("keydown", (e) => { if (e.key === "Enter") confirmarDanoCura(); });
+  $("fechar-dano-cura").addEventListener("click", fecharModalDanoCura);
+  $("btn-confirmar-dano").addEventListener("click", confirmarDanoCura);
+  $("btn-morto-modal").addEventListener("click", mortoViaModal);
+  $("btn-rolar-dano-modal").addEventListener("click", rolarDadoModal);
+  $("modal-dano-manual").addEventListener("input", atualizarPrevia);
+  $("modal-dano-atacante").addEventListener("change", atualizarPrevia);
+  $("modal-dano-alvos-lista").addEventListener("change", atualizarPrevia);
+  $("btn-dano-alvo-todos").addEventListener("click", () => { selecionarTodosAlvos("modal-dano-alvos-lista", true); atualizarPrevia(); });
+  $("btn-dano-alvo-nenhum").addEventListener("click", () => { selecionarTodosAlvos("modal-dano-alvos-lista", false); atualizarPrevia(); });
+  window.addEventListener("click", (e) => { if (e.target === $("modal-dano-cura")) fecharModalDanoCura(); });
+  $("modal-dano-cura").addEventListener("keydown", (e) => { if (e.key === "Enter") confirmarDanoCura(); });
 
-  document.getElementById("btn-abrir-area").addEventListener("click", abrirModalArea);
-  document.getElementById("fechar-area").addEventListener("click", fecharModalArea);
-  document.getElementById("btn-rolar-area").addEventListener("click", rolarDadoArea);
-  document.getElementById("btn-confirmar-area").addEventListener("click", confirmarDanoArea);
-  document.getElementById("btn-area-todos").addEventListener("click", () => selecionarTodosAlvos("area-alvos-lista", true));
-  document.getElementById("btn-area-nenhum").addEventListener("click", () => selecionarTodosAlvos("area-alvos-lista", false));
-  window.addEventListener("click", (e) => { if (e.target === document.getElementById("modal-area")) fecharModalArea(); });
+  $("btn-abrir-area").addEventListener("click", abrirModalArea);
+  $("fechar-area").addEventListener("click", fecharModalArea);
+  $("btn-rolar-area").addEventListener("click", rolarDadoArea);
+  $("btn-confirmar-area").addEventListener("click", confirmarDanoArea);
+  $("btn-area-todos").addEventListener("click", () => selecionarTodosAlvos("area-alvos-lista", true));
+  $("btn-area-nenhum").addEventListener("click", () => selecionarTodosAlvos("area-alvos-lista", false));
+  window.addEventListener("click", (e) => { if (e.target === $("modal-area")) fecharModalArea(); });
 
-  document.getElementById("btn-abrir-cura-area").addEventListener("click", abrirModalCuraArea);
-  document.getElementById("fechar-cura-area").addEventListener("click", fecharModalCuraArea);
-  document.getElementById("btn-rolar-cura-area").addEventListener("click", rolarDadoCuraArea);
-  document.getElementById("btn-confirmar-cura-area").addEventListener("click", confirmarCuraArea);
-  document.getElementById("btn-cura-area-todos").addEventListener("click", () => selecionarTodosAlvos("cura-area-alvos-lista", true));
-  document.getElementById("btn-cura-area-nenhum").addEventListener("click", () => selecionarTodosAlvos("cura-area-alvos-lista", false));
-  window.addEventListener("click", (e) => { if (e.target === document.getElementById("modal-cura-area")) fecharModalCuraArea(); });
+  $("btn-abrir-cura-area").addEventListener("click", abrirModalCuraArea);
+  $("fechar-cura-area").addEventListener("click", fecharModalCuraArea);
+  $("btn-rolar-cura-area").addEventListener("click", rolarDadoCuraArea);
+  $("btn-confirmar-cura-area").addEventListener("click", confirmarCuraArea);
+  $("btn-cura-area-todos").addEventListener("click", () => selecionarTodosAlvos("cura-area-alvos-lista", true));
+  $("btn-cura-area-nenhum").addEventListener("click", () => selecionarTodosAlvos("cura-area-alvos-lista", false));
+  window.addEventListener("click", (e) => { if (e.target === $("modal-cura-area")) fecharModalCuraArea(); });
 
-  document.getElementById("fechar-condicao-duracao").addEventListener("click", fecharModalCondicaoDuracao);
-  document.getElementById("btn-confirmar-condicao").addEventListener("click", confirmarCondicao);
-  window.addEventListener("click", (e) => { if (e.target === document.getElementById("modal-condicao-duracao")) fecharModalCondicaoDuracao(); });
-  document.getElementById("modal-condicao-duracao").addEventListener("keydown", (e) => { if (e.key === "Enter") confirmarCondicao(); });
+  $("fechar-condicao-duracao").addEventListener("click", fecharModalCondicaoDuracao);
+  $("btn-confirmar-condicao").addEventListener("click", confirmarCondicao);
+  window.addEventListener("click", (e) => { if (e.target === $("modal-condicao-duracao")) fecharModalCondicaoDuracao(); });
+  $("modal-condicao-duracao").addEventListener("keydown", (e) => { if (e.key === "Enter") confirmarCondicao(); });
 
-  document.getElementById("fechar-acerto").addEventListener("click", fecharModalAcerto);
-  document.getElementById("btn-rolar-acerto").addEventListener("click", rolarAcerto);
-  document.getElementById("btn-acerto-aplicar-dano").addEventListener("click", irParaDano);
-  document.getElementById("btn-acerto-pular").addEventListener("click", irParaDano);
-  document.getElementById("btn-acerto-alvo-todos").addEventListener("click", () => selecionarTodosAlvos("acerto-alvos-lista", true));
-  document.getElementById("btn-acerto-alvo-nenhum").addEventListener("click", () => selecionarTodosAlvos("acerto-alvos-lista", false));
-  window.addEventListener("click", (e) => { if (e.target === document.getElementById("modal-acerto")) fecharModalAcerto(); });
+  $("fechar-acerto").addEventListener("click", fecharModalAcerto);
+  $("btn-rolar-acerto").addEventListener("click", rolarAcerto);
+  $("btn-acerto-aplicar-dano").addEventListener("click", irParaDano);
+  $("btn-acerto-pular").addEventListener("click", irParaDano);
+  $("btn-acerto-alvo-todos").addEventListener("click", () => selecionarTodosAlvos("acerto-alvos-lista", true));
+  $("btn-acerto-alvo-nenhum").addEventListener("click", () => selecionarTodosAlvos("acerto-alvos-lista", false));
+  window.addEventListener("click", (e) => { if (e.target === $("modal-acerto")) fecharModalAcerto(); });
 
-  document.getElementById("btn-turno-anterior").addEventListener("click", turnoAnterior);
-  document.getElementById("btn-proximo-turno").addEventListener("click", proximoTurno);
+  $("btn-turno-anterior").addEventListener("click", turnoAnterior);
+  $("btn-proximo-turno").addEventListener("click", proximoTurno);
 
-  document.getElementById("btn-rolar-dado").addEventListener("click", rolarDadoSelecionado);
-  selecionarDado(dadoSelecionado);
-  renderizarUltimasRolagens();
+  $("btn-encerrar-combate").addEventListener("click", limparIniciativa);
+  $("btn-limpar-historico").addEventListener("click", limparHistorico);
 
-  document.getElementById("btn-rapido-iniciativa").addEventListener("click", () => abrirModalAcaoRapida("Iniciativa", "🎲", "acao-iniciativa"));
-  document.getElementById("btn-rapido-pericia").addEventListener("click", () => abrirModalAcaoRapida("Teste de Perícia", "🎯", "acao-pericia"));
-  document.getElementById("btn-rapido-resistencia").addEventListener("click", () => abrirModalAcaoRapida("Teste de Resistência", "🛡️", "acao-resistencia"));
-  document.getElementById("fechar-acao-rapida").addEventListener("click", fecharModalAcaoRapida);
-  document.getElementById("btn-confirmar-acao-rapida").addEventListener("click", confirmarAcaoRapida);
-  window.addEventListener("click", (e) => { if (e.target === document.getElementById("modal-acao-rapida")) fecharModalAcaoRapida(); });
-  document.getElementById("modal-acao-rapida").addEventListener("keydown", (e) => { if (e.key === "Enter") confirmarAcaoRapida(); });
-
-  document.getElementById("btn-rapido-evento").addEventListener("click", abrirModalEvento);
-  document.getElementById("fechar-evento").addEventListener("click", fecharModalEvento);
-  document.getElementById("btn-rolar-evento").addEventListener("click", rolarEvento);
-  document.getElementById("evento-personagem").addEventListener("change", () => atualizarPreviaEvento());
-  document.getElementById("evento-acao").addEventListener("input", () => atualizarPreviaEvento());
-  window.addEventListener("click", (e) => { if (e.target === document.getElementById("modal-evento")) fecharModalEvento(); });
+  initDados();
 
   // Botões de ação do painel de turno
-  const btnTurnoAtaque = document.getElementById("btn-turno-ataque");
-  const btnTurnoCondicao = document.getElementById("btn-turno-condicao");
-  const btnTurnoCura = document.getElementById("btn-turno-cura");
+  const btnTurnoAtaque = $("btn-turno-ataque");
+  const btnTurnoCondicao = $("btn-turno-condicao");
+  const btnTurnoCura = $("btn-turno-cura");
 
   if (btnTurnoAtaque) btnTurnoAtaque.addEventListener("click", abrirTurnoAcaoAtaque);
   if (btnTurnoCondicao) btnTurnoCondicao.addEventListener("click", abrirTurnoAcaoCondicao);
@@ -2726,22 +2286,22 @@ window.onload = () => {
   atualizarPainelTurno();
   aplicarConfig();
 
-  const historicoSalvo = lerLocalStorageJSON("historicoRPG", []);
+  const historicoSalvo = lerLocalStorageJSON(CHAVES.historico, []);
   historicoSalvo.forEach(e => renderizarItemHistorico(e.texto, e.tipo, e.hora));
 
-  const areaAnotacoes = document.getElementById("campo-anotacoes");
+  const areaAnotacoes = $("campo-anotacoes");
   if (areaAnotacoes) {
-    areaAnotacoes.value = localStorage.getItem("anotacoesRPG") || "";
-    areaAnotacoes.addEventListener("input", () => localStorage.setItem("anotacoesRPG", areaAnotacoes.value));
+    areaAnotacoes.value = localStorage.getItem(CHAVES.anotacoes) || "";
+    areaAnotacoes.addEventListener("input", () => localStorage.setItem(CHAVES.anotacoes, areaAnotacoes.value));
   }
 
-  const temaAtual = localStorage.getItem("temaRPG") || "dark";
+  const temaAtual = localStorage.getItem(CHAVES.tema) || "dark";
   if (temaAtual === "light") document.body.classList.add("tema-light");
   atualizarBtnTema();
-  document.getElementById("btn-tema").addEventListener("click", () => {
+  $("btn-tema").addEventListener("click", () => {
     document.body.classList.toggle("tema-light");
     const novoTema = document.body.classList.contains("tema-light") ? "light" : "dark";
-    localStorage.setItem("temaRPG", novoTema);
+    localStorage.setItem(CHAVES.tema, novoTema);
     atualizarBtnTema();
   });
 };

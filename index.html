@@ -15,8 +15,8 @@
   <header class="cabecalho-topo">
     <div class="logo">
       <h1>
-        <img src="img/ico_cabecalho.png" alt="Logo do RPG Companion" class="logo-icone">
-        Master Shield RPG
+        <img src="img/ico_cabecalho.png" alt="" class="logo-icone">
+        <img src="img/ico_cabecalho2.png" alt="Master Shield RPG" class="logo-wordmark">
       </h1>
     </div>
 
@@ -64,10 +64,10 @@
         <p>Em <strong>Ações Rápidas</strong>, os botões "Rolar Iniciativa", "Teste de Perícia" e "Teste de Resistência" abrem uma janela pedindo o modificador e rolam um d20, já lançando o resultado colorido no histórico. O botão "Evento" abre um rolador dedicado a testes de personagens específicos.</p>
 
         <h3>⚔️ Combate</h3>
-        <p>Use "Adicionar Monstro" para buscar na coletânea ou criar um monstro customizado — ao adicionar, é pedida a iniciativa dele. Cada combatente vira um card com CA, HP e condições ativas, exibidos em ordem de iniciativa. A faixa "Ordem da Iniciativa" permite pular direto para o turno de qualquer combatente. "Encerrar Combate" limpa a lista e reinicia o contador de turno.</p>
+        <p>Use "Adicionar Monstro" para buscar na coletânea ou criar um monstro customizado — ao adicionar, é pedida a iniciativa dele. Cada combatente vira um card com CA, HP e condições ativas, exibidos em ordem de iniciativa. A faixa "Ordem da Iniciativa" permite pular direto para o turno de qualquer combatente. "Encerrar Combate" limpa a lista e reinicia o contador de rodada.</p>
 
         <h3>🧭 Controle de Turno</h3>
-        <p>"Voltar Turno" e "Finalizar Turno" avançam a iniciativa entre os combatentes vivos; ao completar uma volta, o contador "TURNO" no topo avança e as condições/efeitos temporários são decrementados automaticamente.</p>
+        <p>"Voltar Turno" e "Finalizar Turno" avançam a iniciativa entre os combatentes vivos; ao completar uma volta, o contador "RODADA" no topo avança e as condições/efeitos temporários são decrementados automaticamente.</p>
         <p>O card do combatente ativo tem botões de <strong>Ataque</strong>, <strong>Cura</strong> e <strong>Condição</strong>, além do ícone de caveira para marcar como morto/nocauteado. Condições ativas de duração limitada expiram sozinhas e avisam no histórico quando estão prestes a acabar.</p>
         <p>"Dano em Área" e "Cura em Área" aplicam valor a vários alvos de uma vez — dá para digitar o nome da magia/habilidade usada (ex: "Bola de Fogo") para ela aparecer no histórico no lugar do texto genérico.</p>
 
@@ -115,6 +115,12 @@
             <option value="12">d12</option>
             <option value="20" selected>d20</option>
             <option value="100">d100</option>
+          </select>
+
+          <label for="config-expiracao-condicao">Condição se encerra</label>
+          <select id="config-expiracao-condicao" class="modal-dano-select">
+            <option value="rodada" selected>Ao fim da rodada</option>
+            <option value="turno">No turno do personagem</option>
           </select>
 
           <div class="config-toggle-row">
@@ -636,7 +642,7 @@
         <div class="painel-combate-turno">
           <div class="turno-iniciativa-caixa">
             <div class="turno-bloco">
-              <span class="turno-label">TURNO</span>
+              <span class="turno-label">RODADA</span>
               <span id="combate-turno-num" class="turno-num">1</span>
             </div>
             <div class="ordem-iniciativa-wrap">
@@ -645,7 +651,7 @@
             </div>
           </div>
         </div>
-        <button class="btn-encerrar-combate" onclick="limparIniciativa()">🏳️ Encerrar Combate</button>
+        <button id="btn-encerrar-combate" class="btn-encerrar-combate">🏳️ Encerrar Combate</button>
       </div>
       <div id="lista-iniciativa-conteudo"></div>
     </section>
@@ -659,13 +665,13 @@
       <div class="tab-panel tab-panel--active" id="tab-dados">
         <div class="tab-dados-scroll">
           <div class="botoes-dados">
-            <button onclick="selecionarDado(4)" data-dado="4" title="Selecionar d4"><img src="img/d4.png" alt="d4"></button>
-            <button onclick="selecionarDado(6)" data-dado="6" title="Selecionar d6"><img src="img/d6.png" alt="d6"></button>
-            <button onclick="selecionarDado(8)" data-dado="8" title="Selecionar d8"><img src="img/d8.png" alt="d8"></button>
-            <button onclick="selecionarDado(10)" data-dado="10" title="Selecionar d10"><img src="img/d10.png" alt="d10"></button>
-            <button onclick="selecionarDado(12)" data-dado="12" title="Selecionar d12"><img src="img/d12.png" alt="d12"></button>
-            <button onclick="selecionarDado(20)" data-dado="20" title="Selecionar d20"><img src="img/d20.png" alt="d20"></button>
-            <button onclick="selecionarDado(100)" data-dado="100" title="Selecionar d100"><img src="img/d100.png" alt="d100"></button>
+            <button data-dado="4" title="Selecionar d4"><img src="img/d4.png" alt="d4"></button>
+            <button data-dado="6" title="Selecionar d6"><img src="img/d6.png" alt="d6"></button>
+            <button data-dado="8" title="Selecionar d8"><img src="img/d8.png" alt="d8"></button>
+            <button data-dado="10" title="Selecionar d10"><img src="img/d10.png" alt="d10"></button>
+            <button data-dado="12" title="Selecionar d12"><img src="img/d12.png" alt="d12"></button>
+            <button data-dado="20" title="Selecionar d20"><img src="img/d20.png" alt="d20"></button>
+            <button data-dado="100" title="Selecionar d100"><img src="img/d100.png" alt="d100"></button>
           </div>
           <div class="controle-modificador">
             <label for="quantidade">Quantidade:</label>
@@ -733,7 +739,7 @@
     <section class="painel historico">
       <div class="painel-cabecalho">
         <h2>Histórico da Sessão</h2>
-        <button class="btn-limpar-combate" onclick="limparHistorico()">Limpar Histórico</button>
+        <button id="btn-limpar-historico" class="btn-limpar-combate">Limpar Histórico</button>
       </div>
       <div id="log-historico"></div>
     </section>
@@ -748,8 +754,7 @@
 
   </main>
 
-  <script src="js/monstros.js"></script>
-  <script src="js/script.js"></script>
+  <script type="module" src="js/script.js"></script>
 
 </body>
 </html>
