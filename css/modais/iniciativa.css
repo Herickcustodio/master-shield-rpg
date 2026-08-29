@@ -316,11 +316,13 @@
   line-height: 1.15;
 }
 
-/* Foto do usuário (data URL): preenche o quadro, sem padding e sem inversão no tema claro */
+/* Foto do usuário (data URL): preenche o quadro, cantos arredondados, sem padding
+   e sem inversão no tema claro */
 .heroi-imagem-preview img.foto,
 .imagem-heroi-btn img.foto {
   object-fit: cover;
   padding: 0;
+  border-radius: inherit;
 }
 
 body.tema-light .heroi-imagem-preview img.foto,
