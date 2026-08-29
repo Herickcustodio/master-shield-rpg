@@ -450,12 +450,15 @@ export function renderizarColetanea(filtro = "") {
     const item = document.createElement("div");
     item.className = "item-monstro" + (monstro.custom ? " item-monstro-custom" : "");
 
-    // ── Miniatura (só quando o monstro custom tem imagem)
+    // ── Linha de cima: miniatura (opcional) + info
+    const topo = document.createElement("div");
+    topo.className = "item-monstro-topo";
+
     if (monstro.imagem) {
       const av = document.createElement("div");
       av.className = "item-monstro-avatar";
       preencherAvatar(av, monstro.nome, monstro.imagem);
-      item.appendChild(av);
+      topo.appendChild(av);
     }
 
     // ── Info: nome + stats em badges
@@ -487,6 +490,7 @@ export function renderizarColetanea(filtro = "") {
 
     info.appendChild(nomeLinha);
     info.appendChild(stats);
+    topo.appendChild(info);
 
     // ── Ações: adicionar + deletar (custom)
     const acoes = document.createElement("div");
@@ -507,7 +511,7 @@ export function renderizarColetanea(filtro = "") {
       acoes.appendChild(btnDel);
     }
 
-    item.appendChild(info);
+    item.appendChild(topo);
     item.appendChild(acoes);
     container.appendChild(item);
   });

@@ -73,9 +73,8 @@
 
 .item-monstro {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  gap: 6px;
   padding: 8px 10px;
   border-radius: 6px;
   margin-bottom: 4px;
@@ -83,6 +82,13 @@
   border: 1px solid var(--border-light);
   border-left: 3px solid var(--border-default);
   transition: border-color 0.15s, background 0.15s;
+}
+
+/* Linha de cima: miniatura (opcional) + nome/stats */
+.item-monstro-topo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .item-monstro:hover {
@@ -169,10 +175,10 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  flex-shrink: 0;
 }
 
 .btn-add-monstro {
+  flex: 1;
   padding: 5px 10px;
   background: #064D9F;
   color: white;
