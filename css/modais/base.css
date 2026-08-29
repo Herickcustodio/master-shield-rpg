@@ -1,0 +1,196 @@
+/* ==========================================================================
+   12. MODAL
+   ========================================================================== */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+#modal-monstros-lista {
+  z-index: 1001;
+}
+
+#modal-monstro {
+  z-index: 1050;
+}
+
+#modal-iniciativa {
+  z-index: 1100;
+}
+
+.oculto {
+  display: none;
+}
+
+.modal-conteudo {
+  background: var(--bg-modal);
+  color: var(--text-primary);
+  padding: 25px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  max-height: 85vh;
+  overflow: hidden;
+}
+
+.modal-monstros-conteudo {
+  width: min(92vw, 620px);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-monstros-header {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  position: sticky;
+  top: 0;
+  background: var(--bg-modal);
+  z-index: 1;
+  padding-top: 2px;
+}
+
+.modal-monstros-lista {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 8px;
+  overflow-y: auto;
+  max-height: 58vh;
+  min-height: 0;
+  padding-right: 4px;
+  align-items: stretch;
+}
+
+.item-monstro {
+  min-height: 90px;
+}
+
+.fechar-modal {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+.fechar-modal:hover {
+  color: var(--text-primary);
+}
+
+.exp-heroi-nivel {
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.exp-heroi-atual {
+  font-size: 14px;
+  font-weight: bold;
+  color: #af01e4;
+  text-align: center;
+}
+
+.exp-heroi-barra-wrap {
+  height: 8px;
+  background: var(--bg-card2);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.exp-heroi-barra-fill {
+  height: 100%;
+  background: #af01e4;
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+#modal-heroi .form-heroi {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.campo-heroi {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.campo-heroi-linha {
+  display: flex;
+  gap: 10px;
+}
+
+.campo-heroi--cores {
+  align-items: center;
+}
+
+.form-heroi label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.form-heroi input {
+  padding: 8px 10px;
+  background: var(--bg-card2);
+  color: var(--text-primary);
+  border: 1px solid var(--border-input);
+  border-radius: 4px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-heroi input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.evento-acao-textarea {
+  padding: 8px 10px;
+  background: var(--bg-card2);
+  color: var(--text-primary);
+  border: 1px solid var(--border-input);
+  border-radius: 4px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.evento-acao-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.btn-confirmar {
+  margin-top: 8px;
+  padding: 10px;
+  background: #064D9F;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-confirmar:hover {
+  background: #0a65cc;
+}

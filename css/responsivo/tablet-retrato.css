@@ -1,0 +1,66 @@
+/* ==========================================================================
+   21. RESPONSIVIDADE — TABLET RETRATO (largura até 900px)
+   Empilha os painéis em coluna única, com rolagem de página habilitada.
+   ========================================================================== */
+@media (max-width: 900px) {
+  html, body {
+    height: auto;
+    overflow: auto;
+  }
+
+  .dashboard {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100vh - 55px);
+    padding: 6px;
+    gap: 8px;
+  }
+
+  .painel {
+    width: 100%;
+  }
+
+  /* Ordem dos painéis empilhados: Histórico vai para o final, depois de
+     Grupo e Combatentes. */
+  .iniciativa      { order: 1; }
+  .painel-tabs     { order: 2; }
+  .painel.turno    { order: 3; }
+  .status          { order: 4; }
+  .historico       { order: 5; }
+
+  .iniciativa {
+    height: auto;
+    min-height: 190px;
+  }
+
+  .painel-tabs,
+  .painel.turno,
+  .historico,
+  .status {
+    max-height: 65vh;
+    overflow-y: auto;
+  }
+
+  .logo-icone {
+    height: 24px;
+  }
+
+  .logo-wordmark {
+    height: 22px;
+  }
+
+  .cabecalho-topo {
+    padding: 6px 10px;
+    gap: 6px;
+  }
+
+  .btn-topo {
+    padding: 6px 8px;
+    font-size: 0.8rem;
+  }
+
+  .header-campanha {
+    font-size: 1rem;
+  }
+}

@@ -1,0 +1,79 @@
+/* ==========================================================================
+   3. LAYOUT PRINCIPAL (DASHBOARD)
+   ========================================================================== */
+.dashboard {
+  display: grid;
+  grid-template-columns: 2fr 3fr 3fr;
+  grid-template-rows: auto 0.85fr 1.15fr;
+  gap: 5px;
+  padding: 5px;
+  height: calc(100vh - 55px);
+  box-sizing: border-box;
+}
+
+.painel {
+  background: var(--bg-painel);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  padding: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: border-color 0.2s, transform 0.2s, background 0.3s;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.painel h2 {
+  margin: 0 0 8px 0;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 16px;
+  line-height: 1.2;
+  border-bottom: 1px solid var(--border-default);
+  padding-bottom: 8px;
+  flex-shrink: 0;
+  color: var(--text-primary);
+}
+
+.painel.turno {
+  padding: 6px;
+  gap: 6px;
+  min-height: 0;
+}
+
+.painel-cabecalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 1px solid var(--border-default);
+  padding-bottom: 8px;
+  margin-bottom: 0px;
+  flex-shrink: 0;
+}
+
+.painel-cabecalho h2 {
+  margin: 0;
+  border-bottom: none;
+  padding-bottom: 0;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.painel-cabecalho-botoes {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.painel-cabecalho--status {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.painel:hover {
+  border-color: var(--border-default);
+  transform: none;
+}

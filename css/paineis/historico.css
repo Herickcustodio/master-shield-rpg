@@ -1,0 +1,95 @@
+/* ==========================================================================
+   9. HISTÓRICO
+   ========================================================================== */
+#log-historico {
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  padding: 0 4px;
+}
+
+#conteudo-status-grupo {
+  overflow-y: auto;
+  flex: 1;
+  padding: 0 4px;
+}
+
+.log-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--bg-card);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.log-item-texto {
+  flex: 1;
+  min-width: 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.log-item-hora {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: normal;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+.log-item.falha {
+  border-left-color: var(--red);
+  color: #ff6b6b;
+}
+
+.log-item.sucesso {
+  border-left-color: var(--green);
+  color: #6bffb0;
+}
+
+.log-item.condicao {
+  border-left-color: #f39c12;
+  color: #f39c12;
+}
+
+.log-item.turno {
+  border-left-color: #5aabff;
+  color: #5aabff;
+}
+
+.log-item.acao-iniciativa {
+  border-left-color: #0f7d6c;
+  color: #2dd4bf;
+}
+
+.log-item.acao-pericia {
+  border-left-color: #064D9F;
+  color: #4dabf7;
+}
+
+.log-item.acao-resistencia {
+  border-left-color: #b8860b;
+  color: #f0c419;
+}
+
+.log-item.exp {
+  border-left-color: #af01e4;
+  color: #d968f5;
+}
+
+body.tema-light .log-item.falha          { color: #dc2626; }
+body.tema-light .log-item.sucesso        { color: #16a34a; }
+body.tema-light .log-item.condicao       { color: #b8720a; }
+body.tema-light .log-item.turno          { color: #1d6fd6; }
+body.tema-light .log-item.acao-iniciativa  { color: #0f7d6c; }
+body.tema-light .log-item.acao-pericia     { color: #064D9F; }
+body.tema-light .log-item.acao-resistencia { color: #8a6d0b; }
+body.tema-light .log-item.exp              { color: #af01e4; }

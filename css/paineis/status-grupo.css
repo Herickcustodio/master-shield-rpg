@@ -1,0 +1,244 @@
+/* ==========================================================================
+   10. STATUS DO GRUPO
+   ========================================================================== */
+.btn-novo-heroi-status {
+  padding: 5px 9px;
+  background: var(--accent);
+  color: white;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 11px;
+  flex-shrink: 0;
+  line-height: 1.2;
+  transition: background 0.2s;
+}
+
+.btn-novo-heroi-status:hover {
+  background: var(--accent-hover);
+}
+
+.btn-novo-heroi {
+  display: none;
+}
+
+.card-heroi {
+  background: var(--bg-card);
+  padding: 10px 12px;
+  border-radius: 8px;
+  border-left: 4px solid var(--accent);
+  margin-bottom: 8px;
+  transition: box-shadow 0.2s;
+}
+
+.card-heroi-corpo {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.card-heroi-avatar-col {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.card-heroi-avatar-anel {
+  width: 62px;
+  flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
+  border-radius: 10px;
+  padding: 3px;
+  background: conic-gradient(#af01e4 calc(var(--pct-exp, 0) * 1%), rgba(255,255,255,0.12) 0);
+  transition: background 0.3s;
+}
+
+.btn-exp-heroi {
+  width: 62px;
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid #af01e4;
+  color: #af01e4;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 3px 2px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-exp-heroi:hover {
+  background: #af01e4;
+  color: #fff;
+}
+
+.card-heroi-avatar-anel .card-heroi-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 7px;
+  background: var(--bg-card);
+  box-sizing: border-box;
+}
+
+/* Imagem de herói escolhida (substitui a letra inicial) nos três lugares onde o avatar aparece:
+   card do Grupo e Combatentes, combatente ativo no Controle de Turno e cards do painel de Combate.
+   Os PNGs são silhuetas brancas — no tema claro, invertemos a cor pra continuar visível. */
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+body.tema-light .avatar-img,
+body.tema-light .imagem-heroi-btn img,
+body.tema-light .heroi-imagem-preview img {
+  filter: invert(1);
+}
+
+.card-heroi-avatar {
+  width: 56px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.04);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.card-heroi-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-heroi:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.card-heroi-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 3px;
+}
+
+.card-heroi-nome {
+  font-family: "Cinzel", Georgia, serif;
+  color: var(--text-primary);
+  font-size: 1.1em;
+  font-weight: bold;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-heroi-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Barra de HP */
+.card-heroi .barra-hp-wrap {
+  margin-bottom: 8px;
+  height: 6px;
+}
+
+.card-heroi-rodape {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-heroi-hp {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card-heroi-hp label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.card-heroi-hp input {
+  width: 52px;
+  background: var(--bg-card2);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  text-align: center;
+  border-radius: 4px;
+  padding: 4px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.card-heroi-hp input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.btn-remover-heroi {
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px 4px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.btn-remover-heroi:hover {
+  color: #ff6b6b;
+}
+
+.btn-editar-heroi {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px 4px;
+  line-height: 1;
+  flex-shrink: 0;
+  opacity: 0.35;
+  transition: opacity 0.15s;
+}
+
+.btn-editar-heroi:hover {
+  opacity: 1;
+}
+
+.btn-ini-heroi {
+  background: none;
+  border: 1px solid var(--green);
+  color: var(--green);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  padding: 4px 8px;
+  font-weight: bold;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.btn-ini-heroi:hover {
+  background: var(--green);
+  color: #fff;
+}

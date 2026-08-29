@@ -1,0 +1,187 @@
+/* ==========================================================================
+   MODAL DE CONFIGURAÇÕES
+   ========================================================================== */
+.modal-config-conteudo {
+  max-width: 540px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.config-secao {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.config-secao:last-of-type {
+  border-bottom: none;
+}
+
+.config-titulo {
+  margin: 0 0 4px;
+  font-size: 14px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.config-secao label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.config-secao input[type="text"],
+.config-secao select {
+  padding: 8px 10px;
+  background: var(--bg-card2);
+  color: var(--text-primary);
+  border: 1px solid var(--border-input);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.config-secao input[type="text"]:focus,
+.config-secao select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* Toggle switch */
+.config-toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.config-toggle-label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: bold;
+}
+
+.config-toggle-desc {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.config-toggle {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.config-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.config-toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--border-default);
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.config-toggle-slider::before {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.config-toggle input:checked + .config-toggle-slider {
+  background: var(--accent);
+}
+
+.config-toggle input:checked + .config-toggle-slider::before {
+  transform: translateX(20px);
+}
+
+/* Botões de sessão */
+.config-botoes-sessao {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-config-sessao {
+  flex: 1;
+  padding: 9px 12px;
+  background: var(--bg-card2);
+  color: var(--text-primary);
+  border: 1px solid var(--border-input);
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-align: center;
+  min-width: 140px;
+}
+
+.btn-config-sessao:hover {
+  background: var(--border-default);
+}
+
+.config-secao .btn-config-importar {
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.btn-config-danger {
+  width: 100%;
+  padding: 9px;
+  background: none;
+  border: 1px dashed #8b1a1a;
+  color: #ff6b6b;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 4px;
+}
+
+.btn-config-danger:hover {
+  background: #2a0a0a;
+}
+
+/* Nome da campanha no header */
+.header-campanha {
+  display: block;
+  font-family: var(--font-campanha);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #d69f08;
+  text-shadow:
+    -0.5px -0.5px 0 #000,
+     0.5px -0.5px 0 #000,
+    -0.5px  0.5px 0 #000,
+     0.5px  0.5px 0 #000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.condicao-duracao-dica {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 0;
+  font-style: italic;
+}

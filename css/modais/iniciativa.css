@@ -1,0 +1,316 @@
+/* ==========================================================================
+   13. MODAL DE INICIATIVA
+   ========================================================================== */
+.ini-rolar-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0;
+}
+
+.btn-rolar-ini {
+  padding: 10px 16px;
+  background: var(--bg-card2);
+  color: #fff;
+  border: 1px solid #064D9F;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.btn-rolar-ini:hover {
+  background: #064D9F;
+}
+
+.ini-resultado-display {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.ini-dado-valor {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+.ini-dado-valor.critico {
+  color: #2ecc71;
+}
+
+.ini-dado-valor.falha {
+  color: #e63946;
+}
+
+.btn-abrir-monstros {
+  padding: 3px 9px;
+  background: #8b1a1a;
+  color: white;
+  border: 1px solid #c0392b;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: bold;
+  transition: background 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+  line-height: 1.2;
+}
+
+.btn-abrir-monstros:hover {
+  background: #c0392b;
+}
+
+.btn-area-cab {
+  padding: 3px 9px;
+  background: #5a1a1a;
+  color: #ffaaaa;
+  border: 1px solid #8b2a2a;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: bold;
+  transition: background 0.2s;
+  flex-shrink: 0;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.btn-area-cab:hover {
+  background: #8b2a2a;
+  color: #fff;
+}
+
+.btn-area-cab--cura {
+  background: #1a3a1a;
+  color: #88dd88;
+  border-color: #2a6a2a;
+}
+
+.btn-area-cab--cura:hover {
+  background: #2a6a2a;
+  color: #fff;
+}
+
+/* Lista de alvos */
+.area-alvos-controles {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.btn-area-sel {
+  flex: 1;
+  padding: 5px;
+  background: var(--bg-card2);
+  color: var(--text-secondary);
+  border: 1px solid #444;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-area-sel:hover {
+  background: var(--bg-card2);
+  color: #fff;
+}
+
+.area-alvos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 2px;
+}
+
+.area-alvo-row {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 2px 0;
+}
+
+.area-alvo-row:hover .area-alvo-info {
+  border-color: var(--text-muted);
+}
+
+.area-alvo-cb {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #e63946;
+}
+
+.area-alvo-info {
+  display: block;
+  min-width: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-left: 3px solid #444;
+  border-radius: 5px;
+  padding: 5px 10px;
+  transition: border-color 0.15s;
+}
+
+.area-alvo-nome {
+  display: block;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: bold;
+  word-break: break-word;
+}
+
+.area-alvo-hp {
+  display: block;
+  font-size: 11px;
+  color: #ff6b6b;
+  word-break: break-word;
+}
+
+.area-alvo-morto .area-alvo-info {
+  opacity: 0.4;
+}
+
+.area-alvo-morto .area-alvo-nome {
+  text-decoration: line-through;
+  color: #777;
+}
+
+.heroi-cores {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.cor-heroi-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s, opacity 0.15s;
+  flex-shrink: 0;
+}
+
+.cor-heroi-btn:hover:not(:disabled) {
+  transform: scale(1.2);
+}
+
+.cor-heroi-btn--selecionada {
+  border-color: #fff;
+  transform: scale(1.2);
+}
+
+.cor-heroi-btn--usada {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.heroi-imagem-escolha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.heroi-imagem-preview {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid var(--border-input);
+  background: var(--bg-card2);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.heroi-imagem-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.btn-escolher-imagem {
+  background: var(--bg-card2);
+  color: var(--text-primary);
+  border: 1px solid var(--border-input);
+  border-radius: 4px;
+  padding: 8px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-escolher-imagem:hover {
+  background: var(--border-default);
+  border-color: var(--accent);
+}
+
+.modal-escolher-imagem-conteudo {
+  max-width: 640px;
+}
+
+.heroi-imagens {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 4px;
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+.imagem-heroi-btn {
+  width: 84px;
+  height: 84px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background: var(--bg-card2);
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imagem-heroi-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.imagem-heroi-btn--nenhuma {
+  color: var(--text-muted);
+  font-size: 24px;
+}
+
+.imagem-heroi-btn:hover {
+  transform: scale(1.1);
+  border-color: var(--border-input);
+}
+
+.imagem-heroi-btn--selecionada {
+  border-color: var(--accent);
+  transform: scale(1.1);
+}
+
+.modal-conteudo--pequeno {
+  max-width: 340px;
+}

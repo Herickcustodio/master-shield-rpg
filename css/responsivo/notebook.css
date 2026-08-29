@@ -1,0 +1,114 @@
+/* ==========================================================================
+   19. RESPONSIVIDADE — NOTEBOOK (telas baixas, ex: 1366x768)
+   ========================================================================== */
+@media (max-width: 1440px) and (max-height: 800px) {
+
+  /* Rolador de dados: botão de rolar e resultado lado a lado, para não
+     empurrar o resultado para fora da área visível do painel. */
+  .rolar-resultado-linha {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 15px;
+  }
+
+  .rolar-resultado-linha .btn-rolar-dado-grande {
+    width: 130px;
+    flex: 0 0 auto;
+    margin-top: 0;
+  }
+
+  #resultado-dado {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 6px;
+    margin-top: 0;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  #resultado-dado .valor {
+    font-size: 24px;
+    margin-top: 0;
+  }
+
+  /* Controle de Turno: card do combatente ativo mais compacto, para que CA,
+     Ini, HP e a barra de vida caibam sem serem cortados pelo overflow. */
+  .painel.turno {
+    gap: 4px;
+  }
+
+  .painel.turno .painel-cabecalho {
+    padding-bottom: 4px;
+  }
+
+  .turno-ativo-card,
+  .turno-ativo-condicoes-card {
+    padding: 4px 6px;
+  }
+
+  .turno-ativo-cabecalho {
+    gap: 2px;
+    margin-bottom: 2px;
+  }
+
+  .turno-ativo-topo {
+    gap: 6px;
+  }
+
+  .turno-ativo-avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 15px;
+  }
+
+  .turno-ativo-info-col {
+    gap: 2px;
+  }
+
+  .btn-turno-morto-icone {
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+  }
+
+  .turno-ativo-nome {
+    font-size: 12px;
+  }
+
+  .turno-ativo-detalhes {
+    font-size: 10px;
+    gap: 4px 8px;
+  }
+
+  .turno-ativo-status {
+    gap: 1px;
+  }
+
+  .turno-ativo-hp-row {
+    font-size: 11px;
+  }
+
+  .turno-ativo-barra {
+    height: 5px;
+  }
+
+  .turno-ativo-acoes {
+    gap: 4px;
+  }
+
+  .btn-turno-acao {
+    padding: 4px 6px;
+    min-height: 22px;
+    font-size: 10px;
+  }
+
+  .turno-controles {
+    gap: 4px;
+  }
+
+  .btn-turno {
+    padding: 8px 10px;
+  }
+}

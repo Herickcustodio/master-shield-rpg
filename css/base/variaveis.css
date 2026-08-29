@@ -1,0 +1,66 @@
+/* ==========================================================================
+   0. VARIÁVEIS DE TEMA
+   ========================================================================== */
+:root {
+  --bg-body:        #1b1b1b;
+  --bg-header:      #121212;
+  --bg-painel:      #2a2a2a;
+  --bg-card:        #1e1e1e;
+  --bg-input:       #1e1e1e;
+  --bg-card2:       #2a2a2a;
+  --bg-modal:       #1e1e1e;
+  --bg-popover:     #1a1a1a;
+  --bg-tag-cond:    #2e2210;
+
+  --border-default: #444;
+  --border-light:   #333;
+  --border-input:   #555;
+
+  --text-primary:   #f0f0f0;
+  --text-secondary: #ccc;
+  --text-muted:     #888;
+  --text-faint:     #555;
+
+  --accent:         #064D9F;
+  --accent-hover:   #0a65cc;
+  --accent-glow:    rgba(6, 77, 159, 0.3);
+
+  --green:          #28a745;
+  --red:            #e63946;
+  --yellow:         #f39c12;
+
+  /* Fonte do nome da campanha no cabeçalho*/
+  --font-campanha:  "Berkshire Swash", cursive;
+}
+
+body.tema-light {
+  --bg-body:        #d1d5db;
+  --bg-header:      #b8bec8;
+  --bg-painel:      #e2e5ea;
+  --bg-card:        #d8dce3;
+  --bg-input:       #e8ebef;
+  --bg-card2:       #cdd1d8;
+  --bg-modal:       #e2e5ea;
+  --bg-popover:     #e2e5ea;
+  --bg-tag-cond:    #f0e6c8;
+
+  --border-default: #9aa3af;
+  --border-light:   #b0b8c4;
+  --border-input:   #7a8694;
+
+  --text-btnanterior: #0a65cc;
+  --text-btnproximo: #f0f0f0;
+  --text-clean_buttons: #f0f0f0;
+  --text-primary:   #1e293b;
+  --text-secondary: #374151;
+  --text-muted:     #4b5563;
+  --text-faint:     #6b7280;
+
+  --accent:         #064D9F;
+  --accent-hover:   #0a65cc;
+  --accent-glow:    rgba(6, 77, 159, 0.15);
+
+  --green:          #15803d;
+  --red:            #b91c1c;
+  --yellow:         #b45309;
+}

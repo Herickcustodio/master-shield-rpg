@@ -1,0 +1,23 @@
+/* ==========================================================================
+   8. ANOTAÇÕES
+   ========================================================================== */
+#tab-anotacoes textarea {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border-input);
+  border-radius: 8px;
+  padding: 10px 12px;
+  resize: none;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  min-height: 220px;
+}
+
+#tab-anotacoes textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}

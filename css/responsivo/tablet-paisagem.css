@@ -1,0 +1,64 @@
+/* ==========================================================================
+   20. RESPONSIVIDADE — TABLET PAISAGEM (ex: iPad/Android 1024–1200px)
+   Mantém o grid de 3 colunas, porém mais compacto.
+   ========================================================================== */
+@media (max-width: 1200px) {
+  .cabecalho-topo {
+    padding: 8px 12px;
+    gap: 10px;
+  }
+
+  .logo-icone {
+    height: 38px;
+  }
+
+  .logo-wordmark {
+    height: 90px;
+  }
+
+  .menu-controles {
+    gap: 6px;
+  }
+
+  .btn-topo {
+    padding: 7px 10px;
+    font-size: 0.85rem;
+  }
+
+  .header-campanha {
+    font-size: 1.2rem;
+  }
+
+  .dashboard {
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 4px;
+    padding: 4px;
+  }
+
+  .item-iniciativa {
+    min-width: 150px;
+    width: 150px;
+    max-width: 150px;
+  }
+
+  /* Cabeçalhos dos painéis (título + botões) precisam poder quebrar linha
+     nas colunas mais estreitas, senão os botões estouram a borda do card. */
+  .painel-cabecalho,
+  .painel-cabecalho--status {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+
+  .painel-cabecalho h2 {
+    min-width: 0;
+  }
+
+  .painel-cabecalho-botoes {
+    flex-wrap: wrap;
+  }
+
+  .btn-area-cab {
+    font-size: 10px;
+    padding: 4px 7px;
+  }
+}

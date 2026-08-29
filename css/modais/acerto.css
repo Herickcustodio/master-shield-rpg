@@ -1,0 +1,114 @@
+/* ==========================================================================
+   MODAL DE ACERTO
+   ========================================================================== */
+.acerto-atacante-info {
+  background: var(--bg-card2);
+  border: 1px solid var(--border-input);
+  border-left: 3px solid #5aabff;
+  border-radius: 5px;
+  padding: 7px 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.acerto-atacante-info strong { color: #5aabff; font-size: 15px; }
+
+.acerto-resultado-wrap { margin: 4px 0; }
+
+.acerto-resultado-alvos {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.acerto-alvo-resultado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--bg-card2);
+  border: 1px solid var(--border-light);
+  border-radius: 5px;
+  padding: 6px 10px;
+}
+
+.acerto-alvo-resultado .acerto-badge { margin-top: 0; padding: 3px 10px; font-size: 12px; }
+
+.acerto-alvo-nome {
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: bold;
+}
+
+.acerto-sem-alvo {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin: 4px 0 0;
+}
+
+.acerto-resultado-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px;
+  background: var(--bg-card2);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+}
+
+.acerto-total {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.acerto-total--critico { color: #2ecc71; }
+.acerto-total--falha   { color: #e63946; }
+.acerto-formula { font-size: 12px; color: var(--text-muted); }
+
+.acerto-badge {
+  font-size: 14px;
+  font-weight: bold;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-top: 4px;
+}
+
+.acerto-badge--critico { background: #0a2e0a; color: #2ecc71; border: 1px solid #2ecc71; }
+.acerto-badge--falha   { background: #2e0a0a; color: #e63946; border: 1px solid #e63946; }
+.acerto-badge--acertou { background: #0a2a0a; color: #6bffb0; border: 1px solid #28a745; }
+.acerto-badge--errou   { background: #2a1a0a; color: #f39c12; border: 1px solid #f39c12; }
+
+body.tema-light .acerto-badge--critico { background: #dcfce7; color: #15803d; }
+body.tema-light .acerto-badge--falha   { background: #fee2e2; color: #dc2626; }
+body.tema-light .acerto-badge--acertou { background: #dcfce7; color: #15803d; }
+body.tema-light .acerto-badge--errou   { background: #fef3c7; color: #b45309; }
+
+.acerto-botoes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.btn-acerto-pular {
+  background: none;
+  border: 1px dashed var(--border-input);
+  color: var(--text-muted);
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.btn-acerto-pular:hover {
+  border-color: var(--text-secondary);
+  color: var(--text-primary);
+}

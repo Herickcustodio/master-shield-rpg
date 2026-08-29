@@ -1,0 +1,306 @@
+/* ==========================================================================
+   5. INICIATIVA
+   ========================================================================== */
+.btn-limpar-combate {
+  padding: 3px 9px;
+  background: #8b1a1a;
+  color: #fff;
+  border: 1px solid #c0392b;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: bold;
+  transition: background 0.2s;
+  flex-shrink: 0;
+  white-space: nowrap;
+  margin-left: auto;
+  line-height: 1.2;
+}
+
+.btn-limpar-combate:hover {
+  background: #c0392b;
+}
+
+.btn-encerrar-combate {
+  padding: 5px 9px;
+  background: none;
+  color: #ff6b6b;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: bold;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+  white-space: nowrap;
+  margin-left: auto;
+  line-height: 1.2;
+}
+
+.btn-encerrar-combate:hover {
+  background: #2a0a0a;
+  border-color: #8b1a1a;
+}
+
+/* Item base */
+.item-iniciativa {
+  position: relative;
+  padding: 8px 8px 6px;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  margin-bottom: 0;
+  margin-top: 8px;
+  background: var(--bg-card);
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  min-width: 180px;
+  width: 180px;
+  max-width: 180px;
+  height: 118px;
+  min-height: 118px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  box-sizing: border-box;
+}
+
+.seta-iniciativa {
+  flex-shrink: 0;
+  align-self: center;
+  color: var(--text-muted);
+  font-size: 18px;
+  line-height: 1;
+  user-select: none;
+}
+
+.turno-ativo-card {
+  background: var(--bg-card);
+  border: 1px solid var(--accent);
+  border-left: 4px solid #5aabff;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  margin-top: 10px;
+  animation: pulso-ativo 2s ease-in-out infinite;
+}
+
+body.tema-light .turno-ativo-card {
+  background: #dbeafe;
+}
+
+/* Turno ativo */
+.item-iniciativa--ativo {
+  border-color: #2ecc71;
+  background: var(--bg-card);
+  box-shadow: 0 0 0 1px #2ecc71, 0 0 12px rgba(46, 204, 113, 0.25);
+}
+
+/* Nocauteado */
+.item-iniciativa--nocauteado {
+  border-color: #b8860b;
+  background: #1e1a0a;
+  opacity: 0.85;
+}
+
+.item-iniciativa--nocauteado .item-iniciativa-nome {
+  color: #d4ac0d;
+}
+
+/* Morto */
+.item-iniciativa--morto {
+  border-color: #8b1a1a;
+  background: #1e1212;
+  opacity: 0.75;
+}
+
+.item-iniciativa--morto .item-iniciativa-nome {
+  text-decoration: line-through;
+  color: #999;
+}
+
+.item-iniciativa--morto .barra-hp-fill {
+  background: #555 !important;
+}
+
+/* Cabeçalho: nome + botão remover */
+.item-ini-cabecalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.item-ini-topo {
+  display: flex;
+  align-items: center;
+  height: 0;
+}
+
+.item-ini-iniciativa {
+  position: absolute;
+  top: -9px;
+  left: -7px;
+  font-size: 11px;
+  font-weight: bold;
+  color: #dfe8ff;
+  background: #1b2733;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  padding: 2px 6px;
+  min-width: 18px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.item-ini-atual-badge {
+  position: absolute;
+  top: -9px;
+  right: -7px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  color: #0a2e0a;
+  background: #2ecc71;
+  border-radius: 20px;
+  padding: 2px 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.item-ini-nome-linha {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.item-iniciativa-nome {
+  font-family: "Cinzel", Georgia, serif;
+  font-weight: bold;
+  color: var(--text-primary);
+  font-size: 0.85em;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-morto-item-ini {
+  width: 22px;
+  height: 22px;
+  font-size: 12px;
+  border-radius: 5px;
+}
+
+.item-iniciativa--ativo .item-iniciativa-nome {
+  color: #6bffb0;
+}
+
+.item-iniciativa--monstro .item-iniciativa-nome {
+  color: var(--red);
+}
+
+.item-iniciativa--ativo.item-iniciativa--monstro .item-iniciativa-nome {
+  color: var(--red);
+}
+
+.btn-remover-ini {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 4px;
+  line-height: 1;
+  transition: color 0.15s;
+  flex-shrink: 0;
+}
+
+.btn-remover-ini:hover {
+  color: #ff6b6b;
+}
+
+.btn-morte-ini {
+  background: none;
+  border: 1px dashed #555;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 11px;
+  padding: 2px 6px;
+  opacity: 0.5;
+  transition: opacity 0.15s, border-color 0.15s;
+  line-height: 1.2;
+  color: #ccc;
+  flex: 1;
+  min-width: 40px;
+}
+
+.btn-morte-ini:hover {
+  opacity: 1;
+  border-color: #e63946;
+  color: #e63946;
+}
+
+.btn-morte-ini--reviver {
+  opacity: 1;
+  border-color: #2ecc71;
+  color: #2ecc71;
+}
+
+.btn-morte-ini--reviver:hover {
+  border-color: #27ae60;
+  color: #27ae60;
+}
+
+/* Rodapé do item: condição + morte lado a lado */
+.item-ini-rodape {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+/* Botões de ação (dano/cura/morte) agrupados */
+.item-ini-acoes {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-acao-ini {
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 4px 8px;
+  transition: background 0.15s, opacity 0.15s;
+  line-height: 1.2;
+  flex: 1;
+  min-width: 60px;
+}
+
+.btn-acao-dano {
+  background: #5a1a1a;
+  color: #ffaaaa;
+  border: 1px solid #8b2a2a;
+}
+
+.btn-acao-dano:hover {
+  background: #8b2a2a;
+  color: #fff;
+}
+
+.btn-acao-cura {
+  background: #1a3a1a;
+  color: #88dd88;
+  border: 1px solid #2a6a2a;
+}
+
+.btn-acao-cura:hover {
+  background: #2a6a2a;
+  color: #fff;
+}

@@ -1,0 +1,27 @@
+/* ==========================================================================
+   7. CONTROLES DE INPUT
+   ========================================================================== */
+.controle-modificador {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.controle-modificador input {
+  width: 45px;
+  padding: 6px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-input);
+  border-radius: 4px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.controle-modificador input:focus {
+  outline: none;
+  border-color: #064D9F;
+}

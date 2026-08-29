@@ -1,0 +1,175 @@
+/* ==========================================================================
+   11. COLETÂNEA DE MONSTROS
+   ========================================================================== */
+.monstros-cabecalho-controles {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-novo-monstro-cab {
+  padding: 3px 8px;
+  background: #064D9F;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.btn-novo-monstro-cab:hover {
+  background: #0a65cc;
+}
+
+.item-monstro-custom {
+  background: var(--bg-card);
+}
+
+.badge-custom {
+  font-size: 10px;
+  color: #5aabff;
+  background: #0d2040;
+  border: 1px solid #064D9F;
+  border-radius: 3px;
+  padding: 1px 4px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+.btn-deletar-monstro {
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 5px;
+  transition: color 0.15s;
+  margin-left: 4px;
+}
+
+.btn-deletar-monstro:hover {
+  color: #ff6b6b;
+}
+
+.input-busca-monstros {
+  background: var(--bg-card);
+  color: #fff;
+  border: 1px solid var(--border-input);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 12px;
+  width: 110px;
+  transition: border-color 0.2s, width 0.2s;
+}
+
+.input-busca-monstros:focus {
+  outline: none;
+  border-color: #064D9F;
+  width: 140px;
+}
+
+.item-monstro {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-left: 3px solid var(--border-default);
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.item-monstro:hover {
+  background: var(--bg-card2);
+  border-color: var(--text-faint);
+  border-left-color: #064D9F;
+}
+
+.item-monstro:last-child {
+  margin-bottom: 0;
+}
+
+.item-monstro-custom {
+  background: var(--bg-card);
+  border-color: var(--border-default);
+  border-left-color: #064D9F;
+}
+
+.item-monstro-custom:hover {
+  background: var(--bg-card2);
+  border-left-color: #5aabff;
+}
+
+.item-monstro-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.item-monstro-nome {
+  font-family: "Cinzel", Georgia, serif;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.item-monstro-stats {
+  display: flex;
+  gap: 5px;
+}
+
+.item-monstro-stat {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 11px;
+}
+
+.item-monstro-stat-label {
+  color: var(--text-muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.item-monstro-stat-valor {
+  color: var(--text-secondary);
+  font-weight: bold;
+}
+
+.item-monstro-acoes {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.btn-add-monstro {
+  padding: 5px 10px;
+  background: #064D9F;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.btn-add-monstro:hover {
+  background: #0a65cc;
+}
