@@ -12,7 +12,7 @@
 import { $ } from "./dom.js";
 import { CHAVES, lerLocalStorageJSON } from "./storage.js";
 import { estado } from "./state.js";
-import { renderizarItemHistorico, limparHistorico } from "./historico.js";
+import { renderizarItemHistorico, initHistorico } from "./historico.js";
 import { initDados } from "./dados.js";
 import { configurarModal } from "./ui.js";
 import { aoSincronizar, salvarESincronizar } from "./sync.js";
@@ -143,7 +143,7 @@ window.onload = () => {
   initTurno();
   initDados();
 
-  $("btn-limpar-historico").addEventListener("click", limparHistorico);
+  initHistorico();
 
   // Render inicial
   atualizarIniciativa();

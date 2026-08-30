@@ -39,3 +39,20 @@ export function limparHistorico() {
   localStorage.removeItem(CHAVES.historico);
   $("log-historico").innerHTML = "";
 }
+
+/** Liga o botão de limpar e o campo de anotação manual. Chamado no boot pelo main. */
+export function initHistorico() {
+  $("btn-limpar-historico").addEventListener("click", limparHistorico);
+
+  const form = $("form-historico-nota");
+  if (!form) return;
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const input = $("historico-nota-texto");
+    const texto = input.value.trim();
+    if (!texto) return;
+    adicionarHistorico(`📝 ${texto}`, "nota");
+    input.value = "";
+    input.focus();
+  });
+}

@@ -189,17 +189,17 @@
           <div class="campo-heroi-linha">
             <div class="campo-heroi">
               <label for="heroi-nivel">Nível</label>
-              <input type="number" id="heroi-nivel" value="1" min="1" />
+              <input type="number" id="heroi-nivel" value="0" min="0" />
             </div>
 
             <div class="campo-heroi">
               <label for="heroi-hp">HP Máximo</label>
-              <input type="number" id="heroi-hp" value="10" min="1" />
+              <input type="number" id="heroi-hp" value="10" min="0" />
             </div>
 
             <div class="campo-heroi">
               <label for="heroi-ca">Classe de Armadura (CA)</label>
-              <input type="number" id="heroi-ca" value="10" min="1" />
+              <input type="number" id="heroi-ca" value="10" min="0" />
             </div>
           </div>
 
@@ -756,6 +756,12 @@
         <button id="btn-limpar-historico" class="btn-limpar-combate">Limpar Histórico</button>
       </div>
       <div id="log-historico"></div>
+      <form id="form-historico-nota" class="historico-nota">
+        <input type="text" id="historico-nota-texto" class="historico-nota-input"
+               placeholder="Anotar no histórico… (ex: o grupo seguiu para a floresta)"
+               maxlength="200" autocomplete="off" />
+        <button type="submit" class="historico-nota-btn" title="Adicionar ao histórico">Adicionar</button>
+      </form>
     </section>
 
     <section class="painel status">
