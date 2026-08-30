@@ -1,24 +1,37 @@
 /* ==========================================================================
-   MODAL — ajuda
+   MODAL — de leitura (Ajuda e Sobre): container mais largo/rolável e
+   tipografia de texto corrido padronizada
    ========================================================================== */
-.modal-ajuda-conteudo {
+.modal-texto-conteudo {
   max-width: 640px;
   max-height: 85vh;
   overflow-y: auto;
 }
 
-.modal-ajuda-conteudo h3 {
+.modal-texto-conteudo h3 {
   margin: 18px 0 6px;
   font-family: "Cinzel", Georgia, serif;
   font-size: 15px;
   color: var(--accent-hover);
 }
 
-.modal-ajuda-conteudo p {
+.modal-texto-conteudo p {
   margin: 0 0 8px;
   font-size: 14px;
   line-height: 1.5;
   color: var(--text-secondary);
+}
+
+.modal-texto-conteudo ul {
+  margin: 0 0 8px;
+  padding-left: 22px;
+}
+
+.modal-texto-conteudo li {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
 }
 
 .ajuda-dica {
