@@ -55,15 +55,25 @@ export function calcularCorHP(hpAtual, hpMax) {
   return "#e63946";                   // vermelho
 }
 
-/** Preenche um elemento de avatar com a imagem escolhida do herói, ou a inicial do nome como fallback.
- *  `imagemBase` pode ser um id de preset (img/herois/<id>_white.png) ou uma foto do usuário (data URL). */
+/** Resolve o `src` de um valor de imagem de avatar:
+ *   - data URL  → a própria string (foto enviada pelo usuário)
+ *   - "pasta/id" → img/pasta/id_white.png   (ex.: "monstros/esqueleto")
+ *   - "id"       → img/herois/id_white.png  (ícone de herói, formato antigo)  */
+export function srcAvatar(imagemBase) {
+  if (ehFoto(imagemBase)) return imagemBase;
+  if (imagemBase.includes("/")) return `img/${imagemBase}_white.png`;
+  return `img/herois/${imagemBase}_white.png`;
+}
+
+/** Preenche um elemento de avatar com a imagem escolhida (herói, ícone de monstro ou foto),
+ *  ou a inicial do nome como fallback. */
 export function preencherAvatar(elemento, nome, imagemBase) {
   elemento.innerHTML = "";
   if (imagemBase) {
     const foto = ehFoto(imagemBase);
     const img = document.createElement("img");
     img.className = foto ? "avatar-img avatar-img--foto" : "avatar-img";
-    img.src = foto ? imagemBase : `img/herois/${imagemBase}_white.png`;
+    img.src = srcAvatar(imagemBase);
     img.alt = nome || "";
     elemento.appendChild(img);
   } else {

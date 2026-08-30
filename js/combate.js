@@ -5,11 +5,14 @@
 import { $ } from "./dom.js";
 import { CHAVES } from "./storage.js";
 import { estado } from "./state.js";
-import { CORES_HEROI, CONDICOES } from "./constantes.js";
+import { CORES_HEROI, CONDICOES, MONSTROS_ICONES } from "./constantes.js";
 import { coletaneaMonstros } from "./monstros.js";
 import { adicionarHistorico } from "./historico.js";
 import { salvarESincronizar } from "./sync.js";
-import { calcularCorHP, preencherAvatar, obterImagemCriatura, obterCACriatura, redimensionarImagem } from "./ui.js";
+import {
+  calcularCorHP, preencherAvatar, obterImagemCriatura, obterCACriatura,
+  redimensionarImagem, ehFoto, srcAvatar,
+} from "./ui.js";
 import { alternarMortoNocaute } from "./turno.js";
 
 // Contexto completo do modal de iniciativa (herói ou monstro)
@@ -26,25 +29,66 @@ function abrirModalMonstro() {
   $("monstro-hp").value   = "10";
   $("monstro-nd").value   = "";
   _monstroImagemSel = null;
+  $("monstro-icones").style.display = "none";
   atualizarPreviewImagemMonstro();
   $("modal-monstro").classList.remove("oculto");
   $("monstro-nome").focus();
 }
 
-/** Prévia da imagem no modal de Criar Monstro (a imagem é sempre uma data URL) */
+/** Prévia da imagem no modal de Criar Monstro (ícone de preset OU foto do usuário) */
 function atualizarPreviewImagemMonstro() {
   const preview = $("monstro-imagem-preview");
   if (!preview) return;
   preview.innerHTML = "";
-  if (_monstroImagemSel) {
-    const img = document.createElement("img");
-    img.className = "foto";
-    img.alt = "";
-    img.src = _monstroImagemSel;
-    preview.appendChild(img);
-  } else {
-    preview.textContent = "✕";
-  }
+  if (!_monstroImagemSel) { preview.textContent = "✕"; return; }
+  const img = document.createElement("img");
+  img.alt = "";
+  if (ehFoto(_monstroImagemSel)) img.className = "foto";
+  img.src = srcAvatar(_monstroImagemSel);
+  preview.appendChild(img);
+}
+
+/** Monta a grade de ícones de monstro (✕ nenhum · 📁 do computador · presets) */
+function renderMonstroIcones() {
+  const grade = $("monstro-icones");
+  grade.innerHTML = "";
+
+  const btnNenhum = document.createElement("button");
+  btnNenhum.type = "button";
+  btnNenhum.title = "Sem imagem (usa a inicial do nome)";
+  btnNenhum.className = "imagem-heroi-btn imagem-heroi-btn--nenhuma"
+    + (!_monstroImagemSel ? " imagem-heroi-btn--selecionada" : "");
+  btnNenhum.textContent = "✕";
+  btnNenhum.addEventListener("click", () => {
+    _monstroImagemSel = null;
+    atualizarPreviewImagemMonstro();
+    grade.style.display = "none";
+  });
+  grade.appendChild(btnNenhum);
+
+  const btnUpload = document.createElement("button");
+  btnUpload.type = "button";
+  btnUpload.title = "Enviar uma imagem do computador";
+  btnUpload.className = "imagem-heroi-btn imagem-heroi-btn--upload";
+  btnUpload.innerHTML = `<span>📁</span><span class="imagem-heroi-btn-legenda">Do computador</span>`;
+  btnUpload.addEventListener("click", () => $("monstro-imagem-arquivo").click());
+  grade.appendChild(btnUpload);
+
+  MONSTROS_ICONES.forEach(ic => {
+    const valor = `monstros/${ic.id}`;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.title = ic.label;
+    btn.className = "imagem-heroi-btn"
+      + (_monstroImagemSel === valor ? " imagem-heroi-btn--selecionada" : "");
+    btn.innerHTML = `<img src="img/monstros/${ic.id}_white.png" alt="${ic.label}">`;
+    btn.addEventListener("click", () => {
+      _monstroImagemSel = valor;
+      atualizarPreviewImagemMonstro();
+      grade.style.display = "none";
+    });
+    grade.appendChild(btn);
+  });
 }
 
 function abrirModalMonstrosLista() {
@@ -535,7 +579,15 @@ export function initCombate() {
   window.addEventListener("click", (e) => { if (e.target === $("modal-monstro")) fecharModalMonstro(); });
   $("modal-monstro").addEventListener("keydown", (e) => { if (e.key === "Enter") confirmarNovoMonstro(); });
 
-  $("btn-escolher-imagem-monstro").addEventListener("click", () => $("monstro-imagem-arquivo").click());
+  $("btn-escolher-imagem-monstro").addEventListener("click", () => {
+    const grade = $("monstro-icones");
+    if (grade.style.display === "none") {
+      renderMonstroIcones();
+      grade.style.display = "flex";
+    } else {
+      grade.style.display = "none";
+    }
+  });
   $("monstro-imagem-arquivo").addEventListener("change", async (e) => {
     const file = e.target.files[0];
     e.target.value = ""; // permite reenviar o mesmo arquivo depois
@@ -544,6 +596,7 @@ export function initCombate() {
     try {
       _monstroImagemSel = await redimensionarImagem(file);
       atualizarPreviewImagemMonstro();
+      $("monstro-icones").style.display = "none";
     } catch (err) {
       alert("Não foi possível carregar a imagem: " + err.message);
     }
