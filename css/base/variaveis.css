@@ -29,8 +29,8 @@
   --red:            #e63946;
   --yellow:         #f39c12;
 
-  /* Fonte do nome da campanha no cabeçalho*/
-  --font-campanha:  "Berkshire Swash", cursive;
+  /* Fonte do nome da campanha no cabeçalho (mesma dos títulos dos painéis) */
+  --font-campanha:  "Cinzel", Georgia, serif;
 }
 
 body.tema-light {
