@@ -81,7 +81,7 @@ export function preencherAvatar(elemento, nome, imagemBase) {
   }
 }
 
-/** Resolve a imagem de um combatente da iniciativa (herói ou monstro customizado) */
+/** Resolve a imagem de um combatente da iniciativa (herói, monstro custom ou monstro da coletânea) */
 export function obterImagemCriatura(criatura) {
   if (criatura.idHeroi) {
     const h = estado.partyHerois.find(h => h.id === criatura.idHeroi);
@@ -91,7 +91,8 @@ export function obterImagemCriatura(criatura) {
     const mc = estado.monstrosCustom.find(m => m.id === criatura.idMonstroCustom);
     return mc?.imagem || null;
   }
-  return null;
+  const m = coletaneaMonstros.find(m => m.nome === criatura.nomeBase);
+  return m?.icone || null;
 }
 
 /** Resolve a CA de um combatente da iniciativa (herói, monstro custom ou da coletânea) */

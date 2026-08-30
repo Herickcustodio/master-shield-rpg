@@ -41,15 +41,6 @@ export const IMAGENS_HEROI = [
   { id: "visored-helm",      label: "Elmo com Viseira" },
 ];
 
-// Ícones disponíveis em img/monstros/ (arquivo real é <id>_white.png / <id>_black.png).
-// Guardados no monstro como "monstros/<id>" para distinguir dos ícones de herói.
-export const MONSTROS_ICONES = [
-  { id: "esqueleto",        label: "Esqueleto"       },
-  { id: "beholder",         label: "Beholder"        },
-  { id: "mind_flayer",      label: "Mind Flayer"     },
-  { id: "dragao_vermelho",  label: "Dragão Vermelho" },
-];
-
 export const CONDICOES = [
   { id: "agarrado",      emoji: "🤝", label: "Agarrado",      descricao: "Deslocamento vira 0. O efeito termina se quem agarrou ficar incapacitado ou o alvo escapar mecanicamente."        },
   { id: "amedrontado",   emoji: "😱", label: "Amedrontado",    descricao: "Desvantagem em ataques e testes enquanto a fonte do medo estiver visível. Não pode se aproximar dela."             },

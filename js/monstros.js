@@ -4,6 +4,7 @@
      nome    → nome do monstro
      vidaMax → HP padrão
      ca      → Classe de Armadura
+     icone   → (opcional) "monstros/<id>" — usa img/monstros/<id>_white.png como avatar
    ========================================================================== */
 
 export const coletaneaMonstros = [
@@ -26,7 +27,7 @@ export const coletaneaMonstros = [
   { nome: "Fanático Cultista",  vidaMax: 33,  ca: 13 },
 
   // ── MORTOS-VIVOS ─────────────────────────────────────────────────────────
-  { nome: "Esqueleto",          vidaMax: 13,  ca: 13 },
+  { nome: "Esqueleto",          vidaMax: 13,  ca: 13, icone: "monstros/esqueleto" },
   { nome: "Zumbi",              vidaMax: 22,  ca: 8  },
   { nome: "Ghoul",              vidaMax: 22,  ca: 12 },
   { nome: "Sombra",             vidaMax: 16,  ca: 12 },
@@ -108,28 +109,28 @@ export const coletaneaMonstros = [
   { nome: "Dragão Filhote Preto",    vidaMax: 33,  ca: 17 },
   { nome: "Dragão Filhote Verde",    vidaMax: 38,  ca: 17 },
   { nome: "Dragão Filhote Azul",     vidaMax: 52,  ca: 17 },
-  { nome: "Dragão Filhote Vermelho", vidaMax: 75,  ca: 17 },
+  { nome: "Dragão Filhote Vermelho", vidaMax: 75,  ca: 17, icone: "monstros/dragao_vermelho" },
   { nome: "Dragão Jovem Branco",     vidaMax: 133, ca: 17 },
   { nome: "Dragão Jovem Preto",      vidaMax: 127, ca: 18 },
   { nome: "Dragão Jovem Verde",      vidaMax: 136, ca: 18 },
   { nome: "Dragão Jovem Azul",       vidaMax: 152, ca: 18 },
-  { nome: "Dragão Jovem Vermelho",   vidaMax: 178, ca: 18 },
+  { nome: "Dragão Jovem Vermelho",   vidaMax: 178, ca: 18, icone: "monstros/dragao_vermelho" },
   { nome: "Dragão Adulto Branco",    vidaMax: 200, ca: 18 },
   { nome: "Dragão Adulto Preto",     vidaMax: 195, ca: 19 },
   { nome: "Dragão Adulto Verde",     vidaMax: 207, ca: 19 },
   { nome: "Dragão Adulto Azul",      vidaMax: 225, ca: 19 },
-  { nome: "Dragão Adulto Vermelho",  vidaMax: 256, ca: 19 },
+  { nome: "Dragão Adulto Vermelho",  vidaMax: 256, ca: 19, icone: "monstros/dragao_vermelho" },
   { nome: "Dragão Ancião Branco",    vidaMax: 333, ca: 20 },
-  { nome: "Dragão Ancião Vermelho",  vidaMax: 546, ca: 22 },
+  { nome: "Dragão Ancião Vermelho",  vidaMax: 546, ca: 22, icone: "monstros/dragao_vermelho" },
   { nome: "Dragão Ancião Azul",      vidaMax: 481, ca: 22 },
   { nome: "Wyvern",                  vidaMax: 110, ca: 13 },
   { nome: "Pseudodragão",            vidaMax: 7,   ca: 13 },
 
   // ── ABERRAÇÕES ───────────────────────────────────────────────────────────
   { nome: "Abissal",            vidaMax: 50,  ca: 13 },
-  { nome: "Mind Flayer",        vidaMax: 71,  ca: 15 },
-  { nome: "Beholder",           vidaMax: 180, ca: 18 },
-  { nome: "Beholder Zumbi",     vidaMax: 93,  ca: 15 },
+  { nome: "Mind Flayer",        vidaMax: 71,  ca: 15, icone: "monstros/mind_flayer" },
+  { nome: "Beholder",           vidaMax: 180, ca: 18, icone: "monstros/beholder" },
+  { nome: "Beholder Zumbi",     vidaMax: 93,  ca: 15, icone: "monstros/beholder" },
   { nome: "Chuul",              vidaMax: 93,  ca: 16 },
   { nome: "Aboleth",            vidaMax: 135, ca: 17 },
   { nome: "Gibbering Mouther",  vidaMax: 67,  ca: 9  },
