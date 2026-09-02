@@ -9,3 +9,12 @@ body {
   overflow: hidden;
   transition: background 0.3s, color 0.3s;
 }
+
+/* Ícones Lucide inline com texto (botões, títulos, avisos) */
+[data-lucide] {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  stroke-width: 2.25;
+  flex-shrink: 0;
+}

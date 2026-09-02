@@ -1,0 +1,19 @@
+# Ferramentas locais / IDE
+.claude/
+.vscode/
+.idea/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs e temporários
+*.log
+*.tmp
+
+# Dependências (não há build, mas por precaução)
+node_modules/
+
+# Notas de desenvolvimento — não publicar
+informacoes.txt

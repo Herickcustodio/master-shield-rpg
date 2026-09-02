@@ -4,7 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Master Shield RPG</title>
+    <meta name="description" content="O escudo por trás da tela: ferramenta para mestres de RPG (D&D 5e e sistemas d20). Rolador de dados, controle de combate e iniciativa, condições, grupo de heróis e histórico da sessão. Roda no navegador, sem cadastro.">
+    <meta name="author" content="Herick Custódio">
+    <meta name="theme-color" content="#121212">
+    <link rel="canonical" href="https://mastershieldrpg.com/">
+
+    <!-- Open Graph / Facebook / WhatsApp / Discord -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Master Shield RPG">
+    <meta property="og:title" content="Master Shield RPG">
+    <meta property="og:description" content="O escudo por trás da tela: rolador de dados, controle de combate e iniciativa, condições, grupo de heróis e histórico da sessão. Roda no navegador, sem cadastro.">
+    <meta property="og:url" content="https://mastershieldrpg.com/">
+    <meta property="og:image" content="https://mastershieldrpg.com/img/ico_cabecalho.png">
+    <meta property="og:locale" content="pt_BR">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Master Shield RPG">
+    <meta name="twitter:description" content="O escudo por trás da tela: rolador de dados, controle de combate e iniciativa, condições, grupo de heróis e histórico da sessão. Roda no navegador, sem cadastro.">
+    <meta name="twitter:image" content="https://mastershieldrpg.com/img/ico_cabecalho2.png">
+
     <link rel="icon" type="image/png" href="img/ico_aba.png">
+    <link rel="apple-touch-icon" href="img/ico_aba.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;500;600;700&family=MedievalSharp&family=Pirata+One&family=Metamorphous&family=IM+Fell+English+SC&family=Grenze+Gotisch:wght@400;700&family=Uncial+Antiqua&family=UnifrakturMaguntia&family=Cinzel+Decorative:wght@400;700;900&family=Almendra+SC&family=Fondamento&family=Berkshire+Swash&family=Creepster&display=swap" rel="stylesheet">
@@ -30,7 +51,7 @@
         <button id="btn-sobre" class="btn-topo">Sobre</button>
         <button id="btn-ajuda" class="btn-topo">Ajuda</button>
         <button id="btn-config" class="btn-topo">Configurações</button>
-        <button id="btn-tema" class="btn-topo">🌓 Modo Dark/Light</button>
+        <button id="btn-tema" class="btn-topo">Modo Dark/Light</button>
       </nav>
     </div>
 
@@ -38,13 +59,13 @@
     <div id="modal-sobre" class="modal oculto">
       <div class="modal-conteudo modal-texto-conteudo">
         <span class="fechar-modal" id="fechar-sobre">&times;</span>
-        <h2>Sobre o RPG Companion</h2>
-        <p>O RPG Companion é uma ferramenta auxiliar para mestres em mesas de RPG. Criei o projeto para colocar em prática minhas aulas de programação, também, para ajudar mais mestres(que nem eu) a se organizar nos combates e informações dos grupos de RPG.</p>
+        <h2>Sobre o Master Shield RPG</h2>
+        <p>O Master Shield RPG é uma ferramenta auxiliar para mestres em mesas de RPG. Criei o projeto para colocar em prática minhas aulas de programação, também, para ajudar mais mestres(que nem eu) a se organizar nos combates e informações dos grupos de RPG.</p>
         <p>Como só joguei Tormenta e D&D, não conheço muito outros sistemas, mas fiz diversas coisas personalizáveis, para adaptar ao sistema que quiser usar.</p>
         <p>A ideia inicial do site é deixar as informações salvas automaticamente no navegador, sem precisar de cadastro ou login. Mas ainda irei adicionar alguns desses recursos, só ir avançando mais no meu aprendizado.</p>
         <p>Esse projeto é opensource, mas por favor, não se esqueça de dar os créditos caso utilize em seu próprio projeto.</p>
         <p>Para o domínio desse site paguei tudo do meu bolso, mas se quiser ajudar com alguma coisa, deixarei um botão de doações. Também deixarei um e-mail para envio de sugestões e bugs.</p>
-        <p>Desenvolvido por Herick 🚀</p>
+        <p>Desenvolvido por Herick <i data-lucide="rocket"></i></p>
         <p>https://github.com/Herickcustodio</p>
         <p>Créditos:</p>
         <ul>
@@ -62,34 +83,34 @@
     <div id="modal-ajuda" class="modal oculto">
       <div class="modal-conteudo modal-texto-conteudo">
         <span class="fechar-modal" id="fechar-ajuda">&times;</span>
-        <h2>📖 Como usar o Master Shield RPG</h2>
+        <h2><i data-lucide="book-open"></i> Como usar o Master Shield RPG</h2>
         <p>Guia rápido de cada parte da tela. As alterações são salvas automaticamente no navegador conforme você usa o app.</p>
 
-        <h3>🎲 Rolador de Dados</h3>
+        <h3><i data-lucide="dices"></i> Rolador de Dados</h3>
         <p>Na aba <strong>Dados</strong>: escolha o dado clicando no ícone, ajuste Quantidade/Modificador e toque em "Rolar Dado". O resultado aparece ao lado e fica registrado em "Últimas Rolagens".</p>
         <p>Em <strong>Ações Rápidas</strong>, os botões "Rolar Iniciativa", "Teste de Perícia" e "Teste de Resistência" abrem uma janela pedindo o modificador e rolam um d20, já lançando o resultado colorido no histórico. O botão "Evento" abre um rolador dedicado a testes de personagens específicos.</p>
 
-        <h3>⚔️ Combate</h3>
+        <h3><i data-lucide="swords"></i> Combate</h3>
         <p>Use "Adicionar Monstro" para buscar na coletânea ou criar um monstro customizado — ao adicionar, é pedida a iniciativa dele. Cada combatente vira um card com CA, HP e condições ativas, exibidos em ordem de iniciativa. A faixa "Ordem da Iniciativa" permite pular direto para o turno de qualquer combatente. "Encerrar Combate" limpa a lista e reinicia o contador de rodada.</p>
 
-        <h3>🧭 Controle de Turno</h3>
+        <h3><i data-lucide="compass"></i> Controle de Turno</h3>
         <p>"Voltar Turno" e "Finalizar Turno" avançam a iniciativa entre os combatentes vivos; ao completar uma volta, o contador "RODADA" no topo avança e as condições/efeitos temporários são decrementados automaticamente.</p>
         <p>O card do combatente ativo tem botões de <strong>Ataque</strong>, <strong>Cura</strong> e <strong>Condição</strong>, além do ícone de caveira para marcar como morto/nocauteado. Condições ativas de duração limitada expiram sozinhas e avisam no histórico quando estão prestes a acabar.</p>
         <p>"Dano em Área" e "Cura em Área" aplicam valor a vários alvos de uma vez — dá para digitar o nome da magia/habilidade usada (ex: "Bola de Fogo") para ela aparecer no histórico no lugar do texto genérico.</p>
 
-        <h3>🦸 Grupo e Combatentes</h3>
+        <h3><i data-lucide="users"></i> Grupo e Combatentes</h3>
         <p>"+ Criar Novo Herói" cadastra nome, classe, nível, HP, CA, EXP, cor e imagem. Cada card de herói tem "+ Iniciativa" para entrar em combate e "+ EXP" para lançar experiência ganha — o herói sobe de nível automaticamente ao atingir a meta, que também pode ser reajustada ali mesmo para o próximo nível. HP temporário pode ser ajustado direto no card.</p>
 
-        <h3>📜 Histórico da Sessão</h3>
+        <h3><i data-lucide="scroll-text"></i> Histórico da Sessão</h3>
         <p>Registra automaticamente tudo que acontece na mesa — dano, cura, condições, turnos, rolagens e mais — cada tipo de evento com sua própria cor para facilitar a leitura. "Limpar Histórico" apaga os registros.</p>
 
-        <h3>📝 Anotações</h3>
+        <h3><i data-lucide="notebook-pen"></i> Anotações</h3>
         <p>Na aba "Anotações", ao lado dos Dados, há um campo de texto livre para anotar o que quiser durante a sessão.</p>
 
-        <h3>⚙️ Configurações</h3>
+        <h3><i data-lucide="settings"></i> Configurações</h3>
         <p>Defina o nome da campanha e do mestre (aparecem no cabeçalho), exporte a sessão inteira para um arquivo .json (backup) ou importe um arquivo salvo anteriormente. "Limpar todos os dados" reseta o app por completo.</p>
 
-        <p class="ajuda-dica">💡 Dica: use o botão "🌓 Modo Dark/Light" no topo para trocar o tema a qualquer momento.</p>
+        <p class="ajuda-dica"><i data-lucide="lightbulb"></i> Dica: use o botão "Modo Dark/Light" no topo para trocar o tema a qualquer momento.</p>
       </div>
     </div>
 
@@ -97,11 +118,11 @@
     <div id="modal-config" class="modal oculto">
       <div class="modal-conteudo modal-config-conteudo">
         <span class="fechar-modal" id="fechar-config">&times;</span>
-        <h2>⚙️ Configurações</h2>
+        <h2><i data-lucide="settings"></i> Configurações</h2>
 
         <!-- 1. CAMPANHA -->
         <div class="config-secao">
-          <h3 class="config-titulo">🗺️ Campanha</h3>
+          <h3 class="config-titulo"><i data-lucide="map"></i> Campanha</h3>
           <label for="config-campanha-nome">Nome da Campanha</label>
           <input type="text" id="config-campanha-nome" placeholder="Ex: A Maldição de Strahd" />
           <label for="config-mestre-nome">Nome do Mestre</label>
@@ -110,7 +131,7 @@
 
         <!-- 2. COMBATE -->
         <div class="config-secao">
-          <h3 class="config-titulo">⚔️ Combate</h3>
+          <h3 class="config-titulo"><i data-lucide="swords"></i> Combate</h3>
 
           <label for="config-dado-acerto">Dado padrão de acerto</label>
           <select id="config-dado-acerto" class="modal-dano-select">
@@ -132,7 +153,7 @@
           <div class="config-toggle-row">
             <div>
               <span class="config-toggle-label">Etapa de acerto antes do dano</span>
-              <span class="config-toggle-desc">Se desativado, ⚔️ Dano vai direto para o dano</span>
+              <span class="config-toggle-desc">Se desativado, <i data-lucide="swords"></i> Dano vai direto para o dano</span>
             </div>
             <label class="config-toggle">
               <input type="checkbox" id="config-etapa-acerto" checked />
@@ -154,15 +175,15 @@
 
         <!-- 3. DADOS E SESSÃO -->
         <div class="config-secao">
-          <h3 class="config-titulo">💾 Sessão</h3>
+          <h3 class="config-titulo"><i data-lucide="save"></i> Sessão</h3>
           <div class="config-botoes-sessao">
-            <button id="btn-exportar-sessao" class="btn-config-sessao">📥 Exportar Sessão</button>
+            <button id="btn-exportar-sessao" class="btn-config-sessao"><i data-lucide="download"></i> Exportar Sessão</button>
             <label class="btn-config-sessao btn-config-importar" for="input-importar-sessao">
-              📤 Importar Sessão
+              <i data-lucide="upload"></i> Importar Sessão
             </label>
             <input type="file" id="input-importar-sessao" accept=".json" style="display:none;" />
           </div>
-          <button id="btn-limpar-tudo" class="btn-config-danger">🗑️ Limpar todos os dados</button>
+          <button id="btn-limpar-tudo" class="btn-config-danger"><i data-lucide="trash-2"></i> Limpar todos os dados</button>
         </div>
 
         <button id="btn-salvar-config" class="btn-confirmar" style="margin-top:8px;">Salvar Configurações</button>
@@ -224,7 +245,7 @@
             <label>Imagem do Herói</label>
             <div class="heroi-imagem-escolha">
               <div id="heroi-imagem-preview" class="heroi-imagem-preview">✕</div>
-              <button type="button" id="btn-escolher-imagem-heroi" class="btn-escolher-imagem">🖼️ Escolher Imagem</button>
+              <button type="button" id="btn-escolher-imagem-heroi" class="btn-escolher-imagem"><i data-lucide="image"></i> Escolher Imagem</button>
             </div>
           </div>
 
@@ -244,7 +265,7 @@
           <input type="number" id="ini-modificador" value="0" />
 
           <div class="ini-rolar-area">
-            <button id="btn-rolar-ini" class="btn-rolar-ini">🎲 Rolar d20</button>
+            <button id="btn-rolar-ini" class="btn-rolar-ini"><i data-lucide="dices"></i> Rolar d20</button>
             <div id="ini-resultado-display" class="ini-resultado-display oculto">
               <span id="ini-dado-valor" class="ini-dado-valor">—</span>
               <span id="ini-formula" class="ini-formula"></span>
@@ -311,7 +332,7 @@
           <label>Imagem (opcional)</label>
           <div class="heroi-imagem-escolha">
             <div id="monstro-imagem-preview" class="heroi-imagem-preview">✕</div>
-            <button type="button" id="btn-escolher-imagem-monstro" class="btn-escolher-imagem">🖼️ Escolher Imagem</button>
+            <button type="button" id="btn-escolher-imagem-monstro" class="btn-escolher-imagem"><i data-lucide="image"></i> Escolher Imagem</button>
           </div>
           <input type="file" id="monstro-imagem-arquivo" accept="image/*" style="display:none;" />
 
@@ -359,7 +380,7 @@
               <label>Mod</label>
               <input type="number" id="acerto-modificador" value="0" />
             </div>
-            <button type="button" id="btn-rolar-acerto" class="btn-rolar-dano-modal">🎲 Rolar</button>
+            <button type="button" id="btn-rolar-acerto" class="btn-rolar-dano-modal"><i data-lucide="dices"></i> Rolar</button>
           </div>
 
           <div id="acerto-resultado-wrap" class="acerto-resultado-wrap" style="display:none;">
@@ -369,7 +390,7 @@
 
           <div class="acerto-botoes">
             <button id="btn-acerto-pular" class="btn-acerto-pular">Pular → Ir para Dano</button>
-            <button id="btn-acerto-aplicar-dano" class="btn-confirmar">⚔️ Aplicar Dano</button>
+            <button id="btn-acerto-aplicar-dano" class="btn-confirmar"><i data-lucide="swords"></i> Aplicar Dano</button>
           </div>
         </div>
       </div>
@@ -379,7 +400,7 @@
     <div id="modal-evento" class="modal oculto">
       <div class="modal-conteudo modal-conteudo--pequeno">
         <span class="fechar-modal" id="fechar-evento">&times;</span>
-        <h2>📜 Evento</h2>
+        <h2><i data-lucide="scroll-text"></i> Evento</h2>
 
         <div class="form-heroi">
           <label for="evento-personagem">Personagem</label>
@@ -415,7 +436,7 @@
 
           <div id="evento-previa" class="modal-dano-previa modal-dano-previa--evento"></div>
 
-          <button id="btn-rolar-evento" class="btn-confirmar">🎲 Rolar Evento</button>
+          <button id="btn-rolar-evento" class="btn-confirmar"><i data-lucide="dices"></i> Rolar Evento</button>
         </div>
       </div>
     </div>
@@ -468,7 +489,7 @@
               <label for="modal-dano-modificador">Mod</label>
               <input type="number" id="modal-dano-modificador" value="0" />
             </div>
-            <button type="button" id="btn-rolar-dano-modal" class="btn-rolar-dano-modal">🎲 Rolar</button>
+            <button type="button" id="btn-rolar-dano-modal" class="btn-rolar-dano-modal"><i data-lucide="dices"></i> Rolar</button>
           </div>
 
           <!-- Resultado da rolagem -->
@@ -486,7 +507,7 @@
 
           <button id="btn-confirmar-dano" class="btn-confirmar">Aplicar</button>
           <button id="btn-morto-modal" class="btn-morto-modal" style="display:none;">☠️ Marcar como Morto</button>
-          <p id="modal-dano-aviso" class="modal-dano-aviso" style="display:none;">⚠️ Lembre-se que a cura não pode exceder o máximo de vida configurado.</p>
+          <p id="modal-dano-aviso" class="modal-dano-aviso" style="display:none;"><i data-lucide="triangle-alert"></i> Lembre-se que a cura não pode exceder o máximo de vida configurado.</p>
         </div>
       </div>
     </div>
@@ -513,7 +534,7 @@
         <div class="form-heroi">
           <label for="acao-rapida-modificador">Modificador</label>
           <input type="number" id="acao-rapida-modificador" value="0" />
-          <button id="btn-confirmar-acao-rapida" class="btn-confirmar">🎲 Rolar</button>
+          <button id="btn-confirmar-acao-rapida" class="btn-confirmar"><i data-lucide="dices"></i> Rolar</button>
         </div>
       </div>
     </div>
@@ -522,7 +543,7 @@
     <div id="modal-area" class="modal oculto">
       <div class="modal-conteudo">
         <span class="fechar-modal" id="fechar-area">&times;</span>
-        <h2>💥 Dano em Área</h2>
+        <h2><i data-lucide="flame"></i> Dano em Área</h2>
 
         <div class="form-heroi">
           <label for="area-nome-habilidade">Nome da magia/habilidade (opcional)</label>
@@ -550,7 +571,7 @@
               <label>Mod</label>
               <input type="number" id="area-modificador" value="0" />
             </div>
-            <button type="button" id="btn-rolar-area" class="btn-rolar-dano-modal">🎲 Rolar</button>
+            <button type="button" id="btn-rolar-area" class="btn-rolar-dano-modal"><i data-lucide="dices"></i> Rolar</button>
           </div>
 
           <div class="modal-dano-resultado-wrap">
@@ -568,7 +589,7 @@
           </div>
           <div id="area-alvos-lista" class="area-alvos-lista"></div>
 
-          <button id="btn-confirmar-area" class="btn-confirmar btn-confirmar-dano">💥 Aplicar Dano em Área</button>
+          <button id="btn-confirmar-area" class="btn-confirmar btn-confirmar-dano"><i data-lucide="flame"></i> Aplicar Dano em Área</button>
         </div>
       </div>
     </div>
@@ -577,7 +598,7 @@
     <div id="modal-cura-area" class="modal oculto">
       <div class="modal-conteudo">
         <span class="fechar-modal" id="fechar-cura-area">&times;</span>
-        <h2>💚 Cura em Área</h2>
+        <h2><i data-lucide="heart-pulse"></i> Cura em Área</h2>
 
         <div class="modal-dano-atacante-wrap">
           <label for="cura-area-curador">Curador</label>
@@ -607,7 +628,7 @@
               <label>Mod</label>
               <input type="number" id="cura-area-modificador" value="0" />
             </div>
-            <button type="button" id="btn-rolar-cura-area" class="btn-rolar-dano-modal">🎲 Rolar</button>
+            <button type="button" id="btn-rolar-cura-area" class="btn-rolar-dano-modal"><i data-lucide="dices"></i> Rolar</button>
           </div>
 
           <div class="modal-dano-resultado-wrap">
@@ -625,7 +646,7 @@
           </div>
           <div id="cura-area-alvos-lista" class="area-alvos-lista"></div>
 
-          <button id="btn-confirmar-cura-area" class="btn-confirmar btn-confirmar-cura">💚 Aplicar Cura em Área</button>
+          <button id="btn-confirmar-cura-area" class="btn-confirmar btn-confirmar-cura"><i data-lucide="heart-pulse"></i> Aplicar Cura em Área</button>
         </div>
       </div>
     </div>
@@ -634,9 +655,9 @@
     <div id="modal-monstros-lista" class="modal oculto">
       <div class="modal-conteudo modal-monstros-conteudo">
         <span class="fechar-modal" id="fechar-monstros-lista">&times;</span>
-        <h2>⚔️ Adicionar Monstro ao Combate</h2>
+        <h2><i data-lucide="swords"></i> Adicionar Monstro ao Combate</h2>
         <div class="modal-monstros-header">
-          <input type="text" id="busca-monstros" class="input-busca-monstros-modal" placeholder="🔍 Buscar monstro..." />
+          <input type="text" id="busca-monstros" class="input-busca-monstros-modal" placeholder="Buscar monstro..." />
           <button id="btn-novo-monstro" class="btn-novo-monstro-cab">+ Criar</button>
         </div>
         <div id="conteudo-monstros" class="modal-monstros-lista"></div>
@@ -650,8 +671,8 @@
     <section class="painel iniciativa">
       <div class="painel-combate-topo">
         <div class="painel-combate-esquerda">
-          <h2>Combate</h2>
-          <button id="btn-abrir-monstros" class="btn-abrir-monstros">⚔️ Adicionar Monstro</button>
+          <h2><i data-lucide="swords"></i> Combate</h2>
+          <button id="btn-abrir-monstros" class="btn-abrir-monstros"><i data-lucide="swords"></i> Adicionar Monstro</button>
         </div>
         <div class="painel-combate-turno">
           <div class="turno-iniciativa-caixa">
@@ -665,15 +686,15 @@
             </div>
           </div>
         </div>
-        <button id="btn-encerrar-combate" class="btn-encerrar-combate">🏳️ Encerrar Combate</button>
+        <button id="btn-encerrar-combate" class="btn-encerrar-combate"><i data-lucide="flag"></i> Encerrar Combate</button>
       </div>
       <div id="lista-iniciativa-conteudo"></div>
     </section>
 
     <section class="painel painel-tabs" id="painel-dados-anotacoes">
       <div class="mini-navbar" role="tablist" aria-label="Ferramentas de sessão">
-        <button class="mini-navbar__btn mini-navbar__btn--active" type="button" data-tab="dados" role="tab" aria-selected="true">Dados</button>
-        <button class="mini-navbar__btn" type="button" data-tab="anotacoes" role="tab" aria-selected="false">Anotações</button>
+        <button class="mini-navbar__btn mini-navbar__btn--active" type="button" data-tab="dados" role="tab" aria-selected="true"><i data-lucide="dices"></i> Dados</button>
+        <button class="mini-navbar__btn" type="button" data-tab="anotacoes" role="tab" aria-selected="false"><i data-lucide="notebook-pen"></i> Anotações</button>
       </div>
 
       <div class="tab-panel tab-panel--active" id="tab-dados">
@@ -702,16 +723,16 @@
           </div>
         </div>
         <div class="ultimas-rolagens-wrap">
-          <h3 class="ultimas-rolagens-titulo">📜 Últimas Rolagens</h3>
+          <h3 class="ultimas-rolagens-titulo"><i data-lucide="scroll-text"></i> Últimas Rolagens</h3>
           <div id="lista-ultimas-rolagens" class="ultimas-rolagens-lista"></div>
         </div>
         <div class="acoes-rapidas-wrap">
           <h3 class="acoes-rapidas-titulo">Ações Rápidas</h3>
           <div class="acoes-rapidas-grid">
-            <button id="btn-rapido-iniciativa" class="btn-rapido btn-rapido--teal">🎲 Rolar Iniciativa</button>
-            <button id="btn-rapido-pericia" class="btn-rapido btn-rapido--azul">🎯 Teste de Perícia</button>
-            <button id="btn-rapido-resistencia" class="btn-rapido btn-rapido--amarelo">🛡️ Teste de Resistência</button>
-            <button id="btn-rapido-evento" class="btn-rapido btn-rapido--laranja">📜 Evento</button>
+            <button id="btn-rapido-iniciativa" class="btn-rapido btn-rapido--teal"><i data-lucide="dices"></i> Rolar Iniciativa</button>
+            <button id="btn-rapido-pericia" class="btn-rapido btn-rapido--azul"><i data-lucide="target"></i> Teste de Perícia</button>
+            <button id="btn-rapido-resistencia" class="btn-rapido btn-rapido--amarelo"><i data-lucide="shield"></i> Teste de Resistência</button>
+            <button id="btn-rapido-evento" class="btn-rapido btn-rapido--laranja"><i data-lucide="scroll-text"></i> Evento</button>
           </div>
         </div>
       </div>
@@ -723,10 +744,10 @@
 
 <section class="painel turno">
       <div class="painel-cabecalho">
-        <h2>Controle de Turno</h2>
+        <h2><i data-lucide="compass"></i> Controle de Turno</h2>
         <div class="painel-cabecalho-botoes">
-          <button class="btn-area-cab" id="btn-abrir-area" title="Dano em área">💥 Dano em Área</button>
-          <button class="btn-area-cab btn-area-cab--cura" id="btn-abrir-cura-area" title="Cura em área">💚 Cura em Área</button>
+          <button class="btn-area-cab" id="btn-abrir-area" title="Dano em área"><i data-lucide="flame"></i> Dano em Área</button>
+          <button class="btn-area-cab btn-area-cab--cura" id="btn-abrir-cura-area" title="Cura em área"><i data-lucide="heart-pulse"></i> Cura em Área</button>
         </div>
       </div>
 
@@ -752,7 +773,7 @@
 
     <section class="painel historico">
       <div class="painel-cabecalho">
-        <h2>Histórico da Sessão</h2>
+        <h2><i data-lucide="scroll-text"></i> Histórico da Sessão</h2>
         <button id="btn-limpar-historico" class="btn-limpar-combate">Limpar Histórico</button>
       </div>
       <div id="log-historico"></div>
@@ -766,7 +787,7 @@
 
     <section class="painel status">
       <div class="painel-cabecalho painel-cabecalho--status">
-        <h2>Grupo e Combatentes</h2>
+        <h2><i data-lucide="users"></i> Grupo e Combatentes</h2>
         <button id="btn-novo-heroi-status" class="btn-novo-heroi-status">+ Criar Novo Herói</button>
       </div>
       <div id="conteudo-status-grupo"></div>
@@ -774,7 +795,9 @@
 
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/lucide@1.39.0/dist/umd/lucide.min.js"></script>
   <script type="module" src="js/main.js"></script>
+  <script>window.lucide && lucide.createIcons();</script>
 
 </body>
 </html>

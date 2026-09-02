@@ -26,7 +26,11 @@ import { atualizarPainelTurno, initTurno } from "./turno.js";
 function atualizarBtnTema() {
   const isLight = document.body.classList.contains("tema-light");
   const btn = $("btn-tema");
-  if (btn) btn.textContent = isLight ? "🌙 Modo Dark" : "☀️ Modo Light";
+  if (!btn) return;
+  btn.innerHTML = isLight
+    ? `<i data-lucide="moon"></i> Modo Dark`
+    : `<i data-lucide="sun"></i> Modo Light`;
+  if (window.lucide) window.lucide.createIcons();
 }
 
 /* ==========================================================================

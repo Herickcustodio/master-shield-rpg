@@ -10,12 +10,12 @@
 export const coletaneaMonstros = [
 
   // ── HUMANOIDES ──────────────────────────────────────────────────────────
-  { nome: "Goblin",             vidaMax: 7,   ca: 15 },
-  { nome: "Kobold",             vidaMax: 5,   ca: 12 },
-  { nome: "Hobgoblin",          vidaMax: 11,  ca: 18 },
-  { nome: "Orc",                vidaMax: 15,  ca: 13 },
+  { nome: "Goblin",             vidaMax: 7,   ca: 15, icone: "monstros/goblin" },
+  { nome: "Kobold",             vidaMax: 5,   ca: 12, icone: "monstros/kobold" },
+  { nome: "Hobgoblin",          vidaMax: 11,  ca: 18, icone: "monstros/hobgoblin" },
+  { nome: "Orc",                vidaMax: 15,  ca: 13, icone: "monstros/orc" },
   { nome: "Gnoll",              vidaMax: 22,  ca: 15 },
-  { nome: "Bugbear",            vidaMax: 27,  ca: 16 },
+  { nome: "Bugbear",            vidaMax: 27,  ca: 16, icone: "monstros/bugbear" },
   { nome: "Lizardfolk",         vidaMax: 22,  ca: 15 },
   { nome: "Troglodita",         vidaMax: 13,  ca: 11 },
   { nome: "Bandido",            vidaMax: 11,  ca: 12 },
