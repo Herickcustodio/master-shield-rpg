@@ -112,3 +112,19 @@ body.tema-light .acerto-badge--errou   { background: #fef3c7; color: #b45309; }
   border-color: var(--text-secondary);
   color: var(--text-primary);
 }
+
+/* Aplicar Dano — centralizado e vermelho (não fica dentro de .form-heroi) */
+#btn-acerto-aplicar-dano {
+  display: block;
+  width: fit-content;
+  align-self: center;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 22px;
+  padding-right: 22px;
+  background: #8b1a1a;
+}
+
+#btn-acerto-aplicar-dano:hover {
+  background: #c0392b;
+}

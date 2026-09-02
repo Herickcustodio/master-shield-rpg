@@ -20,15 +20,24 @@ let _contextoIniciativa = null;
 // Imagem escolhida no modal de "Criar Monstro" (data URL ou null)
 let _monstroImagemSel = null;
 
+// id do monstro custom em edição no modal, ou null quando é um novo
+let _monstroEditandoId = null;
+
 /* ==========================================================================
    MONSTRO CUSTOMIZADO + COLETÂNEA
    ========================================================================== */
-function abrirModalMonstro() {
-  $("monstro-nome").value = "";
-  $("monstro-hp").value   = "10";
-  $("monstro-nd").value   = "";
-  _monstroImagemSel = null;
+function abrirModalMonstro(monstro = null) {
+  _monstroEditandoId = monstro ? monstro.id : null;
+
+  $("monstro-nome").value = monstro ? monstro.nome : "";
+  $("monstro-hp").value   = monstro ? monstro.vidaMax : "10";
+  $("monstro-nd").value   = monstro && monstro.ca !== "?" ? monstro.ca : "";
+  _monstroImagemSel       = monstro ? (monstro.imagem || null) : null;
   atualizarPreviewImagemMonstro();
+
+  $("modal-monstro-titulo").textContent  = monstro ? "Editar Monstro" : "Novo Monstro";
+  $("btn-confirmar-monstro").textContent = monstro ? "Salvar Monstro" : "Criar Monstro";
+
   $("modal-monstro").classList.remove("oculto");
   $("monstro-nome").focus();
 }
@@ -66,14 +75,15 @@ function fecharModalMonstrosLista() {
 
 function fecharModalMonstro() {
   $("modal-monstro").classList.add("oculto");
+  _monstroEditandoId = null;
 }
 
 function confirmarNovoMonstro() {
   const nome = $("monstro-nome").value.trim();
   if (!nome) { $("monstro-nome").focus(); return; }
 
-  const novoMonstro = {
-    id:      "mc_" + Date.now(),
+  const editandoId = _monstroEditandoId;
+  const dados = {
     nome,
     vidaMax: parseInt($("monstro-hp").value) || 10,
     ca:      $("monstro-nd").value.trim() || "?",
@@ -81,12 +91,22 @@ function confirmarNovoMonstro() {
     custom:  true
   };
 
-  estado.monstrosCustom.push(novoMonstro);
+  if (editandoId) {
+    const mc = estado.monstrosCustom.find(m => m.id === editandoId);
+    if (mc) Object.assign(mc, dados);
+  } else {
+    estado.monstrosCustom.push({ id: "mc_" + Date.now(), ...dados });
+  }
+
   localStorage.setItem(CHAVES.monstrosCustom, JSON.stringify(estado.monstrosCustom));
   fecharModalMonstro();
 
   const inputBusca = $("busca-monstros");
   renderizarColetanea(inputBusca ? inputBusca.value : "");
+
+  // CA e imagem dos combatentes já em cena são resolvidas ao vivo pelo
+  // idMonstroCustom — re-renderiza o painel de combate para refletir a edição
+  if (editandoId) salvarESincronizar();
 }
 
 function deletarMonstroCustom(id) {
@@ -192,8 +212,9 @@ function confirmarIniciativaModal() {
     });
 
     const caTxt = heroiBase.ca ? ` | CA: ${heroiBase.ca}` : "";
-    if (jaEstava) adicionarHistorico(`🔄 ${heroiBase.nome} atualizou iniciativa para ${valor}`);
-    else          adicionarHistorico(`🦸 ${heroiBase.nome} entrou no combate! (Ini: ${valor} | HP: ${heroiBase.hpMax}${caTxt})`);
+    const corHeroi = heroiBase.cor ? (CORES_HEROI.find(c => c.id === heroiBase.cor)?.hex ?? null) : null;
+    if (jaEstava) adicionarHistorico(`🔄 ${heroiBase.nome} atualizou iniciativa para ${valor}`, "", corHeroi);
+    else          adicionarHistorico(`🦸 ${heroiBase.nome} entrou no combate! (Ini: ${valor} | HP: ${heroiBase.hpMax}${caTxt})`, "", corHeroi);
 
   } else if (ctx.tipo === "monstro") {
     const entradaMonstro = {
@@ -507,6 +528,13 @@ export function renderizarColetanea(filtro = "") {
     acoes.appendChild(btnAdd);
 
     if (monstro.custom) {
+      const btnEdit = document.createElement("button");
+      btnEdit.textContent = "✎";
+      btnEdit.className   = "btn-editar-monstro";
+      btnEdit.title       = "Editar monstro";
+      btnEdit.addEventListener("click", () => abrirModalMonstro(monstro));
+      acoes.appendChild(btnEdit);
+
       const btnDel = document.createElement("button");
       btnDel.textContent = "✕";
       btnDel.className   = "btn-deletar-monstro";
@@ -533,7 +561,7 @@ export function initCombate() {
     if (e.target === modal) fecharModalMonstrosLista();
   });
 
-  $("btn-novo-monstro").addEventListener("click", abrirModalMonstro);
+  $("btn-novo-monstro").addEventListener("click", () => abrirModalMonstro());
   $("fechar-monstro").addEventListener("click", fecharModalMonstro);
   $("btn-confirmar-monstro").addEventListener("click", confirmarNovoMonstro);
   window.addEventListener("click", (e) => { if (e.target === $("modal-monstro")) fecharModalMonstro(); });

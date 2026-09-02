@@ -83,7 +83,7 @@ function importarSessao(file) {
       const area = $("campo-anotacoes");
       if (area) area.value = dados.anotacoes || "";
       $("log-historico").innerHTML = "";
-      (dados.historico || []).forEach(h => renderizarItemHistorico(h.texto, h.tipo, h.hora));
+      (dados.historico || []).forEach(h => renderizarItemHistorico(h.texto, h.tipo, h.hora, h.cor));
       aplicarConfig();
       salvarESincronizar();
       renderizarColetanea();
@@ -157,7 +157,7 @@ window.onload = () => {
 
   // Histórico salvo
   const historicoSalvo = lerLocalStorageJSON(CHAVES.historico, []);
-  historicoSalvo.forEach(e => renderizarItemHistorico(e.texto, e.tipo, e.hora));
+  historicoSalvo.forEach(e => renderizarItemHistorico(e.texto, e.tipo, e.hora, e.cor));
 
   // Anotações
   const areaAnotacoes = $("campo-anotacoes");

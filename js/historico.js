@@ -4,19 +4,25 @@
 import { $, horaAgora } from "./dom.js";
 import { CHAVES, lerLocalStorageJSON } from "./storage.js";
 
-export function adicionarHistorico(texto, tipo = "") {
+export function adicionarHistorico(texto, tipo = "", cor = null) {
   const historico = lerLocalStorageJSON(CHAVES.historico, []);
   const hora = horaAgora();
-  historico.push({ texto, tipo, hora });
+  const entrada = { texto, tipo, hora };
+  if (cor) entrada.cor = cor;
+  historico.push(entrada);
   localStorage.setItem(CHAVES.historico, JSON.stringify(historico));
-  renderizarItemHistorico(texto, tipo, hora);
+  renderizarItemHistorico(texto, tipo, hora, cor);
 }
 
-export function renderizarItemHistorico(texto, tipo, hora) {
+export function renderizarItemHistorico(texto, tipo, hora, cor = null) {
   const log = $("log-historico");
   if (!log) return;
   const item       = document.createElement("div");
   item.className   = "log-item" + (tipo ? ` ${tipo}` : "");
+  if (cor) {
+    item.style.borderLeftColor = cor;
+    item.style.color = cor;
+  }
 
   const texto_el = document.createElement("span");
   texto_el.className = "log-item-texto";

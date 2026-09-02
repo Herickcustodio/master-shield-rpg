@@ -14,6 +14,9 @@ let _corSelecionada = null;
 let _imagemSelecionada = null;
 let _idHeroiExpAtual = null;
 
+/** Hex da cor escolhida para o herói (ou null se não tiver). */
+const corHexHeroi = (heroi) => heroi.cor ? (CORES_HEROI.find(c => c.id === heroi.cor)?.hex ?? null) : null;
+
 /* ==========================================================================
    SELETORES DE COR E IMAGEM
    ========================================================================== */
@@ -160,7 +163,7 @@ export function abrirModalHeroi(idEdicao = null) {
   $("heroi-id-edicao").value             = idEdicao || "";
   $("heroi-nome").value   = heroi ? heroi.nome   : "";
   $("heroi-classe").value = heroi ? heroi.classe : "";
-  $("heroi-nivel").value  = heroi ? heroi.nivel  : "1";
+  $("heroi-nivel").value  = heroi ? heroi.nivel  : "0";
   $("heroi-hp").value     = heroi ? heroi.hpMax  : "10";
   $("heroi-ca").value     = heroi ? heroi.ca     : "10";
   $("heroi-exp").value      = heroi ? (heroi.exp || 0) : "0";
@@ -197,7 +200,7 @@ function confirmarNovoHeroi() {
     if (!heroi) return;
 
     const hpMaxAnterior = heroi.hpMax;
-    const nivelInformado = parseInt($("heroi-nivel").value) || 1;
+    const nivelInformado = parseInt($("heroi-nivel").value) || 0;
     const expInformada   = parseInt($("heroi-exp").value) || 0;
     const expMeta        = parseInt($("heroi-exp-meta").value) || 1000;
     const { nivel, exp, subiuNivel } = aplicarExpENivel(nivelInformado, expInformada, expMeta);
@@ -220,10 +223,10 @@ function confirmarNovoHeroi() {
     }
 
     adicionarHistorico(`✏️ ${heroi.nome} foi editado.`);
-    if (subiuNivel) adicionarHistorico(`📈 ${heroi.nome} subiu para o nível ${nivel}!`);
+    if (subiuNivel) adicionarHistorico(`📈 ${heroi.nome} subiu para o nível ${nivel}!`, "", corHexHeroi(heroi));
   } else {
     // CRIAÇÃO
-    const nivelInformado = parseInt($("heroi-nivel").value) || 1;
+    const nivelInformado = parseInt($("heroi-nivel").value) || 0;
     const expInformada   = parseInt($("heroi-exp").value) || 0;
     const expMeta        = parseInt($("heroi-exp-meta").value) || 1000;
     const { nivel, exp } = aplicarExpENivel(nivelInformado, expInformada, expMeta);
@@ -288,7 +291,7 @@ function confirmarExpHeroi() {
   heroi.expMeta  = novaMeta;
 
   if (valorAdicionado) adicionarHistorico(`✨ ${heroi.nome} ganhou ${valorAdicionado} de EXP!`, "exp");
-  if (subiuNivel) adicionarHistorico(`📈 ${heroi.nome} subiu para o nível ${nivel}!`);
+  if (subiuNivel) adicionarHistorico(`📈 ${heroi.nome} subiu para o nível ${nivel}!`, "", corHexHeroi(heroi));
 
   fecharModalExpHeroi();
   salvarESincronizar();

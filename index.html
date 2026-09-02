@@ -88,21 +88,22 @@
 
         <h3><i data-lucide="dices"></i> Rolador de Dados</h3>
         <p>Na aba <strong>Dados</strong>: escolha o dado clicando no ícone, ajuste Quantidade/Modificador e toque em "Rolar Dado". O resultado aparece ao lado e fica registrado em "Últimas Rolagens".</p>
-        <p>Em <strong>Ações Rápidas</strong>, os botões "Rolar Iniciativa", "Teste de Perícia" e "Teste de Resistência" abrem uma janela pedindo o modificador e rolam um d20, já lançando o resultado colorido no histórico. O botão "Evento" abre um rolador dedicado a testes de personagens específicos.</p>
+        <p>Em <strong>Ações Rápidas</strong>, os botões "Rolar Iniciativa", "Teste de Perícia" e "Teste de Resistência" abrem uma janela pedindo o modificador e rolam um d20, já lançando o resultado colorido no histórico. Cada uma tem um campo opcional de <strong>Personagem</strong> — escolha alguém do grupo/combate ou digite um nome — que aparece na mensagem do histórico. O botão "Evento" abre um rolador dedicado a testes de personagens específicos.</p>
 
         <h3><i data-lucide="swords"></i> Combate</h3>
-        <p>Use "Adicionar Monstro" para buscar na coletânea ou criar um monstro customizado — ao adicionar, é pedida a iniciativa dele. Cada combatente vira um card com CA, HP e condições ativas, exibidos em ordem de iniciativa. A faixa "Ordem da Iniciativa" permite pular direto para o turno de qualquer combatente. "Encerrar Combate" limpa a lista e reinicia o contador de rodada.</p>
+        <p>Use "Adicionar Monstro" para buscar na coletânea ou criar um monstro customizado — ao adicionar, é pedida a iniciativa dele. Monstros customizados podem ser <strong>editados</strong> (✎) ou removidos (✕) na coletânea. Cada combatente vira um card com CA, HP e condições ativas, exibidos em ordem de iniciativa. A faixa "Ordem da Iniciativa" permite pular direto para o turno de qualquer combatente. "Encerrar Combate" limpa a lista e reinicia o contador de rodada.</p>
 
         <h3><i data-lucide="compass"></i> Controle de Turno</h3>
         <p>"Voltar Turno" e "Finalizar Turno" avançam a iniciativa entre os combatentes vivos; ao completar uma volta, o contador "RODADA" no topo avança e as condições/efeitos temporários são decrementados automaticamente.</p>
         <p>O card do combatente ativo tem botões de <strong>Ataque</strong>, <strong>Cura</strong> e <strong>Condição</strong>, além do ícone de caveira para marcar como morto/nocauteado. Condições ativas de duração limitada expiram sozinhas e avisam no histórico quando estão prestes a acabar.</p>
-        <p>"Dano em Área" e "Cura em Área" aplicam valor a vários alvos de uma vez — dá para digitar o nome da magia/habilidade usada (ex: "Bola de Fogo") para ela aparecer no histórico no lugar do texto genérico.</p>
+        <p><strong>Ataque</strong> abre a etapa de acerto (que pode ser desligada em Configurações) e depois o dano. No modal de dano dá para informar o <strong>nome do ataque</strong> e <strong>aplicar uma condição junto</strong> (ex.: golpe de escudo que atordoa) — tudo vai para o histórico. <strong>Cura</strong> deixa escolher quem curar; curar alguém a 0 HP o traz de volta (reviver/tirar do nocaute). Nos modais de dano e cura há um botão <strong>×2 crítico</strong> que liga/desliga a duplicação do valor (acerto/cura crítico) — nunca é automático, para não conflitar com sistemas sem essa regra. Ele acende quando acionado e fica realçado quando o acerto rolado foi crítico.</p>
+        <p>"Dano em vários alvos" e "Cura em vários alvos" aplicam valor a vários de uma vez. Dá para indicar a <strong>Fonte</strong> do dano / o <strong>Curador</strong> (escolhido da lista ou digitado, ex.: "Armadilha", "Fonte sagrada") e o nome da magia/habilidade (ex.: "Bola de Fogo"), que aparecem no histórico.</p>
 
         <h3><i data-lucide="users"></i> Grupo e Combatentes</h3>
-        <p>"+ Criar Novo Herói" cadastra nome, classe, nível, HP, CA, EXP, cor e imagem. Cada card de herói tem "+ Iniciativa" para entrar em combate e "+ EXP" para lançar experiência ganha — o herói sobe de nível automaticamente ao atingir a meta, que também pode ser reajustada ali mesmo para o próximo nível. HP temporário pode ser ajustado direto no card.</p>
+        <p>"+ Criar Novo Herói" cadastra nome, classe, nível (começa em 0), HP, CA, EXP, cor e imagem. Cada card de herói tem "+ Iniciativa" para entrar em combate e "+ EXP" para lançar experiência ganha — o herói sobe de nível automaticamente ao atingir a meta, que também pode ser reajustada ali mesmo para o próximo nível. HP temporário pode ser ajustado direto no card.</p>
 
         <h3><i data-lucide="scroll-text"></i> Histórico da Sessão</h3>
-        <p>Registra automaticamente tudo que acontece na mesa — dano, cura, condições, turnos, rolagens e mais — cada tipo de evento com sua própria cor para facilitar a leitura. "Limpar Histórico" apaga os registros.</p>
+        <p>Registra automaticamente tudo que acontece na mesa — dano, cura, condições, turnos, rolagens e mais — cada tipo de evento com sua própria cor para facilitar a leitura. Ações dos heróis (entrar em combate, subir de nível) saem na cor do próprio herói. Há também um campo para anotar algo manualmente no histórico. "Limpar Histórico" apaga os registros.</p>
 
         <h3><i data-lucide="notebook-pen"></i> Anotações</h3>
         <p>Na aba "Anotações", ao lado dos Dados, há um campo de texto livre para anotar o que quiser durante a sessão.</p>
@@ -314,11 +315,11 @@
       </div>
     </div>
 
-    <!-- Modal Novo Monstro -->
+    <!-- Modal Novo / Editar Monstro -->
     <div id="modal-monstro" class="modal oculto">
       <div class="modal-conteudo">
         <span class="fechar-modal" id="fechar-monstro">&times;</span>
-        <h2>Novo Monstro</h2>
+        <h2 id="modal-monstro-titulo">Novo Monstro</h2>
         <div class="form-heroi">
           <label for="monstro-nome">Nome</label>
           <input type="text" id="monstro-nome" placeholder="Ex: Dragão da Caverna" />
@@ -343,7 +344,7 @@
 
     <!-- Modal Acerto -->
     <div id="modal-acerto" class="modal oculto">
-      <div class="modal-conteudo modal-conteudo--pequeno">
+      <div class="modal-conteudo">
         <span class="fechar-modal" id="fechar-acerto">&times;</span>
         <h2 id="modal-acerto-titulo">🎯 Rolagem de Acerto</h2>
 
@@ -392,6 +393,8 @@
             <button id="btn-acerto-pular" class="btn-acerto-pular">Pular → Ir para Dano</button>
             <button id="btn-acerto-aplicar-dano" class="btn-confirmar"><i data-lucide="swords"></i> Aplicar Dano</button>
           </div>
+
+          <p class="modal-dano-aviso"><i data-lucide="triangle-alert"></i> A etapa de acerto pode ser ligada ou desligada em Configurações (botão no canto superior direito).</p>
         </div>
       </div>
     </div>
@@ -404,7 +407,8 @@
 
         <div class="form-heroi">
           <label for="evento-personagem">Personagem</label>
-          <select id="evento-personagem" class="modal-dano-select"></select>
+          <input type="text" id="evento-personagem" class="modal-dano-select" list="evento-personagem-lista" placeholder="Escolha do grupo/combate ou digite" maxlength="40" autocomplete="off" />
+          <datalist id="evento-personagem-lista"></datalist>
 
           <label for="evento-acao">Ação</label>
           <textarea id="evento-acao" class="evento-acao-textarea" rows="3" placeholder="...vai tentar abrir a porta"></textarea>
@@ -446,6 +450,13 @@
       <div class="modal-conteudo">
         <span class="fechar-modal" id="fechar-dano-cura">&times;</span>
         <h2 id="modal-dano-titulo">Dano</h2>
+
+        <!-- Quem curar (só no modo cura) — 1 alvo; vários alvos usam Cura em Área -->
+        <div id="modal-dano-cura-alvo-wrap" class="modal-dano-atacante-wrap" style="display:none;">
+          <label for="modal-dano-cura-alvo">Quem curar</label>
+          <select id="modal-dano-cura-alvo" class="modal-dano-select"></select>
+        </div>
+
         <p id="modal-dano-hp-atual" class="modal-dano-hp-atual"></p>
 
         <!-- Atacante (só no modo dano) -->
@@ -496,6 +507,7 @@
           <div class="modal-dano-resultado-wrap">
             <span id="modal-dano-resultado" class="modal-dano-valor">—</span>
             <span id="modal-dano-formula-txt" class="modal-dano-formula"></span>
+            <button type="button" id="btn-dano-critico" class="btn-dano-critico" aria-pressed="false" title="Liga/desliga a duplicação do valor (acerto/cura crítico)">×2 crítico</button>
           </div>
 
           <!-- Valor manual -->
@@ -504,6 +516,21 @@
 
           <!-- Prévia do resultado -->
           <div id="modal-dano-previa" class="modal-dano-previa" style="display:none;"></div>
+
+          <!-- Extras do ataque (só no modo dano): nome do golpe + condição aplicada no acerto -->
+          <div id="modal-dano-extras" class="modal-dano-extras" style="display:none;">
+            <label for="modal-dano-nome-ataque">Nome do ataque (opcional)</label>
+            <input type="text" id="modal-dano-nome-ataque" maxlength="40" placeholder="Ex: Golpe de Escudo" autocomplete="off" />
+
+            <label for="modal-dano-condicao">Aplicar condição (opcional)</label>
+            <select id="modal-dano-condicao" class="modal-dano-select"></select>
+
+            <div id="modal-dano-condicao-turnos-wrap" style="display:none;">
+              <label for="modal-dano-condicao-turnos">Duração da condição (turnos)</label>
+              <input type="number" id="modal-dano-condicao-turnos" min="1" placeholder="Valor em turnos" />
+              <p class="condicao-duracao-dica">Deixe em branco para duração indefinida.</p>
+            </div>
+          </div>
 
           <button id="btn-confirmar-dano" class="btn-confirmar">Aplicar</button>
           <button id="btn-morto-modal" class="btn-morto-modal" style="display:none;">☠️ Marcar como Morto</button>
@@ -532,6 +559,10 @@
         <span class="fechar-modal" id="fechar-acao-rapida">&times;</span>
         <h2 id="modal-acao-rapida-titulo">Rolar 1d20</h2>
         <div class="form-heroi">
+          <label for="acao-rapida-personagem">Personagem (opcional)</label>
+          <input type="text" id="acao-rapida-personagem" list="acao-rapida-personagem-lista" placeholder="Escolha do grupo/combate ou digite" maxlength="40" autocomplete="off" />
+          <datalist id="acao-rapida-personagem-lista"></datalist>
+
           <label for="acao-rapida-modificador">Modificador</label>
           <input type="number" id="acao-rapida-modificador" value="0" />
           <button id="btn-confirmar-acao-rapida" class="btn-confirmar"><i data-lucide="dices"></i> Rolar</button>
@@ -546,6 +577,10 @@
         <h2><i data-lucide="flame"></i> Dano em Área</h2>
 
         <div class="form-heroi">
+          <label for="area-fonte">Fonte do dano (opcional)</label>
+          <input type="text" id="area-fonte" list="area-fonte-lista" placeholder="Escolha um combatente ou digite (ex: Armadilha)" maxlength="40" autocomplete="off" />
+          <datalist id="area-fonte-lista"></datalist>
+
           <label for="area-nome-habilidade">Nome da magia/habilidade (opcional)</label>
           <input type="text" id="area-nome-habilidade" placeholder="Ex: Bola de Fogo" maxlength="40" />
 
@@ -600,12 +635,11 @@
         <span class="fechar-modal" id="fechar-cura-area">&times;</span>
         <h2><i data-lucide="heart-pulse"></i> Cura em Área</h2>
 
-        <div class="modal-dano-atacante-wrap">
-          <label for="cura-area-curador">Curador</label>
-          <select id="cura-area-curador" class="modal-dano-select"></select>
-        </div>
-
         <div class="form-heroi">
+          <label for="cura-area-curador">Curador (opcional)</label>
+          <input type="text" id="cura-area-curador" list="cura-area-curador-lista" placeholder="Escolha um combatente ou digite (ex: Fonte sagrada)" maxlength="40" autocomplete="off" />
+          <datalist id="cura-area-curador-lista"></datalist>
+
           <label>Rolar cura</label>
           <div class="modal-dano-seletor">
             <div class="modal-dano-seletor-grupo">
@@ -647,6 +681,7 @@
           <div id="cura-area-alvos-lista" class="area-alvos-lista"></div>
 
           <button id="btn-confirmar-cura-area" class="btn-confirmar btn-confirmar-cura"><i data-lucide="heart-pulse"></i> Aplicar Cura em Área</button>
+          <p class="modal-dano-aviso"><i data-lucide="triangle-alert"></i> Lembre-se que a cura não pode exceder o máximo de vida configurado.</p>
         </div>
       </div>
     </div>
@@ -746,8 +781,8 @@
       <div class="painel-cabecalho">
         <h2><i data-lucide="compass"></i> Controle de Turno</h2>
         <div class="painel-cabecalho-botoes">
-          <button class="btn-area-cab" id="btn-abrir-area" title="Dano em área"><i data-lucide="flame"></i> Dano em Área</button>
-          <button class="btn-area-cab btn-area-cab--cura" id="btn-abrir-cura-area" title="Cura em área"><i data-lucide="heart-pulse"></i> Cura em Área</button>
+          <button class="btn-area-cab" id="btn-abrir-area" title="Dano em vários alvos"><i data-lucide="flame"></i> Dano em vários alvos</button>
+          <button class="btn-area-cab btn-area-cab--cura" id="btn-abrir-cura-area" title="Cura em vários alvos"><i data-lucide="heart-pulse"></i> Cura em vários alvos</button>
         </div>
       </div>
 

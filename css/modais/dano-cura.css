@@ -1,6 +1,13 @@
 /* ==========================================================================
    MODAL — dano / cura
    ========================================================================== */
+
+/* Conteúdo pode passar de 85vh (atacante + alvos + dados + extras + botões);
+   rola em vez de cortar, como nos modais de Ajuda/Configurações. */
+#modal-dano-cura .modal-conteudo {
+  overflow-y: auto;
+}
+
 .modal-dano-hp-atual {
   font-size: 13px;
   color: var(--text-secondary);
@@ -11,8 +18,10 @@
   margin-bottom: 8px;
 }
 
-.modal-dano-atacante-wrap label,
-.modal-dano-alvos-wrap label {
+/* Só o rótulo direto da seção ("Atacante" / "Alvo(s)") — não os <label>
+   de cada linha da lista de alvos, que precisam manter seu próprio display. */
+.modal-dano-atacante-wrap > label,
+.modal-dano-alvos-wrap > label {
   font-size: 13px;
   color: var(--text-muted);
   display: block;
@@ -90,7 +99,7 @@ body.tema-light .previa-cura { color: #16a34a; }
 .modal-dano-seletor {
   display: flex;
   align-items: flex-end;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
@@ -114,15 +123,16 @@ body.tema-light .previa-cura { color: #16a34a; }
   color: #fff;
   border: 1px solid var(--border-input);
   border-radius: 6px;
-  padding: 7px 10px;
+  padding: 7px 6px;
   font-size: 15px;
   font-weight: bold;
-  width: 70px;
+  width: 50px;
   text-align: center;
 }
 
 .modal-dano-seletor-grupo select {
-  width: 80px;
+  width: 66px;
+  padding-left: 4px;
   cursor: pointer;
 }
 
@@ -133,24 +143,28 @@ body.tema-light .previa-cura { color: #16a34a; }
 }
 
 .modal-dano-seletor-sep {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: bold;
   color: var(--text-faint);
   padding-bottom: 6px;
 }
 
 .btn-rolar-dano-modal {
-  padding: 8px 14px;
+  padding: 8px 10px;
   background: var(--bg-card2);
   color: #fff;
   border: 1px solid #064D9F;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: bold;
   cursor: pointer;
   transition: background 0.15s;
   white-space: nowrap;
   align-self: flex-end;
+}
+
+.btn-rolar-dano-modal [data-lucide] {
+  margin-right: 3px;
 }
 
 .btn-rolar-dano-modal:hover {
@@ -185,6 +199,48 @@ body.tema-light .previa-cura { color: #16a34a; }
   color: #777;
 }
 
+/* Botão "×2" — dobrar o valor (dano/cura crítico), nunca automático */
+.btn-dano-critico {
+  margin-left: auto;
+  align-self: center;
+  flex-shrink: 0;
+  padding: 5px 12px;
+  background: var(--bg-card2);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-input);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.btn-dano-critico:hover {
+  border-color: var(--yellow);
+  color: var(--yellow);
+}
+
+/* Realce: o acerto que trouxe até aqui foi crítico (sugestão, não "ligado") */
+.btn-dano-critico--critico {
+  border-color: #f0c419;
+  color: #f0c419;
+  box-shadow: 0 0 0 2px rgba(240, 196, 25, 0.18);
+}
+
+/* Acionado: duplicação ligada */
+.btn-dano-critico--ativo {
+  background: #b8860b;
+  border-color: #f0c419;
+  color: #fff;
+  box-shadow: 0 0 0 2px rgba(240, 196, 25, 0.35);
+}
+
+.btn-dano-critico--ativo:hover {
+  background: #d4a017;
+  color: #fff;
+}
+
 .btn-confirmar-dano {
   background: #8b1a1a !important;
 }
@@ -201,9 +257,13 @@ body.tema-light .previa-cura { color: #16a34a; }
   background: #27ae60 !important;
 }
 
-#btn-confirmar-area {
+#btn-confirmar-area,
+#btn-confirmar-cura-area,
+#btn-confirmar-dano {
   display: block;
   width: fit-content;
+  padding-left: 20px;
+  padding-right: 20px;
   margin: 8px auto 0;
 }
 
@@ -233,6 +293,27 @@ body.tema-light .previa-cura { color: #16a34a; }
 .btn-morto-modal--reviver:hover {
   border-color: #27ae60;
   color: #27ae60;
+}
+
+/* Extras do ataque: nome do golpe + condição aplicada no acerto */
+.modal-dano-extras {
+  margin: 8px 0 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-light);
+}
+
+.modal-dano-extras label {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.modal-dano-extras input,
+.modal-dano-extras select {
+  margin-bottom: 8px;
+}
+
+#modal-dano-condicao-turnos-wrap .condicao-duracao-dica {
+  margin-top: -4px;
 }
 
 .modal-dano-aviso {

@@ -43,21 +43,31 @@ function fecharModalCondicaoDuracao() {
   if (_aoFechar) _aoFechar();
 }
 
-function confirmarCondicao() {
-  if (!_condicaoCtx) return;
-  const { criaturaId, condicaoId } = _condicaoCtx;
+/** Aplica (ou renova, se já ativa) uma condição num combatente e registra no
+ *  histórico. Não persiste — quem chama deve rodar salvarESincronizar(). */
+export function aplicarCondicao(criaturaId, condicaoId, turnos = null) {
   const criatura = estado.listaDeIniciativa.find(c => c.id === criaturaId);
   if (!criatura) return;
+  const cond = CONDICOES.find(c => c.id === condicaoId);
+  if (!cond) return;
   if (!criatura.condicoes) criatura.condicoes = [];
 
-  const turnosVal = $("condicao-turnos").value.trim();
-  const turnos    = turnosVal !== "" ? parseInt(turnosVal) || 1 : null; // null = indefinido
-  const cond      = CONDICOES.find(c => c.id === condicaoId);
-
-  criatura.condicoes.push({ id: condicaoId, turnos });
+  const existente = criatura.condicoes.find(c => c.id === condicaoId);
+  if (existente) existente.turnos = turnos;
+  else criatura.condicoes.push({ id: condicaoId, turnos });
 
   const duracaoTxt = turnos ? `${turnos} turno${turnos > 1 ? "s" : ""}` : "indefinido";
   adicionarHistorico(`${cond.emoji} ${criatura.nome} recebeu: ${cond.label} (${duracaoTxt})`, "condicao");
+}
+
+function confirmarCondicao() {
+  if (!_condicaoCtx) return;
+  const { criaturaId, condicaoId } = _condicaoCtx;
+
+  const turnosVal = $("condicao-turnos").value.trim();
+  const turnos    = turnosVal !== "" ? parseInt(turnosVal) || 1 : null; // null = indefinido
+
+  aplicarCondicao(criaturaId, condicaoId, turnos);
 
   fecharModalCondicaoDuracao();
   salvarESincronizar();

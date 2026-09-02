@@ -20,6 +20,7 @@
   justify-content: space-between;
   gap: 8px;
   background: var(--bg-card);
+  border: 1px solid var(--border-light);
   border-left: 3px solid var(--accent);
   border-radius: 4px;
   padding: 6px 8px;
@@ -78,6 +79,11 @@
 .log-item.acao-resistencia {
   border-left-color: #b8860b;
   color: #f0c419;
+}
+
+.log-item.acao-evento {
+  border-left-color: #b8590a;
+  color: #ff9d4d;
 }
 
 .log-item.exp {
@@ -143,4 +149,5 @@ body.tema-light .log-item.turno          { color: #1d6fd6; }
 body.tema-light .log-item.acao-iniciativa  { color: #0f7d6c; }
 body.tema-light .log-item.acao-pericia     { color: #064D9F; }
 body.tema-light .log-item.acao-resistencia { color: #8a6d0b; }
+body.tema-light .log-item.acao-evento      { color: #b8590a; }
 body.tema-light .log-item.exp              { color: #af01e4; }

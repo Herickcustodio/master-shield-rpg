@@ -1,6 +1,17 @@
 /* ==========================================================================
    PAINEL — controle de turno
    ========================================================================== */
+/* Os botões "Aplicar dano/cura em mais de um alvo" têm rótulo longo: deixa o
+   cabeçalho e o par de botões quebrarem linha em vez de estourar a largura. */
+.painel.turno .painel-cabecalho {
+  flex-wrap: wrap;
+  row-gap: 6px;
+}
+
+.painel.turno .painel-cabecalho-botoes {
+  flex-wrap: wrap;
+}
+
 /* Linha com o card do combatente ativo + card de condições ao lado.
    Ocupa só o espaço que sobrar na coluna — os botões de ação e de turno
    ficam fixos abaixo dela em vez de serem empurrados para baixo. */
@@ -295,7 +306,7 @@
   border: 1px solid var(--border-input);
   border-radius: 4px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: bold;
   transition: background 0.2s;
 }

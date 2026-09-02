@@ -17,18 +17,20 @@ function rolarDadoSelecionado() {
   rolarDado(estado.dadoSelecionado);
 }
 
-function rolarAcaoRapida(nomeAcao, emoji, modificador, tipoHistorico) {
+function rolarAcaoRapida(nomeAcao, emoji, modificador, tipoHistorico, personagem = "") {
   const rolagem = Math.floor(Math.random() * 20) + 1;
   const total   = rolagem + modificador;
   document.querySelector("#resultado-dado .valor").textContent = total;
 
+  const rotulo = personagem ? `${personagem} — ${nomeAcao}` : nomeAcao;
+
   const formulaCurta = `1d20${modificador ? (modificador > 0 ? " + " + modificador : " - " + Math.abs(modificador)) : ""}`;
-  registrarUltimaRolagem(formulaCurta, total, nomeAcao);
+  registrarUltimaRolagem(formulaCurta, total, rotulo);
 
   const textoBase = `1d20: [${rolagem}] + ${modificador} = ${total}`;
-  if (rolagem === 20) adicionarHistorico(`${emoji} ${nomeAcao}: SUCESSO CRÍTICO! ${textoBase}`, "sucesso");
-  else if (rolagem === 1) adicionarHistorico(`${emoji} ${nomeAcao}: FALHA CRÍTICA! ${textoBase}`, "falha");
-  else adicionarHistorico(`${emoji} ${nomeAcao}: ${textoBase}`, tipoHistorico);
+  if (rolagem === 20) adicionarHistorico(`${emoji} ${rotulo}: SUCESSO CRÍTICO! ${textoBase}`, "sucesso");
+  else if (rolagem === 1) adicionarHistorico(`${emoji} ${rotulo}: FALHA CRÍTICA! ${textoBase}`, "falha");
+  else adicionarHistorico(`${emoji} ${rotulo}: ${textoBase}`, tipoHistorico);
 }
 
 /* ==========================================================================
@@ -36,9 +38,31 @@ function rolarAcaoRapida(nomeAcao, emoji, modificador, tipoHistorico) {
    ========================================================================== */
 let _acaoRapidaCtx = null; // { nomeAcao, emoji, tipoHistorico }
 
+/** Nomes de heróis do grupo + combatentes em cena, ordenados e sem repetir. */
+function nomesParaSugestao() {
+  const nomes = new Set();
+  estado.partyHerois.forEach(h => nomes.add(h.nome));
+  estado.listaDeIniciativa.forEach(c => nomes.add(c.nome));
+  return [...nomes].sort((a, b) => a.localeCompare(b, "pt-BR"));
+}
+
+/** Preenche um <datalist> com os nomes disponíveis (campo aceita texto livre). */
+function popularDatalistNomes(datalistId) {
+  const dl = $(datalistId);
+  if (!dl) return;
+  dl.innerHTML = "";
+  nomesParaSugestao().forEach(nome => {
+    const opt = document.createElement("option");
+    opt.value = nome;
+    dl.appendChild(opt);
+  });
+}
+
 function abrirModalAcaoRapida(nomeAcao, emoji, tipoHistorico) {
   _acaoRapidaCtx = { nomeAcao, emoji, tipoHistorico };
   $("modal-acao-rapida-titulo").textContent = `${emoji} ${nomeAcao}`;
+  $("acao-rapida-personagem").value = "";
+  popularDatalistNomes("acao-rapida-personagem-lista");
   $("acao-rapida-modificador").value = "0";
   $("modal-acao-rapida").classList.remove("oculto");
   $("acao-rapida-modificador").focus();
@@ -54,31 +78,14 @@ function confirmarAcaoRapida() {
   if (!_acaoRapidaCtx) return;
   const { nomeAcao, emoji, tipoHistorico } = _acaoRapidaCtx;
   const modificador = parseInt($("acao-rapida-modificador").value) || 0;
-  rolarAcaoRapida(nomeAcao, emoji, modificador, tipoHistorico);
+  const personagem  = $("acao-rapida-personagem").value.trim();
+  rolarAcaoRapida(nomeAcao, emoji, modificador, tipoHistorico, personagem);
   fecharModalAcaoRapida();
 }
 
 function abrirModalEvento() {
-  const sel = $("evento-personagem");
-  sel.innerHTML = "";
-
-  const nomes = new Set();
-  estado.partyHerois.forEach(h => nomes.add(h.nome));
-  estado.listaDeIniciativa.forEach(c => nomes.add(c.nome));
-
-  if (nomes.size === 0) {
-    const opt = document.createElement("option");
-    opt.value = "";
-    opt.textContent = "Nenhum personagem disponível";
-    sel.appendChild(opt);
-  } else {
-    [...nomes].sort((a, b) => a.localeCompare(b, "pt-BR")).forEach(nome => {
-      const opt = document.createElement("option");
-      opt.value = nome;
-      opt.textContent = nome;
-      sel.appendChild(opt);
-    });
-  }
+  $("evento-personagem").value = "";
+  popularDatalistNomes("evento-personagem-lista");
 
   $("evento-acao").value = "";
   $("evento-qtd").value = "1";
@@ -95,7 +102,7 @@ function fecharModalEvento() {
 }
 
 function atualizarPreviaEvento(resultado = null) {
-  const personagem = $("evento-personagem").value || "Alguém";
+  const personagem = $("evento-personagem").value.trim() || "Alguém";
   const acao       = $("evento-acao").value.trim();
   const previa     = $("evento-previa");
 
@@ -119,7 +126,7 @@ function rolarEvento() {
 
   atualizarPreviaEvento(total);
 
-  const personagem = $("evento-personagem").value || "Alguém";
+  const personagem = $("evento-personagem").value.trim() || "Alguém";
   const acao       = $("evento-acao").value.trim();
   const sinal      = mod >= 0 ? "+" : "";
   const formula    = `(${qtd}d${lados}: [${rolagens.join(", ")}] ${sinal}${mod})`;
@@ -127,7 +134,7 @@ function rolarEvento() {
   const formulaCurta = `${qtd}d${lados}${mod ? (mod > 0 ? " + " + mod : " - " + Math.abs(mod)) : ""}`;
   registrarUltimaRolagem(formulaCurta, total, `Evento: ${personagem}${acao ? " " + acao : ""}`);
 
-  adicionarHistorico(`📜 ${personagem}${acao ? " " + acao : ""} e rolou ${total} ${formula}`);
+  adicionarHistorico(`📜 ${personagem}${acao ? " " + acao : ""} e rolou ${total} ${formula}`, "acao-evento");
 }
 
 function rolarDado(lados) {
@@ -207,7 +214,7 @@ export function initDados() {
   $("btn-rapido-evento").addEventListener("click", abrirModalEvento);
   $("fechar-evento").addEventListener("click", fecharModalEvento);
   $("btn-rolar-evento").addEventListener("click", rolarEvento);
-  $("evento-personagem").addEventListener("change", () => atualizarPreviaEvento());
+  $("evento-personagem").addEventListener("input", () => atualizarPreviaEvento());
   $("evento-acao").addEventListener("input", () => atualizarPreviaEvento());
   window.addEventListener("click", (e) => { if (e.target === $("modal-evento")) fecharModalEvento(); });
 }

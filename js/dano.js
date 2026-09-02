@@ -8,11 +8,15 @@ import { config } from "./config.js";
 import { adicionarHistorico } from "./historico.js";
 import { salvarESincronizar } from "./sync.js";
 import { renderizarListaAlvos, selecionarTodosAlvos, obterCACriatura } from "./ui.js";
-import { marcarMorto } from "./condicoes.js";
+import { marcarMorto, aplicarCondicao } from "./condicoes.js";
+import { CONDICOES } from "./constantes.js";
 
 let _modalDanoCuraIds  = [];
 let _modalDanoCuraTipo = null;
 let _acertoAtacanteId  = null;
+let _acertoCritico     = false; // último acerto rolado foi crítico? (leva o botão ×2 ao dano)
+let _x2Ativo           = false; // botão "×2 crítico" ligado no modal de dano/cura?
+let _formulaBaseModal  = "";    // fórmula da última rolagem do modal, sem o sufixo " ×2"
 
 /* ==========================================================================
    DANO EM ÁREA
@@ -24,6 +28,7 @@ function abrirModalArea() {
   }
 
   // Reseta campos
+  $("area-fonte").value        = "";
   $("area-nome-habilidade").value = "";
   $("area-qtd").value          = "1";
   $("area-tipo").value         = "8";
@@ -33,8 +38,20 @@ function abrirModalArea() {
   $("area-resultado").className    = "modal-dano-valor modal-dano-valor--dano";
   $("area-formula").textContent    = "";
 
+  popularFonteArea();
   renderizarAlvosArea();
   $("modal-area").classList.remove("oculto");
+}
+
+/** Sugestões da "Fonte do dano" — combatentes vivos; o campo aceita texto livre. */
+function popularFonteArea() {
+  const dl = $("area-fonte-lista");
+  dl.innerHTML = "";
+  estado.listaDeIniciativa.filter(c => !c.morto).forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c.nome;
+    dl.appendChild(opt);
+  });
 }
 
 function fecharModalArea() {
@@ -87,8 +104,15 @@ function confirmarDanoArea() {
     if (c.hpAtual === 0 && !c.morto) processarHPZero(c);
   });
 
+  const fonte          = $("area-fonte").value.trim();
   const nomeHabilidade = $("area-nome-habilidade").value.trim();
-  const rotulo = nomeHabilidade || "Dano em área";
+
+  let rotulo;
+  if (fonte && nomeHabilidade) rotulo = `${fonte} — ${nomeHabilidade}`;
+  else if (fonte)              rotulo = fonte;
+  else if (nomeHabilidade)     rotulo = nomeHabilidade;
+  else                         rotulo = "Dano em área";
+
   adicionarHistorico(`💥 ${rotulo} (${valor}): ${nomes.join(", ")}`, "falha");
   fecharModalArea();
   salvarESincronizar();
@@ -103,17 +127,16 @@ function abrirModalCuraArea() {
     return;
   }
 
-  // Curador — pré-seleciona o ativo do turno, mas pode ser trocado
-  const sel   = $("cura-area-curador");
-  sel.innerHTML = "";
-  const ativo = estado.listaDeIniciativa[estado.turnoAtivo];
+  // Curador — sugere todos os combatentes vivos (heróis e monstros); começa
+  // vazio para não filtrar o datalist, e aceita texto livre ("Fonte sagrada"…)
+  const dl = $("cura-area-curador-lista");
+  dl.innerHTML = "";
   estado.listaDeIniciativa.filter(c => !c.morto).forEach(c => {
     const opt = document.createElement("option");
-    opt.value = c.id;
-    opt.textContent = c.nome;
-    if (ativo && c.id === ativo.id) opt.selected = true;
-    sel.appendChild(opt);
+    opt.value = c.nome;
+    dl.appendChild(opt);
   });
+  $("cura-area-curador").value = "";
 
   $("cura-area-qtd").value          = "1";
   $("cura-area-tipo").value         = "8";
@@ -165,26 +188,34 @@ function confirmarCuraArea() {
     alert("Selecione pelo menos um alvo!"); return;
   }
 
-  const sel       = $("cura-area-curador");
-  const curadorId = sel ? sel.value : null;
-  const curador   = curadorId ? estado.listaDeIniciativa.find(c => c.id == curadorId) : null;
-
   const nomes = [];
   selecionados.forEach(c => {
     const antes = c.hpAtual;
     c.hpAtual = Math.min(c.hpMax, c.hpAtual + valor);
     nomes.push(`${c.nome} (${antes}→${c.hpAtual})`);
-    if (c.nocauteado && c.hpAtual > 0) {
-      c.nocauteado = false;
-      adicionarHistorico(`💪 ${c.nome} se recuperou do nocaute!`, "sucesso");
-    }
+    reviverSeCurada(c);
   });
 
-  const prefixo = curador ? `${curador.nome} curou` : "Cura em área";
+  const curador = $("cura-area-curador").value.trim();
+  const prefixo = curador ? `${curador} curou` : "Cura em área";
   adicionarHistorico(`💚 ${prefixo} (${valor}): ${nomes.join(", ")}`, "sucesso");
 
   fecharModalCuraArea();
   salvarESincronizar();
+}
+
+/** Oposto de processarHPZero: quando uma cura devolve HP, tira do nocaute e
+ *  ressuscita quem estava marcado como morto (herói ou monstro). */
+function reviverSeCurada(criatura) {
+  if (criatura.hpAtual <= 0) return;
+  if (criatura.nocauteado) {
+    criatura.nocauteado = false;
+    adicionarHistorico(`💪 ${criatura.nome} se recuperou do nocaute!`, "sucesso");
+  }
+  if (criatura.morto) {
+    criatura.morto = false;
+    adicionarHistorico(`💚 ${criatura.nome} voltou à vida com a cura!`, "sucesso");
+  }
 }
 
 /** Processa HP zerado: monstro morre, herói fica nocauteado */
@@ -209,6 +240,7 @@ export function abrirModalAcerto(atacanteId) {
   if (!atacante) return;
 
   _acertoAtacanteId = atacanteId;
+  _acertoCritico    = false;
 
   $("modal-acerto-titulo").textContent = `🎯 Acerto — ${atacante.nome}`;
   $("acerto-atacante-info").innerHTML  = `⚔️ Atacante: <strong>${atacante.nome}</strong>`;
@@ -233,6 +265,9 @@ function fecharModalAcerto() {
   _acertoAtacanteId = null;
 }
 
+/* _acertoCritico é lido em irParaDano() antes de fechar o modal — não é
+   zerado aqui de propósito; o próximo abrirModalAcerto() reseta. */
+
 function alvosSelecionadosAcerto() {
   return [...document.querySelectorAll("#acerto-alvos-lista .area-alvo-cb:checked")]
     .map(cb => estado.listaDeIniciativa.find(c => c.id == cb.value))
@@ -256,6 +291,7 @@ function rolarAcerto() {
 
   const critico      = lados === 20 && qtd === 1 && rolagens[0] === 20;
   const falhaCritica = lados === 20 && qtd === 1 && rolagens[0] === 1;
+  _acertoCritico = critico;
 
   const wrap        = $("acerto-resultado-wrap");
   const display      = $("acerto-resultado-display");
@@ -310,14 +346,15 @@ function rolarAcerto() {
 function irParaDano() {
   const idsAlvos   = alvosSelecionadosAcerto().map(c => c.id);
   const atacanteId = _acertoAtacanteId;
+  const critico    = _acertoCritico;
   fecharModalAcerto();
-  abrirModalDanoCura(idsAlvos, "dano", atacanteId);
+  abrirModalDanoCura(idsAlvos, "dano", atacanteId, critico);
 }
 
 /* ==========================================================================
    MODAL DE DANO / CURA
    ========================================================================== */
-export function abrirModalDanoCura(ids, tipo, atacantePreId = null) {
+export function abrirModalDanoCura(ids, tipo, atacantePreId = null, critico = false) {
   const idsArr = (Array.isArray(ids) ? ids : [ids]).filter(id => id !== null && id !== undefined);
   const isDano = tipo === "dano";
 
@@ -333,6 +370,14 @@ export function abrirModalDanoCura(ids, tipo, atacantePreId = null) {
   $("modal-dano-manual").value          = "";
   $("modal-dano-qtd").value             = "1";
   $("modal-dano-tipo").value            = "20";
+
+  // Botão "×2 crítico" — toggle manual; começa desligado a cada abertura.
+  // A classe --critico é só um realce indicando que o acerto foi crítico.
+  _x2Ativo          = false;
+  _formulaBaseModal = "";
+  $("btn-dano-critico").classList.toggle("btn-dano-critico--critico", !!critico);
+  atualizarBotaoX2();
+
   $("btn-confirmar-dano").textContent   = isDano ? "⚔️ Aplicar Dano" : "💊 Aplicar Cura";
   $("btn-confirmar-dano").className     = isDano ? "btn-confirmar btn-confirmar-dano" : "btn-confirmar btn-confirmar-cura";
 
@@ -340,16 +385,26 @@ export function abrirModalDanoCura(ids, tipo, atacantePreId = null) {
   const hpAtualEl = $("modal-dano-hp-atual");
   const alvosWrap = $("modal-dano-alvos-wrap");
 
+  const curaAlvoWrap = $("modal-dano-cura-alvo-wrap");
   if (isDano) {
     tituloEl.textContent    = "⚔️ Dano";
     hpAtualEl.style.display = "none";
     alvosWrap.style.display = "block";
+    curaAlvoWrap.style.display = "none";
     // Alvo(s) já escolhidos na etapa de acerto vêm pré-selecionados; pode-se ajustar aqui
     renderizarListaAlvos("modal-dano-alvos-lista", { preSelecionados: idsArr, mostrarCA: true });
   } else {
-    const criatura = estado.listaDeIniciativa.find(c => c.id === idsArr[0]);
-    tituloEl.textContent    = `💊 Cura — ${criatura.nome}`;
-    hpAtualEl.textContent   = `HP atual: ${criatura.hpAtual} / ${criatura.hpMax}`;
+    // Cura de 1 alvo — quem curar é escolhível (vários alvos → Cura em Área)
+    const selAlvo = $("modal-dano-cura-alvo");
+    selAlvo.innerHTML = "";
+    estado.listaDeIniciativa.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.id;
+      opt.textContent = c.morto ? `☠️ ${c.nome}` : c.nome;
+      if (c.id === idsArr[0]) opt.selected = true;
+      selAlvo.appendChild(opt);
+    });
+    curaAlvoWrap.style.display = "block";
     hpAtualEl.style.display = "block";
     alvosWrap.style.display = "none";
   }
@@ -374,6 +429,13 @@ export function abrirModalDanoCura(ids, tipo, atacantePreId = null) {
     atacanteWrap.style.display = "none";
   }
 
+  // Extras do ataque (nome do golpe + condição no acerto) — só no modo dano
+  $("modal-dano-extras").style.display = isDano ? "block" : "none";
+  $("modal-dano-nome-ataque").value = "";
+  $("modal-dano-condicao").value = "";
+  $("modal-dano-condicao-turnos").value = "";
+  $("modal-dano-condicao-turnos-wrap").style.display = "none";
+
   // Prévia
   const previa = $("modal-dano-previa");
   previa.style.display = "none";
@@ -388,23 +450,41 @@ export function abrirModalDanoCura(ids, tipo, atacantePreId = null) {
       btnMortoModal.className   = unico.morto ? "btn-morto-modal btn-morto-modal--reviver" : "btn-morto-modal";
     }
   } else {
-    const criatura = estado.listaDeIniciativa.find(c => c.id === idsArr[0]);
     btnMortoModal.style.display = "block";
-    btnMortoModal.textContent   = criatura.morto ? "💚 Reviver" : "☠️ Marcar como Morto";
-    btnMortoModal.className     = criatura.morto ? "btn-morto-modal btn-morto-modal--reviver" : "btn-morto-modal";
   }
 
   const aviso = $("modal-dano-aviso");
   if (aviso) aviso.style.display = isDano ? "none" : "block";
 
+  // Título, HP atual, botão de morte e prévia do modo cura acompanham o alvo escolhido
+  if (!isDano) sincronizarAlvoCura();
+
   $("modal-dano-cura").classList.remove("oculto");
   $("modal-dano-modificador").focus();
+}
+
+/** Reflete no modal de cura o alvo escolhido no seletor "Quem curar". */
+function sincronizarAlvoCura() {
+  const criatura = estado.listaDeIniciativa.find(c => c.id == $("modal-dano-cura-alvo").value);
+  if (!criatura) return;
+  _modalDanoCuraIds = [criatura.id];
+
+  $("modal-dano-titulo").textContent   = `💊 Cura — ${criatura.nome}`;
+  $("modal-dano-hp-atual").textContent = `HP atual: ${criatura.hpAtual} / ${criatura.hpMax}`;
+
+  const btnMorto = $("btn-morto-modal");
+  btnMorto.textContent = criatura.morto ? "💚 Reviver" : "☠️ Marcar como Morto";
+  btnMorto.className   = criatura.morto ? "btn-morto-modal btn-morto-modal--reviver" : "btn-morto-modal";
+
+  atualizarPrevia();
 }
 
 function fecharModalDanoCura() {
   $("modal-dano-cura").classList.add("oculto");
   _modalDanoCuraIds  = [];
   _modalDanoCuraTipo = null;
+  _x2Ativo           = false;
+  _formulaBaseModal  = "";
 }
 
 function alvosSelecionadosDano() {
@@ -413,10 +493,40 @@ function alvosSelecionadosDano() {
     .filter(Boolean);
 }
 
+/** Valor digitado/rolado, sem o ×2. NaN se vazio ou negativo. */
+function valorBaseModal() {
+  const v = parseInt($("modal-dano-manual").value);
+  return (isNaN(v) || v < 0) ? NaN : v;
+}
+
+/** Valor que será realmente aplicado (dobrado se o ×2 estiver ligado). */
+function valorEfetivoModal() {
+  const b = valorBaseModal();
+  return isNaN(b) ? NaN : (_x2Ativo ? b * 2 : b);
+}
+
+/** Espelha o número grande + a fórmula conforme a base e o toggle ×2. */
+function refletirResultadoModal() {
+  const ef   = valorEfetivoModal();
+  const disp = $("modal-dano-resultado");
+  disp.textContent = isNaN(ef) ? "—" : ef;
+  disp.className   = "modal-dano-valor " + (_modalDanoCuraTipo === "dano" ? "modal-dano-valor--dano" : "modal-dano-valor--cura");
+  const sufixoX2 = (_x2Ativo && !isNaN(ef)) ? (_formulaBaseModal ? " ×2" : "×2 crítico") : "";
+  $("modal-dano-formula-txt").textContent = _formulaBaseModal + sufixoX2;
+}
+
+/** Reflete no botão ×2 o estado ligado/desligado. */
+function atualizarBotaoX2() {
+  const btn = $("btn-dano-critico");
+  btn.classList.toggle("btn-dano-critico--ativo", _x2Ativo);
+  btn.setAttribute("aria-pressed", String(_x2Ativo));
+  btn.textContent = _x2Ativo ? "×2 crítico ✓" : "×2 crítico";
+}
+
 function atualizarPrevia() {
-  const valor  = parseInt($("modal-dano-manual").value);
+  const valor  = valorEfetivoModal();
   const previa = $("modal-dano-previa");
-  if (isNaN(valor) || valor < 0) { previa.style.display = "none"; return; }
+  if (isNaN(valor)) { previa.style.display = "none"; return; }
 
   const isDano = _modalDanoCuraTipo === "dano";
 
@@ -459,19 +569,25 @@ function rolarDadoModal() {
   }
   const total = Math.max(0, soma + modificador);
 
-  const display = $("modal-dano-resultado");
-  display.textContent = total;
-  display.className   = "modal-dano-valor " + (_modalDanoCuraTipo === "dano" ? "modal-dano-valor--dano" : "modal-dano-valor--cura");
-
   const sinal = modificador >= 0 ? "+" : "";
-  $("modal-dano-formula-txt").textContent = `(${quantidade}d${lados}: [${rolagens.join(", ")}] ${sinal}${modificador})`;
-  $("modal-dano-manual").value = total;
+  _formulaBaseModal = `(${quantidade}d${lados}: [${rolagens.join(", ")}] ${sinal}${modificador})`;
+  $("modal-dano-manual").value = total;   // guarda sempre a base; o ×2 é aplicado ao exibir/confirmar
+  refletirResultadoModal();
+  atualizarPrevia();
+}
+
+/** Liga/desliga a duplicação do valor (acerto/cura crítico). Nunca automático. */
+function alternarX2() {
+  if (isNaN(valorBaseModal())) { $("modal-dano-manual").focus(); return; }
+  _x2Ativo = !_x2Ativo;
+  atualizarBotaoX2();
+  refletirResultadoModal();
   atualizarPrevia();
 }
 
 function confirmarDanoCura() {
-  const valor = parseInt($("modal-dano-manual").value);
-  if (isNaN(valor) || valor < 0) { $("modal-dano-manual").focus(); return; }
+  const valor = valorEfetivoModal();
+  if (isNaN(valor)) { $("modal-dano-manual").focus(); return; }
 
   const isDano = _modalDanoCuraTipo === "dano";
 
@@ -484,16 +600,35 @@ function confirmarDanoCura() {
     const atacante    = atacanteId ? estado.listaDeIniciativa.find(c => c.id == atacanteId) : null;
     const nomeAtacante = atacante ? atacante.nome : null;
 
+    const nomeAtaque  = $("modal-dano-nome-ataque").value.trim();
+
+    const condId        = $("modal-dano-condicao").value;
+    const condTurnosVal = $("modal-dano-condicao-turnos").value.trim();
+    const condTurnos    = condTurnosVal !== "" ? parseInt(condTurnosVal) || 1 : null;
+
     alvos.forEach(criatura => {
       const hpAntes = criatura.hpAtual;
       criatura.hpAtual = Math.max(0, criatura.hpAtual - valor);
 
-      const logTxt = nomeAtacante
-        ? `⚔️ ${nomeAtacante} causou ${valor} de dano em ${criatura.nome}! (${hpAntes} → ${criatura.hpAtual} HP)`
-        : `⚔️ ${criatura.nome} recebeu ${valor} de dano (${hpAntes} → ${criatura.hpAtual} HP)`;
+      let logTxt;
+      if (nomeAtacante && nomeAtaque)
+        logTxt = `⚔️ ${nomeAtacante} usou ${nomeAtaque} e causou ${valor} de dano em ${criatura.nome}! (${hpAntes} → ${criatura.hpAtual} HP)`;
+      else if (nomeAtacante)
+        logTxt = `⚔️ ${nomeAtacante} causou ${valor} de dano em ${criatura.nome}! (${hpAntes} → ${criatura.hpAtual} HP)`;
+      else if (nomeAtaque)
+        logTxt = `⚔️ ${criatura.nome} recebeu ${valor} de dano (${nomeAtaque}) (${hpAntes} → ${criatura.hpAtual} HP)`;
+      else
+        logTxt = `⚔️ ${criatura.nome} recebeu ${valor} de dano (${hpAntes} → ${criatura.hpAtual} HP)`;
       adicionarHistorico(logTxt, "falha");
       if (criatura.hpAtual === 0 && !criatura.morto) processarHPZero(criatura);
     });
+
+    // Condição aplicada junto com o golpe (ex.: golpe de escudo → atordoado)
+    if (condId) {
+      alvos.forEach(criatura => {
+        if (!criatura.morto) aplicarCondicao(criatura.id, condId, condTurnos);
+      });
+    }
   } else {
     const criatura = estado.listaDeIniciativa.find(c => c.id === _modalDanoCuraIds[0]);
     if (!criatura) return;
@@ -501,11 +636,7 @@ function confirmarDanoCura() {
     const hpAntes = criatura.hpAtual;
     criatura.hpAtual = Math.min(criatura.hpMax, criatura.hpAtual + valor);
     adicionarHistorico(`💊 ${criatura.nome} recuperou ${valor} de HP (${hpAntes} → ${criatura.hpAtual} HP)`, "sucesso");
-    // Se estava nocauteado e recuperou HP, remove nocaute
-    if (criatura.nocauteado && criatura.hpAtual > 0) {
-      criatura.nocauteado = false;
-      adicionarHistorico(`💪 ${criatura.nome} se recuperou do nocaute!`, "sucesso");
-    }
+    reviverSeCurada(criatura);
   }
 
   fecharModalDanoCura();
@@ -518,13 +649,36 @@ function mortoViaModal() {
   marcarMorto(id);
 }
 
+/** Preenche o select de condição do modal de dano a partir de CONDICOES. */
+function popularSelectCondicoes() {
+  const sel = $("modal-dano-condicao");
+  sel.innerHTML = '<option value="">— Nenhuma —</option>';
+  CONDICOES.forEach(cond => {
+    const opt = document.createElement("option");
+    opt.value = cond.id;
+    opt.textContent = `${cond.emoji} ${cond.label}`;
+    sel.appendChild(opt);
+  });
+}
+
 /** Liga os modais de acerto, dano/cura e dano/cura em área. Chamado no boot pelo main. */
 export function initDano() {
   $("fechar-dano-cura").addEventListener("click", fecharModalDanoCura);
   $("btn-confirmar-dano").addEventListener("click", confirmarDanoCura);
   $("btn-morto-modal").addEventListener("click", mortoViaModal);
   $("btn-rolar-dano-modal").addEventListener("click", rolarDadoModal);
-  $("modal-dano-manual").addEventListener("input", atualizarPrevia);
+  $("btn-dano-critico").addEventListener("click", alternarX2);
+  $("modal-dano-manual").addEventListener("input", () => {
+    _formulaBaseModal = "";        // valor digitado à mão não tem fórmula de dado
+    refletirResultadoModal();
+    atualizarPrevia();
+  });
+
+  popularSelectCondicoes();
+  $("modal-dano-condicao").addEventListener("change", () => {
+    $("modal-dano-condicao-turnos-wrap").style.display = $("modal-dano-condicao").value ? "block" : "none";
+  });
+  $("modal-dano-cura-alvo").addEventListener("change", sincronizarAlvoCura);
   $("modal-dano-atacante").addEventListener("change", atualizarPrevia);
   $("modal-dano-alvos-lista").addEventListener("change", atualizarPrevia);
   $("btn-dano-alvo-todos").addEventListener("click", () => { selecionarTodosAlvos("modal-dano-alvos-lista", true); atualizarPrevia(); });

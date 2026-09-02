@@ -39,6 +39,7 @@
   vertical-align: middle;
 }
 
+.btn-editar-monstro,
 .btn-deletar-monstro {
   background: none;
   border: none;
@@ -48,6 +49,10 @@
   padding: 2px 5px;
   transition: color 0.15s;
   margin-left: 4px;
+}
+
+.btn-editar-monstro:hover {
+  color: var(--accent-hover);
 }
 
 .btn-deletar-monstro:hover {

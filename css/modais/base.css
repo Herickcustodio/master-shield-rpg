@@ -180,7 +180,7 @@
 
 .btn-confirmar {
   margin-top: 8px;
-  padding: 10px;
+  padding: 6px;
   background: #064D9F;
   color: white;
   border: none;
@@ -193,4 +193,16 @@
 
 .btn-confirmar:hover {
   background: #0a65cc;
+}
+
+/* Botão de confirmação dos modais: sempre centralizado e do tamanho do texto,
+   nunca ocupando a linha toda (padrão dos modais de dano/cura em área). */
+.form-heroi > .btn-confirmar {
+  display: block;
+  width: fit-content;
+  align-self: center;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 22px;
+  padding-right: 22px;
 }

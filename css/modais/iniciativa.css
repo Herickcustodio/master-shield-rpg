@@ -25,6 +25,15 @@
   background: #064D9F;
 }
 
+/* Confirmar Iniciativa — verde (centralização vem de .form-heroi > .btn-confirmar) */
+#btn-confirmar-ini {
+  background: #1a6b1a;
+}
+
+#btn-confirmar-ini:hover {
+  background: #27ae60;
+}
+
 .ini-resultado-display {
   display: flex;
   align-items: baseline;
@@ -142,9 +151,17 @@
   border-color: var(--text-muted);
 }
 
-.area-alvo-cb {
+/* Seletor com 2 classes para vencer `.form-heroi input` nos modais de área,
+   onde a lista de alvos fica dentro de .form-heroi (senão o checkbox herda
+   width:100%/padding/borda e quebra a linha). */
+.area-alvo-row .area-alvo-cb {
   width: 16px;
   height: 16px;
+  flex: none;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
   cursor: pointer;
   accent-color: #e63946;
 }
