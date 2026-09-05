@@ -28,8 +28,8 @@ function atualizarBtnTema() {
   const btn = $("btn-tema");
   if (!btn) return;
   btn.innerHTML = isLight
-    ? `<i data-lucide="moon"></i> Modo Dark`
-    : `<i data-lucide="sun"></i> Modo Light`;
+    ? `<i data-lucide="moon"></i><span class="btn-topo-label"> Modo Dark</span>`
+    : `<i data-lucide="sun"></i><span class="btn-topo-label"> Modo Light</span>`;
   if (window.lucide) window.lucide.createIcons();
 }
 

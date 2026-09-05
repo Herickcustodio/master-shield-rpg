@@ -5,7 +5,8 @@
 @media (max-width: 900px) {
   html, body {
     height: auto;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   .dashboard {
@@ -15,10 +16,14 @@
     min-height: calc(100vh - 55px);
     padding: 6px;
     gap: 8px;
+    overflow-x: hidden;
+    max-width: 100vw;
   }
 
   .painel {
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   /* Ordem dos painéis empilhados: Histórico vai para o final, depois de

@@ -42,16 +42,34 @@
   }
 
   .logo-icone {
-    height: 20px;
+    height: 28px;
   }
 
   .logo-wordmark {
-    height: 18px;
+    height: 26px;
   }
 
   .btn-topo {
     padding: 5px 8px;
     font-size: 0.72rem;
+  }
+
+  /* Config e Modo Dark/Light viram botões só de ícone no celular, pra
+     sobrar espaço pro logo e pro Sobre/Ajuda na mesma linha. */
+  .btn-topo--icone-celular {
+    padding: 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-topo--icone-celular .btn-topo-label {
+    display: none;
+  }
+
+  .btn-topo--icone-celular [data-lucide] {
+    width: 1.1em;
+    height: 1.1em;
   }
 
   .header-campanha {
@@ -99,5 +117,85 @@
 
   .acoes-rapidas-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* Modais ancorados perto do topo (em vez de centralizados) e com rolagem
+     própria — quando o teclado abre, dá pra rolar até o campo focado em
+     vez do modal inteiro ficar recentralizado atrás do teclado. */
+  .modal {
+    align-items: flex-start;
+    padding: 16px 0;
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+
+  .modal-conteudo {
+    max-height: none;
+    margin: auto;
+  }
+
+  /* Exceção: a lista de monstros depende de uma altura própria (com
+     rolagem interna) para a busca ficar fixa no topo da lista. */
+  .modal-monstros-conteudo {
+    max-height: 80vh;
+    margin: 0 auto;
+  }
+
+  /* Campos de texto a pelo menos 16px: abaixo disso o Safari/Chrome no
+     iOS dá zoom automático ao focar o campo, o que some com o teclado
+     junto e deixa a tela bagunçada. */
+  .form-heroi input,
+  .evento-acao-textarea,
+  .modal-dano-select,
+  .modal-dano-seletor-grupo input,
+  .modal-dano-seletor-grupo select,
+  .input-vida,
+  .input-busca-monstros,
+  .historico-nota-input,
+  .card-heroi-hp input,
+  .config-secao input[type="text"],
+  .config-secao select,
+  #tab-anotacoes textarea {
+    font-size: 16px;
+  }
+
+  /* Painel de Dados: dados menores empilhados à esquerda; quantidade,
+     modificador, botão de rolar e resultado à direita — para caber sem
+     rolagem e sem o botão de rolar ficar espremido pelas Últimas Rolagens. */
+  .tab-dados-scroll {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 10px;
+    row-gap: 6px;
+    align-items: start;
+  }
+
+  .botoes-dados {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+    margin-top: 0;
+    align-content: start;
+  }
+
+  .botoes-dados button {
+    width: 34px;
+    height: 34px;
+    padding: 2px;
+  }
+
+  .controle-modificador {
+    grid-column: 2;
+    grid-row: 1;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin-top: 0;
+  }
+
+  .rolar-resultado-linha {
+    grid-column: 2;
+    grid-row: 2;
   }
 }
