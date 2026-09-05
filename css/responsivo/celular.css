@@ -5,12 +5,16 @@
    de celular eles não cabem numa única linha mesmo compactados.
    ========================================================================== */
 @media (max-width: 600px) {
+  /* Logo em linha própria, ocupando a largura toda e centralizado — assim
+     ele pode ficar maior sem disputar espaço com os botões, que ficam na
+     linha de baixo, também centralizados. */
   .cabecalho-topo {
     height: auto;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     grid-template-areas:
-      "logo direita"
-      "campanha campanha";
+      "logo"
+      "direita"
+      "campanha";
     row-gap: 4px;
     padding: 6px 8px;
   }
@@ -19,17 +23,15 @@
   .header-campanha-wrap { grid-area: campanha; }
   .cabecalho-direita     { grid-area: direita; }
 
-  /* Colunas em fr (em vez de auto) dão uma largura definida à célula dos
-     botões — sem isso, o grid tenta caber os 4 botões numa única linha
-     (ignorando o flex-wrap) e espreme a logo a quase zero de largura.
-     justify-self:stretch também é necessário: "end" (regra base) faz o
-     item de grid encolher para o conteúdo em vez de ocupar a coluna,
-     então o flex-wrap nunca chega a ser acionado. */
+  .cabecalho-topo h1 {
+    justify-content: center;
+  }
+
   .cabecalho-direita {
     justify-self: stretch;
     min-width: 0;
     flex-wrap: wrap;
-    justify-content: flex-end;
+    justify-content: center;
     row-gap: 6px;
   }
 
@@ -38,15 +40,17 @@
     flex-shrink: 1;
     min-width: 0;
     width: 100%;
-    justify-content: flex-end;
+    justify-content: center;
   }
 
+  /* Ícone do escudo e a marca "Master Shield RPG" na mesma altura, para
+     não ficar um maior que o outro nem cortado. */
   .logo-icone {
-    height: 28px;
+    height: 44px;
   }
 
   .logo-wordmark {
-    height: 26px;
+    height: 44px;
   }
 
   .btn-topo {
