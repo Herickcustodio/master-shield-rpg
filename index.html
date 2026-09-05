@@ -59,15 +59,15 @@
     <div id="modal-sobre" class="modal oculto">
       <div class="modal-conteudo modal-texto-conteudo">
         <span class="fechar-modal" id="fechar-sobre">&times;</span>
-        <h2>Sobre o Master Shield RPG</h2>
+        <h2><i data-lucide="info"></i> Sobre o Master Shield RPG</h2>
         <p>O Master Shield RPG é uma ferramenta auxiliar para mestres em mesas de RPG. Criei o projeto para colocar em prática minhas aulas de programação, também, para ajudar mais mestres(que nem eu) a se organizar nos combates e informações dos grupos de RPG.</p>
         <p>Como só joguei Tormenta e D&D, não conheço muito outros sistemas, mas fiz diversas coisas personalizáveis, para adaptar ao sistema que quiser usar.</p>
         <p>A ideia inicial do site é deixar as informações salvas automaticamente no navegador, sem precisar de cadastro ou login. Mas ainda irei adicionar alguns desses recursos, só ir avançando mais no meu aprendizado.</p>
         <p>Esse projeto é opensource, mas por favor, não se esqueça de dar os créditos caso utilize em seu próprio projeto.</p>
         <p>Para o domínio desse site paguei tudo do meu bolso, mas se quiser ajudar com alguma coisa, deixarei um botão de doações. Também deixarei um e-mail para envio de sugestões e bugs.</p>
-        <p>Desenvolvido por Herick <i data-lucide="rocket"></i></p>
+        <p>Desenvolvido por Herick Custódio Francisco</p>
         <p>https://github.com/Herickcustodio</p>
-        <p>Créditos:</p>
+        <h3><i data-lucide="award"></i> Créditos</h3>
         <ul>
           <li>Fontes: Google Fonts</li>
           <li>Ícones: Flaticon</li>
@@ -88,30 +88,30 @@
 
         <h3><i data-lucide="dices"></i> Rolador de Dados</h3>
         <p>Na aba <strong>Dados</strong>: escolha o dado clicando no ícone, ajuste Quantidade/Modificador e toque em "Rolar Dado". O resultado aparece ao lado e fica registrado em "Últimas Rolagens".</p>
-        <p>Em <strong>Ações Rápidas</strong>, os botões "Rolar Iniciativa", "Teste de Perícia" e "Teste de Resistência" abrem uma janela pedindo o modificador e rolam um d20, já lançando o resultado colorido no histórico. Cada uma tem um campo opcional de <strong>Personagem</strong> — escolha alguém do grupo/combate ou digite um nome — que aparece na mensagem do histórico. O botão "Evento" abre um rolador dedicado a testes de personagens específicos.</p>
+        <p>Em <strong>Ações Rápidas</strong>, os botões <span class="ajuda-btn" style="background:#0f7d6c;color:#fff;">Rolar Iniciativa</span>, <span class="ajuda-btn" style="background:#064D9F;color:#fff;">Teste de Perícia</span> e <span class="ajuda-btn" style="background:#b8860b;color:#fff;">Teste de Resistência</span> abrem uma janela pedindo o modificador e rolam um d20, já lançando o resultado colorido no histórico. Cada uma tem um campo opcional de <strong>Personagem</strong> — escolha alguém do grupo/combate ou digite um nome — que aparece na mensagem do histórico. O botão <span class="ajuda-btn" style="background:#b8590a;color:#fff;">Evento</span> abre um rolador dedicado a testes de personagens específicos.</p>
 
         <h3><i data-lucide="swords"></i> Combate</h3>
-        <p>Use "Adicionar Monstro" para buscar na coletânea ou criar um monstro customizado — ao adicionar, é pedida a iniciativa dele. Monstros customizados podem ser <strong>editados</strong> (✎) ou removidos (✕) na coletânea. Cada combatente vira um card com CA, HP e condições ativas, exibidos em ordem de iniciativa. A faixa "Ordem da Iniciativa" permite pular direto para o turno de qualquer combatente. "Encerrar Combate" limpa a lista e reinicia o contador de rodada.</p>
+        <p>Use <span class="ajuda-btn" style="background:#8b1a1a;color:#fff;">Adicionar Monstro</span> para buscar na coletânea ou criar um monstro customizado — ao adicionar, é pedida a iniciativa dele. Monstros customizados podem ser <strong>editados</strong> (✎) ou removidos (✕) na coletânea. Cada combatente vira um card com CA, HP e condições ativas, exibidos em ordem de iniciativa. A faixa "Ordem da Iniciativa" permite pular direto para o turno de qualquer combatente. <span class="ajuda-btn-ghost" style="color:#ff6b6b;">Encerrar Combate</span> limpa a lista e reinicia o contador de rodada.</p>
 
         <h3><i data-lucide="compass"></i> Controle de Turno</h3>
-        <p>"Voltar Turno" e "Finalizar Turno" avançam a iniciativa entre os combatentes vivos; ao completar uma volta, o contador "RODADA" no topo avança e as condições/efeitos temporários são decrementados automaticamente.</p>
-        <p>O card do combatente ativo tem botões de <strong>Ataque</strong>, <strong>Cura</strong> e <strong>Condição</strong>, além do ícone de caveira para marcar como morto/nocauteado. Condições ativas de duração limitada expiram sozinhas e avisam no histórico quando estão prestes a acabar.</p>
-        <p><strong>Ataque</strong> abre a etapa de acerto (que pode ser desligada em Configurações) e depois o dano. No modal de dano dá para informar o <strong>nome do ataque</strong> e <strong>aplicar uma condição junto</strong> (ex.: golpe de escudo que atordoa) — tudo vai para o histórico. <strong>Cura</strong> deixa escolher quem curar; curar alguém a 0 HP o traz de volta (reviver/tirar do nocaute). Nos modais de dano e cura há um botão <strong>×2 crítico</strong> que liga/desliga a duplicação do valor (acerto/cura crítico) — nunca é automático, para não conflitar com sistemas sem essa regra. Ele acende quando acionado e fica realçado quando o acerto rolado foi crítico.</p>
-        <p>"Dano em vários alvos" e "Cura em vários alvos" aplicam valor a vários de uma vez. Dá para indicar a <strong>Fonte</strong> do dano / o <strong>Curador</strong> (escolhido da lista ou digitado, ex.: "Armadilha", "Fonte sagrada") e o nome da magia/habilidade (ex.: "Bola de Fogo"), que aparecem no histórico.</p>
+        <p><span class="ajuda-btn-ghost" style="color:#0a65cc;">Voltar Turno</span> e <span class="ajuda-btn" style="background:#064D9F;color:#fff;">Finalizar Turno</span> avançam a iniciativa entre os combatentes vivos; ao completar uma volta, o contador "RODADA" no topo avança e as condições/efeitos temporários são decrementados automaticamente.</p>
+        <p>O card do combatente ativo tem botões de <span class="ajuda-btn" style="background:#5a1a1a;color:#ffaaaa;">Ataque</span>, <span class="ajuda-btn" style="background:#1a3a1a;color:#88dd88;">Cura</span> e <span class="ajuda-btn" style="background:#b8590a;color:#fff;">Condição</span>, além do ícone de caveira para marcar como morto/nocauteado. Condições ativas de duração limitada expiram sozinhas e avisam no histórico quando estão prestes a acabar.</p>
+        <p><span class="ajuda-btn" style="background:#5a1a1a;color:#ffaaaa;">Ataque</span> abre a etapa de acerto (que pode ser desligada em Configurações) e depois o dano. No modal de dano dá para informar o <strong>nome do ataque</strong> e <strong>aplicar uma condição junto</strong> (ex.: golpe de escudo que atordoa) — tudo vai para o histórico. <span class="ajuda-btn" style="background:#1a3a1a;color:#88dd88;">Cura</span> deixa escolher quem curar; curar alguém a 0 HP o traz de volta (reviver/tirar do nocaute). Nos modais de dano e cura há um botão <span class="ajuda-btn" style="background:#b8860b;color:#fff;">×2 crítico</span> que liga/desliga a duplicação do valor (acerto/cura crítico) — nunca é automático, para não conflitar com sistemas sem essa regra. Ele acende quando acionado e fica realçado quando o acerto rolado foi crítico.</p>
+        <p><span class="ajuda-btn" style="background:#5a1a1a;color:#ffaaaa;">Dano em vários alvos</span> e <span class="ajuda-btn" style="background:#1a3a1a;color:#88dd88;">Cura em vários alvos</span> aplicam valor a vários de uma vez. Dá para indicar a <strong>Fonte</strong> do dano / o <strong>Curador</strong> (escolhido da lista ou digitado, ex.: "Armadilha", "Fonte sagrada") e o nome da magia/habilidade (ex.: "Bola de Fogo"), que aparecem no histórico.</p>
 
         <h3><i data-lucide="users"></i> Grupo e Combatentes</h3>
-        <p>"+ Criar Novo Herói" cadastra nome, classe, nível (começa em 0), HP, CA, EXP, cor e imagem. Cada card de herói tem "+ Iniciativa" para entrar em combate e "+ EXP" para lançar experiência ganha — o herói sobe de nível automaticamente ao atingir a meta, que também pode ser reajustada ali mesmo para o próximo nível. HP temporário pode ser ajustado direto no card.</p>
+        <p><span class="ajuda-btn" style="background:var(--accent);color:#fff;">+ Criar Novo Herói</span> cadastra nome, classe, nível (começa em 0), HP, CA, EXP, cor e imagem. Cada card de herói tem <span class="ajuda-btn-ghost" style="color:var(--green);">+ Iniciativa</span> para entrar em combate e <span class="ajuda-btn-ghost" style="color:#af01e4;">+ EXP</span> para lançar experiência ganha — o herói sobe de nível automaticamente ao atingir a meta, que também pode ser reajustada ali mesmo para o próximo nível. HP temporário pode ser ajustado direto no card.</p>
 
         <h3><i data-lucide="scroll-text"></i> Histórico da Sessão</h3>
-        <p>Registra automaticamente tudo que acontece na mesa — dano, cura, condições, turnos, rolagens e mais — cada tipo de evento com sua própria cor para facilitar a leitura. Ações dos heróis (entrar em combate, subir de nível) saem na cor do próprio herói. Há também um campo para anotar algo manualmente no histórico. "Limpar Histórico" apaga os registros.</p>
+        <p>Registra automaticamente tudo que acontece na mesa — dano, cura, condições, turnos, rolagens e mais — cada tipo de evento com sua própria cor para facilitar a leitura. Ações dos heróis (entrar em combate, subir de nível) saem na cor do próprio herói. Há também um campo para anotar algo manualmente no histórico. <span class="ajuda-btn" style="background:#8b1a1a;color:#fff;">Limpar Histórico</span> apaga os registros.</p>
 
         <h3><i data-lucide="notebook-pen"></i> Anotações</h3>
         <p>Na aba "Anotações", ao lado dos Dados, há um campo de texto livre para anotar o que quiser durante a sessão.</p>
 
         <h3><i data-lucide="settings"></i> Configurações</h3>
-        <p>Defina o nome da campanha e do mestre (aparecem no cabeçalho), exporte a sessão inteira para um arquivo .json (backup) ou importe um arquivo salvo anteriormente. "Limpar todos os dados" reseta o app por completo.</p>
+        <p>Defina o nome da campanha e do mestre (aparecem no cabeçalho), exporte a sessão inteira para um arquivo .json (backup) ou importe um arquivo salvo anteriormente. <span class="ajuda-btn-ghost" style="color:#ff6b6b;">Limpar todos os dados</span> reseta o app por completo.</p>
 
-        <p class="ajuda-dica"><i data-lucide="lightbulb"></i> Dica: use o botão "Modo Dark/Light" no topo para trocar o tema a qualquer momento.</p>
+        <p class="ajuda-dica"><i data-lucide="lightbulb"></i> Dica: use o botão <span class="ajuda-btn" style="background:var(--accent);color:#fff;">Modo Dark/Light</span> no topo para trocar o tema a qualquer momento.</p>
       </div>
     </div>
 
