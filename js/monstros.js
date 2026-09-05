@@ -25,6 +25,7 @@ export const coletaneaMonstros = [
   { nome: "Berserker",          vidaMax: 67,  ca: 13 },
   { nome: "Cultista",           vidaMax: 9,   ca: 12, icone: "monstros/cultista" },
   { nome: "Fanático Cultista",  vidaMax: 33,  ca: 13 },
+  { nome: "Besta-fera de Caerbannog",  vidaMax: 999,  ca: 99, icone: "monstros/besta-fera-de-caerbannog" },
 
   // ── MORTOS-VIVOS ─────────────────────────────────────────────────────────
   { nome: "Esqueleto",          vidaMax: 13,  ca: 13, icone: "monstros/esqueleto" },

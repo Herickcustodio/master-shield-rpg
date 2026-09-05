@@ -59,3 +59,42 @@
   font-weight: 700;
   white-space: nowrap;
 }
+
+.ajuda-link {
+  color: var(--accent-hover);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.ajuda-link:hover {
+  color: var(--accent);
+}
+
+.ajuda-doacao-wrap {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+  padding-top: 10px;
+  background: var(--bg-modal);
+}
+
+.ajuda-btn-doacao {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  background: #e63946;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(230, 57, 70, 0.35);
+  transition: background 0.2s;
+}
+
+.ajuda-btn-doacao:hover {
+  background: #ff4d5e;
+}
