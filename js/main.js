@@ -22,6 +22,7 @@ import { initDano } from "./dano.js";
 import { renderizarStatusGrupo, initHerois } from "./herois.js";
 import { atualizarIniciativa, renderizarColetanea, initCombate } from "./combate.js";
 import { atualizarPainelTurno, initTurno } from "./turno.js";
+import { initAtualizacoes } from "./atualizacoes.js";
 
 function atualizarBtnTema() {
   const isLight = document.body.classList.contains("tema-light");
@@ -115,6 +116,8 @@ window.onload = () => {
   renderizarColetanea();
 
   configurarModal("btn-sobre", "modal-sobre", "fechar-sobre");
+  configurarModal("btn-atualizacoes", "modal-atualizacoes", "fechar-atualizacoes");
+  initAtualizacoes();
   configurarModal("btn-ajuda", "modal-ajuda", "fechar-ajuda");
 
   // Abas Dados / Anotações

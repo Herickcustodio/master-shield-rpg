@@ -49,10 +49,22 @@
       <span id="header-mestre" class="header-mestre"></span>
       <nav class="menu-controles">
         <button id="btn-sobre" class="btn-topo">Sobre</button>
+        <button id="btn-atualizacoes" class="btn-topo" aria-haspopup="dialog" aria-controls="modal-atualizacoes">Atualizações</button>
         <button id="btn-ajuda" class="btn-topo">Ajuda</button>
         <button id="btn-config" class="btn-topo btn-topo--icone-celular"><i data-lucide="settings"></i><span class="btn-topo-label">Configurações</span></button>
         <button id="btn-tema" class="btn-topo btn-topo--icone-celular">Modo Dark/Light</button>
       </nav>
+    </div>
+
+    <!-- Modal Atualizações -->
+    <div id="modal-atualizacoes" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="titulo-atualizacoes">
+      <div class="modal-conteudo modal-atualizacoes-conteudo">
+        <button type="button" class="fechar-modal" id="fechar-atualizacoes" aria-label="Fechar">&times;</button>
+        <h2 id="titulo-atualizacoes"><i data-lucide="history"></i> Atualizações</h2>
+        <p id="atualizacoes-status" class="atualizacoes-status" aria-live="polite">As atualizações serão carregadas ao abrir esta janela.</p>
+        <ol id="lista-atualizacoes" class="atualizacoes-lista"></ol>
+        <a class="atualizacoes-link ajuda-link" href="https://github.com/Herickcustodio/master-shield-rpg/commits" target="_blank" rel="noopener noreferrer">Ver todos os commits no GitHub</a>
+      </div>
     </div>
 
     <!-- Modal Sobre -->

@@ -1,0 +1,57 @@
+.modal-atualizacoes-conteudo {
+  width: min(90%, 720px);
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.modal-atualizacoes-conteudo h2 {
+  margin-top: 0;
+  padding-right: 24px;
+  font-family: "Cinzel", Georgia, serif;
+  color: var(--accent-hover);
+}
+
+.atualizacoes-status {
+  margin: 0 0 14px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.atualizacoes-lista {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.atualizacao-item {
+  padding: 12px;
+  background: var(--bg-card2);
+  border: 1px solid var(--border-input);
+  border-radius: 8px;
+}
+
+.atualizacao-mensagem {
+  color: var(--text-primary);
+  font-weight: 700;
+  line-height: 1.45;
+  text-decoration: none;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.atualizacao-mensagem:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+.atualizacao-detalhes {
+  margin: 6px 0 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.atualizacoes-link {
+  display: inline-block;
+}
