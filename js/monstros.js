@@ -21,10 +21,10 @@ export const coletaneaMonstros = [
   { nome: "Bandido",            vidaMax: 11,  ca: 12, icone: "monstros/bandido" },
   { nome: "Capitão Bandido",    vidaMax: 65,  ca: 15, icone: "monstros/capitao-bandido" },
   { nome: "Guarda",             vidaMax: 11,  ca: 16, icone: "monstros/guarda" },
-  { nome: "Veterano",           vidaMax: 58,  ca: 17 },
-  { nome: "Berserker",          vidaMax: 67,  ca: 13 },
+  { nome: "Veterano",           vidaMax: 58,  ca: 17, icone: "monstros/veterano" },
+  { nome: "Berserker",          vidaMax: 67,  ca: 13, icone: "monstros/berserker" },
   { nome: "Cultista",           vidaMax: 9,   ca: 12, icone: "monstros/cultista" },
-  { nome: "Fanático Cultista",  vidaMax: 33,  ca: 13 },
+  { nome: "Fanático Cultista",  vidaMax: 33,  ca: 13, icone: "monstros/fanatico-cultista" },
   { nome: "Besta-fera de Caerbannog",  vidaMax: 999,  ca: 99, icone: "monstros/besta-fera-de-caerbannog" },
 
   // ── MORTOS-VIVOS ─────────────────────────────────────────────────────────

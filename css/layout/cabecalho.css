@@ -52,7 +52,6 @@
   color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
-  font-style: italic;
   text-overflow: ellipsis;
   min-width: 0;
   flex-shrink: 1;

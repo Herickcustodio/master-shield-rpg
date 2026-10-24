@@ -41,7 +41,13 @@ export function aplicarConfig() {
   const spanCampanha = $("header-campanha");
   if (spanCampanha) spanCampanha.textContent = config.campanhaNome || "";
   const spanMestre = $("header-mestre");
-  if (spanMestre) spanMestre.textContent = config.mestreNome ? `Mestre: ${config.mestreNome}` : "";
+  if (spanMestre) {
+    const nomeMestre = Array.from(config.mestreNome || "");
+    const nomeExibido = nomeMestre.length > 20
+      ? `${nomeMestre.slice(0, 20).join("")}...`
+      : nomeMestre.join("");
+    spanMestre.textContent = nomeExibido ? `Mestre: ${nomeExibido}` : "";
+  }
   const selAcerto = $("acerto-tipo");
   if (selAcerto) selAcerto.value = config.dadoAcerto;
 }
