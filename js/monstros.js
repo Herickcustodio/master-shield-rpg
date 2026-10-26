@@ -14,7 +14,7 @@ export const coletaneaMonstros = [
   { nome: "Kobold",             vidaMax: 5,   ca: 12, icone: "monstros/kobold" },
   { nome: "Hobgoblin",          vidaMax: 11,  ca: 18, icone: "monstros/hobgoblin" },
   { nome: "Orc",                vidaMax: 15,  ca: 13, icone: "monstros/orc" },
-  { nome: "Gnoll",              vidaMax: 22,  ca: 15 },
+  { nome: "Gnoll",              vidaMax: 22,  ca: 15, icone: "monstros/gnoll" },
   { nome: "Bugbear",            vidaMax: 27,  ca: 16, icone: "monstros/bugbear" },
   { nome: "Lizardfolk",         vidaMax: 22,  ca: 15, icone: "monstros/lizardfolk" },
   { nome: "Troglodita",         vidaMax: 13,  ca: 11, icone: "monstros/troglodita" },
@@ -29,10 +29,10 @@ export const coletaneaMonstros = [
 
   // ── MORTOS-VIVOS ─────────────────────────────────────────────────────────
   { nome: "Esqueleto",          vidaMax: 13,  ca: 13, icone: "monstros/esqueleto" },
-  { nome: "Zumbi",              vidaMax: 22,  ca: 8  },
-  { nome: "Ghoul",              vidaMax: 22,  ca: 12 },
-  { nome: "Sombra",             vidaMax: 16,  ca: 12 },
-  { nome: "Espectro",           vidaMax: 22,  ca: 12 },
+  { nome: "Zumbi",              vidaMax: 22,  ca: 8, icone: "monstros/zumbi" },
+  { nome: "Ghoul",              vidaMax: 22,  ca: 12, icone: "monstros/ghoul" },
+  { nome: "Sombra",             vidaMax: 16,  ca: 12, icone: "monstros/sombra" },
+  { nome: "Espectro",           vidaMax: 22,  ca: 12, icone: "monstros/espectro" },
   { nome: "Fantasma",           vidaMax: 45,  ca: 11 },
   { nome: "Múmia",              vidaMax: 58,  ca: 11 },
   { nome: "Senhor Múmia",       vidaMax: 97,  ca: 17 },
