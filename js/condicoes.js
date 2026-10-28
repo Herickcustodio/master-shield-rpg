@@ -8,6 +8,7 @@ import { estado } from "./state.js";
 import { CONDICOES } from "./constantes.js";
 import { adicionarHistorico } from "./historico.js";
 import { salvarESincronizar } from "./sync.js";
+import { definirTituloComIcone } from "./ui.js";
 
 let _condicaoCtx = null; // { criaturaId, condicaoId }
 let _aoFechar = null;
@@ -31,7 +32,7 @@ export function abrirModalCondicaoDuracao(criaturaId, condicaoId) {
   }
 
   _condicaoCtx = { criaturaId, condicaoId };
-  $("modal-condicao-titulo").textContent = `${cond.emoji} ${cond.label} — ${criatura.nome}`;
+  definirTituloComIcone($("modal-condicao-titulo"), "sparkles", cond.label, criatura.nome);
   $("condicao-turnos").value = "1";
   $("modal-condicao-duracao").classList.remove("oculto");
   $("condicao-turnos").focus();

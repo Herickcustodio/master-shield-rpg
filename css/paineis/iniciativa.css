@@ -155,7 +155,7 @@ body.tema-light .turno-ativo-card {
 .item-ini-atual-badge {
   position: absolute;
   top: -9px;
-  right: -7px;
+  right: 20px;
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.6px;
@@ -218,6 +218,39 @@ body.tema-light .turno-ativo-card {
 
 .btn-remover-ini:hover {
   color: #ff6b6b;
+}
+
+.btn-remover-combatente {
+  position: absolute;
+  top: -9px;
+  right: -7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 3px;
+  color: #ff6b6b;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.btn-remover-combatente:hover {
+  color: #fff;
+  background: #8b1a1a;
+  border-color: #c0392b;
+}
+
+.btn-remover-combatente:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn-remover-combatente svg {
+  width: 14px;
+  height: 14px;
 }
 
 .btn-morte-ini {

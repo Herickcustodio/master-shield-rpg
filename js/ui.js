@@ -17,6 +17,26 @@ export function configurarModal(btnId, modalId, fecharId) {
   window.addEventListener("click", (e) => { if (e.target === modal) modal.classList.add("oculto"); });
 }
 
+export function definirTituloComIcone(elemento, icone, titulo, detalhe = "") {
+  const iconEl = document.createElement("i");
+  iconEl.dataset.lucide = icone;
+  iconEl.setAttribute("aria-hidden", "true");
+
+  const tituloEl = document.createElement("span");
+  tituloEl.textContent = titulo;
+  elemento.replaceChildren(iconEl, tituloEl);
+
+  if (detalhe) {
+    const separadorEl = document.createElement("span");
+    separadorEl.textContent = " — ";
+    const detalheEl = document.createElement("span");
+    detalheEl.textContent = detalhe;
+    elemento.append(separadorEl, detalheEl);
+  }
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
 /** true se o valor é uma foto enviada pelo usuário (data URL), não um id de preset */
 export const ehFoto = (v) => typeof v === "string" && v.startsWith("data:");
 

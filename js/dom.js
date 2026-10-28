@@ -1,3 +1,5 @@
+import { idiomaAtual } from "./i18n.js";
+
 /* ==========================================================================
    DOM — atalhos usados em todo o app
    ========================================================================== */
@@ -5,7 +7,8 @@
 /** Atalho para document.getElementById */
 export const $ = (id) => document.getElementById(id);
 
-/** Hora atual no formato HH:MM (pt-BR), usada nos registros de histórico/rolagens */
+/** Hora local, usada nos registros de histórico e rolagens */
 export function horaAgora() {
-  return new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  const locale = idiomaAtual() === "en" ? "en-US" : "pt-BR";
+  return new Date().toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" });
 }

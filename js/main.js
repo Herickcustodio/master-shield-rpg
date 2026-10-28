@@ -23,6 +23,7 @@ import { renderizarStatusGrupo, initHerois } from "./herois.js";
 import { atualizarIniciativa, renderizarColetanea, initCombate } from "./combate.js";
 import { atualizarPainelTurno, initTurno } from "./turno.js";
 import { initAtualizacoes } from "./atualizacoes.js";
+import { idiomaAtual, initIdioma } from "./i18n.js";
 
 function atualizarBtnTema() {
   const isLight = document.body.classList.contains("tema-light");
@@ -40,7 +41,7 @@ function atualizarBtnTema() {
 function exportarSessao() {
   const dados = {
     versao: "1.0",
-    data: new Date().toLocaleString("pt-BR"),
+    data: new Date().toLocaleString(idiomaAtual() === "en" ? "en-US" : "pt-BR"),
     campanha: config.campanhaNome,
     mestre: config.mestreNome,
     config,
@@ -108,6 +109,8 @@ function limparTodosDados() {
    INICIALIZAÇÃO
    ========================================================================== */
 window.onload = () => {
+  initIdioma();
+
   // Painéis re-renderizados a cada salvarESincronizar()
   aoSincronizar(atualizarIniciativa);
   aoSincronizar(renderizarStatusGrupo);

@@ -1,3 +1,5 @@
+import { idiomaAtual } from "./i18n.js";
+
 const API_COMMITS = "https://api.github.com/repos/Herickcustodio/master-shield-rpg/commits?per_page=10";
 
 function criarItemAtualizacao(commit) {
@@ -17,7 +19,7 @@ function criarItemAtualizacao(commit) {
     || "Autor desconhecido";
   const dataCommit = commit.commit.author?.date || commit.commit.committer?.date;
   const data = dataCommit
-    ? new Date(dataCommit).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
+    ? new Date(dataCommit).toLocaleString(idiomaAtual() === "en" ? "en-US" : "pt-BR", { dateStyle: "short", timeStyle: "short" })
     : "Data indisponível";
   const detalhes = document.createElement("p");
   detalhes.className = "atualizacao-detalhes";

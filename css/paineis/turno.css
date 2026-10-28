@@ -251,6 +251,13 @@
   min-height: 28px;
 }
 
+.btn-turno-acao svg {
+  width: 1em;
+  height: 1em;
+  margin-right: 2px;
+  vertical-align: -0.15em;
+}
+
 .btn-turno-acao--ataque {
   background: #5a1a1a;
   color: #ffaaaa;

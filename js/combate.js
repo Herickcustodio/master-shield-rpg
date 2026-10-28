@@ -5,6 +5,7 @@
 import { $ } from "./dom.js";
 import { CHAVES } from "./storage.js";
 import { estado } from "./state.js";
+import { idiomaAtual, traduzir } from "./i18n.js";
 import { CORES_HEROI, CONDICOES } from "./constantes.js";
 import { coletaneaMonstros } from "./monstros.js";
 import { adicionarHistorico } from "./historico.js";
@@ -249,6 +250,19 @@ export function limparIniciativa() {
   salvarESincronizar();
 }
 
+function removerCombatenteDoCombate(id) {
+  const index = estado.listaDeIniciativa.findIndex(personagem => personagem.id === id);
+  if (index < 0) return;
+
+  const [personagem] = estado.listaDeIniciativa.splice(index, 1);
+  if (index < estado.turnoAtivo) estado.turnoAtivo--;
+  if (estado.listaDeIniciativa.length === 0) estado.turnoAtivo = 0;
+  else if (estado.turnoAtivo >= estado.listaDeIniciativa.length) estado.turnoAtivo = 0;
+
+  adicionarHistorico(`🗑️ ${personagem.nome} foi removido do combate.`);
+  salvarESincronizar();
+}
+
 /* ==========================================================================
    RENDERIZAÇÃO — PAINEL DE INICIATIVA
    ========================================================================== */
@@ -306,6 +320,23 @@ export function atualizarIniciativa() {
     iniciativaTag.textContent = personagem.valor;
 
     topo.appendChild(iniciativaTag);
+
+    const btnRemover = document.createElement("button");
+    btnRemover.type = "button";
+    btnRemover.className = "btn-remover-ini btn-remover-combatente";
+    btnRemover.title = "Remover combatente do combate";
+    btnRemover.setAttribute("aria-label", "Remover combatente do combate");
+    const iconeRemover = document.createElement("i");
+    iconeRemover.dataset.lucide = "x";
+    iconeRemover.setAttribute("aria-hidden", "true");
+    btnRemover.appendChild(iconeRemover);
+    btnRemover.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (confirm(`Deseja remover "${personagem.nome}" do combate?`)) {
+        removerCombatenteDoCombate(personagem.id);
+      }
+    });
+    topo.appendChild(btnRemover);
 
     const corpo = document.createElement("div");
     corpo.className = "item-ini-corpo";
@@ -421,6 +452,8 @@ export function atualizarIniciativa() {
     container.appendChild(item);
   });
 
+  if (window.lucide) window.lucide.createIcons();
+
   // Rola o painel até o combatente ativo ficar visível
   const itemAtivo = container.querySelector(".item-iniciativa--ativo");
   if (itemAtivo) {
@@ -466,7 +499,9 @@ export function renderizarColetanea(filtro = "") {
   ];
 
   const lista = termo
-    ? listaCompleta.filter(m => m.nome.toLowerCase().includes(termo))
+    ? listaCompleta.filter(m =>
+      m.nome.toLowerCase().includes(termo)
+      || (idiomaAtual() === "en" && traduzir(m.nome).toLowerCase().includes(termo)))
     : listaCompleta;
 
   lista.forEach(monstro => {

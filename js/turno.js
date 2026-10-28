@@ -394,26 +394,27 @@ export function atualizarPainelTurno() {
   btnAtaque.id = "btn-turno-ataque";
   btnAtaque.type = "button";
   btnAtaque.className = "btn-turno-acao btn-turno-acao--ataque";
-  btnAtaque.textContent = "⚔️ Ataque";
+  btnAtaque.innerHTML = '<i data-lucide="swords"></i> Ataque';
   btnAtaque.addEventListener("click", abrirTurnoAcaoAtaque);
 
   const btnCondicao = document.createElement("button");
   btnCondicao.id = "btn-turno-condicao";
   btnCondicao.type = "button";
   btnCondicao.className = "btn-turno-acao btn-turno-acao--condicao";
-  btnCondicao.textContent = "🩺 Condição";
+  btnCondicao.innerHTML = '<i data-lucide="sparkles"></i> Condição';
   btnCondicao.addEventListener("click", abrirTurnoAcaoCondicao);
 
   const btnCura = document.createElement("button");
   btnCura.id = "btn-turno-cura";
   btnCura.type = "button";
   btnCura.className = "btn-turno-acao btn-turno-acao--cura";
-  btnCura.textContent = "💊 Cura";
+  btnCura.innerHTML = '<i data-lucide="heart-pulse"></i> Cura';
   btnCura.addEventListener("click", abrirTurnoAcaoCura);
 
   divAcoesTurno.appendChild(btnAtaque);
   divAcoesTurno.appendChild(btnCura);
   divAcoesTurno.appendChild(btnCondicao);
+  if (window.lucide) window.lucide.createIcons();
 
   // Montagem final do card de turno ativo
   cardEl.appendChild(cabecalho);

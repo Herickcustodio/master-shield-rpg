@@ -7,7 +7,7 @@ import { estado } from "./state.js";
 import { config } from "./config.js";
 import { adicionarHistorico } from "./historico.js";
 import { salvarESincronizar } from "./sync.js";
-import { renderizarListaAlvos, selecionarTodosAlvos, obterCACriatura } from "./ui.js";
+import { renderizarListaAlvos, selecionarTodosAlvos, obterCACriatura, definirTituloComIcone } from "./ui.js";
 import { marcarMorto, aplicarCondicao } from "./condicoes.js";
 import { CONDICOES } from "./constantes.js";
 
@@ -242,7 +242,7 @@ export function abrirModalAcerto(atacanteId) {
   _acertoAtacanteId = atacanteId;
   _acertoCritico    = false;
 
-  $("modal-acerto-titulo").textContent = `🎯 Acerto — ${atacante.nome}`;
+  definirTituloComIcone($("modal-acerto-titulo"), "crosshair", "Acerto", atacante.nome);
   $("acerto-atacante-info").innerHTML  = `⚔️ Atacante: <strong>${atacante.nome}</strong>`;
 
   // Lista de alvos — nada pré-selecionado, o mestre escolhe quem é atacado
@@ -378,7 +378,7 @@ export function abrirModalDanoCura(ids, tipo, atacantePreId = null, critico = fa
   $("btn-dano-critico").classList.toggle("btn-dano-critico--critico", !!critico);
   atualizarBotaoX2();
 
-  $("btn-confirmar-dano").textContent   = isDano ? "⚔️ Aplicar Dano" : "💊 Aplicar Cura";
+  definirTituloComIcone($("btn-confirmar-dano"), isDano ? "swords" : "heart-pulse", isDano ? "Aplicar Dano" : "Aplicar Cura");
   $("btn-confirmar-dano").className     = isDano ? "btn-confirmar btn-confirmar-dano" : "btn-confirmar btn-confirmar-cura";
 
   const tituloEl  = $("modal-dano-titulo");
@@ -387,7 +387,7 @@ export function abrirModalDanoCura(ids, tipo, atacantePreId = null, critico = fa
 
   const curaAlvoWrap = $("modal-dano-cura-alvo-wrap");
   if (isDano) {
-    tituloEl.textContent    = "⚔️ Dano";
+    definirTituloComIcone(tituloEl, "swords", "Dano");
     hpAtualEl.style.display = "none";
     alvosWrap.style.display = "block";
     curaAlvoWrap.style.display = "none";
@@ -469,7 +469,7 @@ function sincronizarAlvoCura() {
   if (!criatura) return;
   _modalDanoCuraIds = [criatura.id];
 
-  $("modal-dano-titulo").textContent   = `💊 Cura — ${criatura.nome}`;
+  definirTituloComIcone($("modal-dano-titulo"), "heart-pulse", "Cura", criatura.nome);
   $("modal-dano-hp-atual").textContent = `HP atual: ${criatura.hpAtual} / ${criatura.hpMax}`;
 
   const btnMorto = $("btn-morto-modal");
