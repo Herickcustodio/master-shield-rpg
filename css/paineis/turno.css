@@ -298,6 +298,14 @@ body.tema-light .btn-turno-acao--cura {
   background: #2a6a2a;
 }
 
+body.tema-light .btn-turno-acao--ataque:hover {
+  background: #c0392b;
+}
+
+body.tema-light .btn-turno-acao--cura:hover {
+  background: #27ae60;
+}
+
 
 .turno-controles {
   display: flex;

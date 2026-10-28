@@ -112,6 +112,14 @@ body.tema-light .btn-area-cab--cura {
   background: #2a6a2a;
 }
 
+body.tema-light .btn-area-cab:hover {
+  background: #c0392b;
+}
+
+body.tema-light .btn-area-cab--cura:hover {
+  background: #27ae60;
+}
+
 /* Lista de alvos */
 .area-alvos-controles {
   display: flex;
