@@ -185,11 +185,15 @@ body.tema-light .turno-ativo-card {
   text-overflow: ellipsis;
 }
 
-.btn-morto-item-ini {
-  width: 22px;
-  height: 22px;
+.btn-turno-morto-icone.btn-morto-item-ini {
+  position: absolute;
+  right: -7px;
+  bottom: -7px;
+  width: 24px;
+  height: 24px;
   font-size: 12px;
-  border-radius: 5px;
+  border-radius: 50%;
+  z-index: 1;
 }
 
 .item-iniciativa--ativo .item-iniciativa-nome {

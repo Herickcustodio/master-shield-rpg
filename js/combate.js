@@ -363,6 +363,7 @@ export function atualizarIniciativa() {
     btnMortoCombate.type = "button";
     btnMortoCombate.className = "btn-turno-morto-icone btn-morto-item-ini";
     btnMortoCombate.title = estaCaidoCombate ? "Reviver" : "Marcar como Morto ou Nocautear";
+    btnMortoCombate.setAttribute("aria-label", btnMortoCombate.title);
     btnMortoCombate.textContent = estaCaidoCombate ? "💚" : "☠️";
     btnMortoCombate.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -376,7 +377,6 @@ export function atualizarIniciativa() {
     const caTexto = document.createElement("span");
     caTexto.textContent = `CA ${caValor ?? "?"}`;
     caLinha.appendChild(caTexto);
-    caLinha.appendChild(btnMortoCombate);
 
     const vidaLinha = document.createElement("div");
     vidaLinha.className = "item-ini-vida-row";
@@ -434,6 +434,7 @@ export function atualizarIniciativa() {
     item.appendChild(topo);
     item.appendChild(corpo);
     if (condicoes.length > 0) item.appendChild(condTags);
+    item.appendChild(btnMortoCombate);
 
     if (ativo) {
       const atualBadge = document.createElement("span");
@@ -494,14 +495,14 @@ export function renderizarColetanea(filtro = "") {
   const termo = filtro.toLowerCase().trim();
 
   const listaCompleta = [
-    ...estado.monstrosCustom,
+    ...estado.monstrosCustom.map(monstro => ({ ...monstro, custom: true })),
     ...[...coletaneaMonstros].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"))
   ];
 
   const lista = termo
     ? listaCompleta.filter(m =>
       m.nome.toLowerCase().includes(termo)
-      || (idiomaAtual() === "en" && traduzir(m.nome).toLowerCase().includes(termo)))
+      || (!m.custom && idiomaAtual() === "en" && traduzir(m.nome).toLowerCase().includes(termo)))
     : listaCompleta;
 
   lista.forEach(monstro => {

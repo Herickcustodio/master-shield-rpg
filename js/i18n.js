@@ -1,3 +1,5 @@
+import { estado } from "./state.js";
+
 const STORAGE_KEY = "masterShieldIdioma";
 const translations = {
   "Sobre": "About",
@@ -176,6 +178,8 @@ const translations = {
   "Editar herói": "Edit hero",
   "Atualizar iniciativa": "Update initiative",
   "Lançar iniciativa": "Roll initiative",
+  "Reviver": "Revive",
+  "Marcar como Morto ou Nocautear": "Mark as Dead or Unconscious",
   "Indefinido": "Indefinite",
   "indefinido": "indefinite",
   "💚 Reviver": "💚 Revive",
@@ -284,20 +288,36 @@ const translations = {
   "Não pode ouvir. Falha automática em testes baseados em audição.": "Cannot hear and automatically fails checks that require hearing.",
   "Condição cumulativa. Níveis crescentes afetam testes e velocidade, podendo levar à morte no nível máximo.": "Cumulative condition. Increasing levels affect checks and speed and can eventually cause death.",
   "Troglodita": "Troglodyte",
+  "Goblin": "Goblin",
+  "Kobold": "Kobold",
+  "Hobgoblin": "Hobgoblin",
+  "Orc": "Orc",
+  "Gnoll": "Gnoll",
+  "Bugbear": "Bugbear",
+  "Lizardfolk": "Lizardfolk",
   "Bandido": "Bandit",
   "Capitão Bandido": "Bandit Captain",
   "Guarda": "Guard",
   "Veterano": "Veteran",
+  "Berserker": "Berserker",
+  "Cultista": "Cultist",
   "Fanático Cultista": "Cult Fanatic",
   "Besta-fera de Caerbannog": "The Beast of Caerbannog",
   "Esqueleto": "Skeleton",
   "Zumbi": "Zombie",
+  "Ghoul": "Ghoul",
   "Sombra": "Shadow",
   "Espectro": "Specter",
   "Fantasma": "Ghost",
   "Múmia": "Mummy",
   "Senhor Múmia": "Mummy Lord",
+  "Vampiro Spawn": "Vampire Spawn",
+  "Vampiro": "Vampire",
+  "Lich": "Lich",
+  "Banshee": "Banshee",
   "Morto-Vivo Carcaça": "Revenant",
+  "Wight": "Wight",
+  "Wraith": "Wraith",
   "Rato Gigante": "Giant Rat",
   "Morcego Gigante": "Giant Bat",
   "Aranha Gigante": "Giant Spider",
@@ -309,14 +329,18 @@ const translations = {
   "Leão": "Lion",
   "Grifo": "Griffon",
   "Hipogrifo": "Hippogriff",
+  "Peryton": "Peryton",
   "Quimera": "Chimera",
   "Basilisco": "Basilisk",
+  "Medusa": "Medusa",
   "Minotauro": "Minotaur",
   "Centauro": "Centaur",
   "Ciclope": "Cyclops",
   "Harpia": "Harpy",
   "Hidra": "Hydra",
   "Mantícora": "Manticore",
+  "Worg": "Worg",
+  "Troll": "Troll",
   "Ogro": "Ogre",
   "Gigante da Colina": "Hill Giant",
   "Gigante de Pedra": "Stone Giant",
@@ -331,6 +355,9 @@ const translations = {
   "Mefito de Lama": "Mud Mephit",
   "Mefito de Fumaça": "Smoke Mephit",
   "Mefito de Vapor": "Steam Mephit",
+  "Salamandra": "Salamander",
+  "Djinn": "Djinn",
+  "Efreet": "Efreet",
   "Homúnculo": "Homunculus",
   "Estátua Animada": "Animated Armor",
   "Golem de Argila": "Clay Golem",
@@ -358,6 +385,37 @@ const translations = {
   "Dragão Ancião Azul": "Ancient Blue Dragon",
   "Pseudodragão": "Pseudodragon",
   "Abissal": "Abyssal",
+  "Wyvern": "Wyvern",
+  "Mind Flayer": "Mind Flayer",
+  "Beholder": "Beholder",
+  "Beholder Zumbi": "Zombie Beholder",
+  "Chuul": "Chuul",
+  "Aboleth": "Aboleth",
+  "Gibbering Mouther": "Gibbering Mouther",
+  "Grell": "Grell",
+  "Nothic": "Nothic",
+  "Otyugh": "Otyugh",
+  "Roper": "Roper",
+  "Umber Hulk": "Umber Hulk",
+  "Intellect Devourer": "Intellect Devourer",
+  "Quasit": "Quasit",
+  "Dretch": "Dretch",
+  "Shadow Demon": "Shadow Demon",
+  "Manes": "Manes",
+  "Barlgura": "Barlgura",
+  "Chasme": "Chasme",
+  "Glabrezu": "Glabrezu",
+  "Hezrou": "Hezrou",
+  "Marilith": "Marilith",
+  "Nalfeshnee": "Nalfeshnee",
+  "Vrock": "Vrock",
+  "Balor": "Balor",
+  "Imp": "Imp",
+  "Bearded Devil": "Bearded Devil",
+  "Chain Devil": "Chain Devil",
+  "Bone Devil": "Bone Devil",
+  "Ice Devil": "Ice Devil",
+  "Pit Fiend": "Pit Fiend",
   "Do computador": "From computer",
   "Enviar uma imagem do computador": "Upload an image from your computer",
   "Imagem atual (enviada do computador)": "Current image (uploaded from computer)",
@@ -432,14 +490,23 @@ const originalText = new WeakMap();
 const originalAttributes = new WeakMap();
 let currentLanguage = "pt-BR";
 
+function ehNomeCriaturaCustom(nome) {
+  const nomeBase = nome.match(/^(.+?) [A-Z]$/)?.[1] ?? nome;
+  return estado.monstrosCustom.some(monstro =>
+    monstro.nome === nome || monstro.nome === nomeBase
+  );
+}
+
 function isUserContent(element) {
   if (!element) return false;
   return Boolean(element.closest(
     "#header-campanha, .card-heroi-nome, .item-iniciativa-nome, .turno-ativo-nome, .area-alvo-nome, .acerto-alvo-nome"
-  ) || (element.closest(".item-monstro-custom") && element.closest(".item-monstro-nome")));
+  ) || (element.closest(".item-monstro-custom") && element.closest(".item-monstro-nome"))
+    || ehNomeCriaturaCustom(element.textContent?.trim()));
 }
 
 function translateCombatantName(name) {
+  if (ehNomeCriaturaCustom(name)) return name;
   if (translations[name] !== undefined) return translations[name];
   const numberedName = name.match(/^(.+?) ([A-Z])$/);
   if (numberedName && translations[numberedName[1]] !== undefined) {
