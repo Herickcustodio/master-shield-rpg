@@ -76,7 +76,7 @@
 .btn-area-cab {
   padding: 3px 9px;
   background: #5a1a1a;
-  color: #ffaaaa;
+  color: #fff;
   border: 1px solid #8b2a2a;
   border-radius: 4px;
   cursor: pointer;
@@ -95,13 +95,21 @@
 
 .btn-area-cab--cura {
   background: #1a3a1a;
-  color: #88dd88;
+  color: #fff;
   border-color: #2a6a2a;
 }
 
 .btn-area-cab--cura:hover {
   background: #2a6a2a;
   color: #fff;
+}
+
+body.tema-light .btn-area-cab {
+  background: #8b2a2a;
+}
+
+body.tema-light .btn-area-cab--cura {
+  background: #2a6a2a;
 }
 
 /* Lista de alvos */

@@ -260,7 +260,7 @@
 
 .btn-turno-acao--ataque {
   background: #5a1a1a;
-  color: #ffaaaa;
+  color: #fff;
   border-color: #8b2a2a;
 }
 
@@ -281,13 +281,21 @@
 
 .btn-turno-acao--cura {
   background: #1a3a1a;
-  color: #88dd88;
+  color: #fff;
   border-color: #2a6a2a;
 }
 
 .btn-turno-acao--cura:hover {
   background: #2a6a2a;
   color: #fff;
+}
+
+body.tema-light .btn-turno-acao--ataque {
+  background: #8b2a2a;
+}
+
+body.tema-light .btn-turno-acao--cura {
+  background: #2a6a2a;
 }
 
 

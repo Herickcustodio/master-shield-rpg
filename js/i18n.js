@@ -646,11 +646,13 @@ export function traduzir(texto) {
 export function initIdioma() {
   const button = document.getElementById("btn-idioma");
   if (!button) return;
+  const buttonLabel = button.querySelector("span");
+  if (!buttonLabel) return;
 
   currentLanguage = localStorage.getItem(STORAGE_KEY) === "en" ? "en" : "pt-BR";
   const applyLanguage = () => {
     document.documentElement.lang = currentLanguage;
-    button.textContent = currentLanguage === "en" ? "PT" : "EN";
+    buttonLabel.textContent = currentLanguage === "en" ? "EN" : "PT";
     button.setAttribute("aria-label", currentLanguage === "en" ? "Switch to Portuguese" : "Switch to English");
     document.title = currentLanguage === "en" ? "Master Shield RPG — Game Master Tools" : "Master Shield RPG";
     const description = document.querySelector('meta[name="description"]');
